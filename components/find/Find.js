@@ -4,14 +4,17 @@ import { gql } from 'apollo-boost';
 import {
   Pane,
   Heading,
-  Button,
+  Text,
   SearchInput,
-  SelectMenu,
+  Icon,
   TextInput,
   IconButton,
   Spinner,
   TagInput,
   toaster,
+  Tablist,
+  Tab,
+  Avatar,
 } from 'evergreen-ui';
 import PropTypes from 'prop-types';
 import { Query } from 'react-apollo';
@@ -28,14 +31,22 @@ const getItems = gql`
     $limit: Int
     $sort: String
     $pageNum: Int
-    $filter: Json
+    $exclude: Json
+    $include: Json
+    $priceCurrency: String
+    $price: String
+    $itemLocationCountry: String
   ) {
     getItems(
       search: $search
       limit: $limit
       sort: $sort
       pageNum: $pageNum
-      filters: $filter
+      exclude: $exclude
+      include: $include
+      priceCurrency: $priceCurrency
+      price: $price
+      itemLocationCountry: $itemLocationCountry
     ) {
       item
     }
@@ -65,6 +76,80 @@ const sortOptions = [
   },
 ];
 
+const option = (name, options, update, selected) => (
+  <Pane marginBottom={10} marginRight={10}>
+    <Heading size={500} fontSize="12px" fontWeight={500} marginBottom={2}>
+      {name}
+    </Heading>
+    <Tablist>
+      {options.map((a, index) => (
+        <Tab
+          key={a}
+          id={a}
+          marginLeft={0}
+          height="20px"
+          fontSize="10px"
+          // lineHeight="16px"
+          marginBottom={3}
+          letterSpacing="0.3px"
+          fontWeight={400}
+          textTransform="uppercase"
+          onSelect={() => update(a)}
+          isSelected={a === selected}
+          aria-controls={`panel-${a}`}
+        >
+          {a}
+        </Tab>
+      ))}
+    </Tablist>
+  </Pane>
+);
+
+// fetch('http://localhost:3000/api/zinc-api?search=shoes')
+//   .then(response => response.json())
+//   .then(json =>
+//     json.map(
+//       item => <div>{item.product_id}</div>
+//   (
+// <Pane
+//   display="flex"
+//   alignItems="center"
+//   borderTop="0.1rem solid #dfe3e8"
+// >
+//   <Pane padding={15}>
+//     {item.image && (
+//       <Avatar
+//         src={item.image}
+//         alt={`${item.title} product shot`}
+//         borderStyle="solid"
+//         borderWidth="1px"
+//         borderRadius={3}
+//         borderColor="#e8e9ea"
+//         size={90}
+//       />
+//     )}
+//   </Pane>
+//   <Pane
+//     padding={15}
+//     paddingLeft={0}
+//     marginTop={3}
+//     marginBottom="auto"
+//   >
+//     <Heading size={500}>
+//       {item.product_id}
+//     </Heading>
+//     <Heading
+//       size={400}
+//       marginRight={10}
+//       color="green"
+//     >
+//       ${item.price}
+//     </Heading>
+//   </Pane>
+// </Pane>
+// )
+//   )
+// );
 export default class Find extends Component {
   static propTypes = {
     headerSize: PropTypes.number,
@@ -79,7 +164,7 @@ export default class Find extends Component {
     },
     searchBar: '',
     searchEntry: null,
-    limit: 100,
+    limit: 10,
     pageNum: 0,
     min: '',
     max: '',
@@ -88,6 +173,63 @@ export default class Find extends Component {
     itemLocationCountry: 'US',
     include: [],
     exclude: [],
+    selectedChannel: 'zinc',
+    amzResults: [],
+  };
+
+  amzFunc = searchEntry => {
+    fetch(`http://localhost:3000/api/zinc-api?search=${searchEntry}`)
+      .then(res => res.json())
+      .then(json => this.setState({ amzResults: json }))
+      .catch(error => console.log('Error: ', error));
+
+    if (this.state.amzResults) {
+      return this.state.amzResults.map(item => (
+        <Pane
+          display="flex"
+          alignItems="center"
+          borderTop="0.1rem solid #dfe3e8"
+        >
+          <Pane padding={15}>
+            {item.image && (
+              <Avatar
+                src={item.image}
+                alt={`${item.title} product shot`}
+                borderStyle="solid"
+                borderWidth="1px"
+                borderRadius={3}
+                borderColor="#e8e9ea"
+                size={90}
+              />
+            )}
+          </Pane>
+          <Pane padding={15} paddingLeft={0} marginTop={3} marginBottom="auto">
+            <Heading size={500}>{`${item.title.slice(0, 70)}...`}</Heading>
+            <Pane color="#F7D154" display="flex" alignItems="center">
+              <Icon icon="star" size={15} paddingRight={3} />
+              <Text paddingRight={12} lineHeight="unset">
+                {item.stars}
+              </Text>
+              <Text size={300} color="muted" lineHeight="unset">
+                {item.num_reviews} reviews
+              </Text>
+            </Pane>
+            <a
+              href={`https://amazon.com/gp/product/${item.product_id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Text size={300} lineHeight="12px">
+                {item.product_id}
+              </Text>
+            </a>
+            <Heading size={400} marginRight={10} color="green">
+              ${item.price / 100}
+            </Heading>
+          </Pane>
+        </Pane>
+      ));
+    }
   };
 
   render() {
@@ -98,6 +240,7 @@ export default class Find extends Component {
       sort,
       limit,
       itemLocationCountry,
+      selectedChannel,
       min,
       max,
       include,
@@ -105,6 +248,7 @@ export default class Find extends Component {
       searchEntry,
       priceCurrency,
       price,
+      amzResults,
     } = this.state;
     return (
       <>
@@ -123,7 +267,7 @@ export default class Find extends Component {
                     <Pane
                       display="flex"
                       paddingX="1em"
-                      paddingTop="1em"
+                      paddingY="1em"
                       flexWrap="wrap"
                     >
                       <Pagination
@@ -162,7 +306,7 @@ export default class Find extends Component {
                         />
                       </Pane>
                     </Pane>
-                    <Pane
+                    {/* <Pane
                       display="block"
                       paddingX="1em"
                       paddingY=".5em"
@@ -292,8 +436,73 @@ export default class Find extends Component {
                           type="search"
                         />
                       </Pane>
+                    </Pane> */}
+                    <Pane
+                      display="flex"
+                      flexWrap="wrap"
+                      background="#f5f5f5"
+                      paddingY=".7em"
+                      paddingX="1em"
+                    >
+                      {/* <Pane marginBottom={10} marginRight={10}>
+                        <Heading
+                          size={500}
+                          fontSize="12px"
+                          fontWeight={500}
+                          marginBottom={2}
+                        >
+                          Channel
+                        </Heading>
+                        <Tablist
+                        // marginBottom={10}
+                        // display="flex"
+                        // alignItems="center"
+                        // flexBasis={240}
+                        // marginRight={24}
+                        >
+                          {this.state.channels.map((channel, index) => (
+                            <Tab
+                              key={channel}
+                              id={channel}
+                              marginLeft={0}
+                              height="20px"
+                              fontSize="10px"
+                              // lineHeight="16px"
+                              marginBottom={3}
+                              letterSpacing="0.3px"
+                              fontWeight={400}
+                              textTransform="uppercase"
+                              onSelect={() =>
+                                this.setState({ selectedChannel: index })
+                              }
+                              isSelected={index === this.state.selectedChannel}
+                              aria-controls={`panel-${channel}`}
+                            >
+                              {channel}
+                            </Tab>
+                          ))}
+                        </Tablist>
+                      </Pane> */}
+                      {option(
+                        'Channel',
+                        ['zinc', 'marketplace'],
+                        a => this.setState({ selectedChannel: a }),
+                        selectedChannel
+                      )}
+                      {option(
+                        'Location',
+                        ['US', 'CN', 'All'],
+                        a => this.setState({ itemLocationCountry: a }),
+                        itemLocationCountry
+                      )}
+                      {option(
+                        'Items per page',
+                        [10, 50, 100],
+                        a => this.setState({ limit: a }),
+                        limit
+                      )}
                     </Pane>
-                    {searchEntry && (
+                    {searchEntry && selectedChannel === 'marketplace' && (
                       <Query
                         query={getItems}
                         variables={{
@@ -301,16 +510,11 @@ export default class Find extends Component {
                           limit,
                           sort: sort.value,
                           pageNum,
-                          filter: `priceCurrency:${priceCurrency},price:${price},itemLocationCountry:${itemLocationCountry},sellers:${JSON.stringify(
-                            include
-                          )
-                            .replace('[', '{')
-                            .replace(']', '}')
-                            .replace(/,/g, '|')},
-                  excludeSellers:${JSON.stringify(exclude)
-                    .replace('[', '{')
-                    .replace(']', '}')
-                    .replace(/,/g, '|')}`,
+                          exclude,
+                          include,
+                          priceCurrency,
+                          price,
+                          itemLocationCountry,
                         }}
                       >
                         {({ data, error, loading }) => {
@@ -382,6 +586,9 @@ export default class Find extends Component {
                         }}
                       </Query>
                     )}
+                    {searchEntry &&
+                      selectedChannel === 'zinc' &&
+                      this.amzFunc(searchEntry)}
                   </>
                 );
               }

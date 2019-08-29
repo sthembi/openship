@@ -26,7 +26,7 @@ export const ORDER_QUERY = gql`
       first: $first
       skip: $skip
       orderBy: $orderBy
-      where: { errorText_not: null }
+      where: { mpCart_not: null }
     ) {
       id
       orderId
@@ -47,8 +47,10 @@ export const ORDER_QUERY = gql`
       totalDiscount
       totalTax
       createAt
-      processText
-      errorText
+      mpCart
+      mpCheckout
+      zincCart
+      zincCheckout
       shopName
     }
   }
@@ -56,7 +58,7 @@ export const ORDER_QUERY = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { errorText_not: null }) {
+    ordersConnection(where: { mpCart_not: null }) {
       aggregate {
         count
       }
@@ -67,7 +69,7 @@ const PAGINATION_QUERY = gql`
 const UPDATE_ORDER_MUTATION = gql`
   mutation updateOrder(
     $id: ID!
-    $errorText: String!
+    $mpCart: String!
     $first_name: String
     $last_name: String
     $streetAddress1: String
@@ -78,7 +80,7 @@ const UPDATE_ORDER_MUTATION = gql`
   ) {
     updateOrder(
       id: $id
-      errorText: $errorText
+      mpCart: $mpCart
       first_name: $first_name
       last_name: $last_name
       streetAddress1: $streetAddress1
@@ -104,8 +106,8 @@ const UPSERT_MUTATION = gql`
 const PURCHASE_ORDER_MUTATION = gql`
   mutation purchaseItems($ids: Json!) {
     purchaseItems(ids: $ids) {
-      processText
-      errorText
+      checkout
+      cart
     }
   }
 `;
@@ -258,7 +260,7 @@ function PendingOrders() {
           variant_id: a.variant_id,
           quantity: a.quantity
         })),
-        marketplace: errorText.lineItems.edges.map(a => ({
+        marketplace: mpCart.lineItems.edges.map(a => ({
           product_id: a.node.id,
           variant_id: a.node.variant.id,
           quantity: a.node.quantity
@@ -295,7 +297,7 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: orderID,
-        errorText: JSON.stringify(newCheck)
+        mpCart: JSON.stringify(newCheck)
       }
     });
   }
@@ -324,7 +326,7 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        errorText: JSON.stringify(newCheck)
+        mpCart: JSON.stringify(newCheck)
       }
     });
   }
@@ -345,7 +347,7 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        errorText: JSON.stringify(
+        mpCart: JSON.stringify(
           varCheck.data.checkoutLineItemsRemove.checkout
         )
       }
@@ -368,7 +370,7 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        errorText: JSON.stringify(
+        mpCart: JSON.stringify(
           varCheck.data.checkoutLineItemsUpdate.checkout
         )
       }
@@ -654,10 +656,10 @@ function PendingOrders() {
                                                   .filter(
                                                     order =>
                                                       JSON.parse(
-                                                        order.errorText
+                                                        order.mpCart
                                                       ).length > 0 &&
                                                       JSON.parse(
-                                                        order.errorText
+                                                        order.mpCart
                                                       )[0].status === "matched"
                                                   )
                                                   .map(a => a.id),
@@ -670,9 +672,9 @@ function PendingOrders() {
                                             {orders &&
                                               orders.filter(
                                                 order =>
-                                                  JSON.parse(order.errorText)
+                                                  JSON.parse(order.mpCart)
                                                     .length > 0 &&
-                                                  JSON.parse(order.errorText)[0]
+                                                  JSON.parse(order.mpCart)[0]
                                                     .status === "matched"
                                               ).length}
                                           </Button>
@@ -884,17 +886,17 @@ function PendingOrders() {
                                     height={20}
                                     onClick={() =>
                                       overwrite(
-                                        JSON.parse(theOrder.errorText),
+                                        JSON.parse(theOrder.mpCart),
                                         theOrder.lineItems,
                                         upsertMatch.mutation
                                       )
                                     }
                                     disabled={
-                                      (theOrder.errorText &&
-                                        theOrder.errorText.lineItems &&
-                                        theOrder.errorText.lineItems.edges
+                                      (theOrder.mpCart &&
+                                        theOrder.mpCart.lineItems &&
+                                        theOrder.mpCart.lineItems.edges
                                           .length === 0) ||
-                                      !theOrder.errorText
+                                      !theOrder.mpCart
                                     }
                                   >
                                     Match
@@ -995,17 +997,17 @@ function PendingOrders() {
                               removeItem={a =>
                                 removeItem(
                                   a,
-                                  JSON.parse(theOrder.errorText).id,
+                                  JSON.parse(theOrder.mpCart).id,
 
                                   checkoutLineItemsRemove,
                                   updateOrder.mutation
                                 )
                               }
-                              checkout={JSON.parse(theOrder.errorText)}
+                              checkout={JSON.parse(theOrder.mpCart)}
                               checkoutLineItemsUpdate={a =>
                                 updateItem(
                                   a,
-                                  JSON.parse(theOrder.errorText).id,
+                                  JSON.parse(theOrder.mpCart).id,
                                   checkoutLineItemsUpdate,
                                   updateOrder.mutation
                                 )
@@ -1036,7 +1038,7 @@ function PendingOrders() {
                               addVariant(
                                 a,
                                 b,
-                                JSON.parse(theOrder.errorText).id,
+                                JSON.parse(theOrder.mpCart).id,
                                 checkoutLineItemsAdd,
                                 updateOrder.mutation
                               )

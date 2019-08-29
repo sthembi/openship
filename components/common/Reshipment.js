@@ -30,7 +30,8 @@ const CREATE_ORDER = gql`
     $subTotalPrice: String!
     $totalDiscount: String!
     $totalTax: String!
-    $errorText: String!
+    $mpCart: String!
+    $zincCart: String!
     $createAt: String!
   ) {
     createOrder(
@@ -51,7 +52,8 @@ const CREATE_ORDER = gql`
       totalDiscount: $totalDiscount
       subTotalPrice: $subTotalPrice
       totalTax: $totalTax
-      errorText: $errorText
+      mpCart: $mpCart
+      zincCart: $zincCart
       createAt: $createAt
     ) {
       id
@@ -174,7 +176,8 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
                 totalDiscount: 0,
                 totalTax: 0,
                 createAt: order.processedAt,
-                errorText: '{}',
+                mpCart: '{}',
+                zincCart: '{}',
               },
             });
             onCloseComplete();

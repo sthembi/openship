@@ -116,8 +116,8 @@ export default function OrderListItem(props) {
     totalDiscount,
     totalTax,
     createAt,
-    processText,
-    errorText,
+    mpCheckout,
+    mpCart,
     note,
     disabled,
     buttons,
@@ -125,7 +125,6 @@ export default function OrderListItem(props) {
     updateIndex,
     createCheckout,
   } = props;
-  console.log(processText);
   return (
     <Pane>
       <Pane
@@ -139,7 +138,7 @@ export default function OrderListItem(props) {
                   !selectedOrderIndex,
                   updateIndex,
                   createCheckout,
-                  errorText
+                  mpCart
                 )
             : undefined
         }
@@ -225,8 +224,8 @@ export default function OrderListItem(props) {
               <OrderLine key={a.id} item={a.node ? a.node : a} />
             ))}
           </Pane>
-          {errorText && cart(errorText)}
-          {processText && (
+          {mpCart && cart(mpCart)}
+          {mpCheckout && (
             <Pane
               marginLeft="-3px"
               background="#F1FAF5"
@@ -239,7 +238,7 @@ export default function OrderListItem(props) {
                   Marketplace Order
                 </Text>
               </Pane>
-              {processText[0].marketLineItems.map(a => (
+              {mpCheckout[0].marketLineItems.map(a => (
                 <Pane background="#fff" border="muted" marginBottom={5}>
                   <Pane display="flex" alignItems="center">
                     <Pane
@@ -304,8 +303,8 @@ OrderListItem.propTypes = {
   totalDiscount: PropTypes.number,
   totalTax: PropTypes.number,
   createAt: PropTypes.number,
-  processText: PropTypes.object,
-  errorText: PropTypes.object,
+  mpCheckout: PropTypes.object,
+  mpCart: PropTypes.object,
   note: PropTypes.object,
   disabled: PropTypes.bool,
   selectedOrderIndex: PropTypes.number,

@@ -169,7 +169,6 @@ const WebhookSwitch = ({ domain, accessToken }) => {
               Endpoint:
             </Text>
             <Code fontSize="12px" size={300} wordWrap="break-word">
-              {/* {`https://server.app.openship.org/order?spdn=${domain}`} */}
               Openship
             </Code>
           </Pane>

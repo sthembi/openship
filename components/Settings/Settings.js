@@ -129,7 +129,6 @@ export default function Shop() {
                       onSelect={() => setBillSetting(index)}
                       isSelected={index === billSetting}
                       aria-controls={`panel-${tab}`}
-                      fontSize="17px"
                       {...{
                         borderRadius: '.25rem!important',
                         fontSize: '.925rem!important',

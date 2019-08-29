@@ -13,7 +13,7 @@ export const OrdersQuery = gql`
       first: $first
       skip: $skip
       orderBy: createdAt_DESC
-      where: { errorText: null }
+      where: { mpCart: null }
     ) {
       id
       orderId
@@ -34,8 +34,10 @@ export const OrdersQuery = gql`
       totalDiscount
       totalTax
       createAt
-      processText
-      errorText
+      mpCart
+      mpCheckout
+      zincCart
+      zincCheckout
       shopName
     }
   }
@@ -43,7 +45,7 @@ export const OrdersQuery = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { errorText: null }) {
+    ordersConnection(where: { mpCart: null }) {
       aggregate {
         count
       }

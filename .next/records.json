@@ -1,0 +1,45 @@
+{
+  "modules": {
+    "byIdentifier": {},
+    "usedIds": {}
+  },
+  "chunks": {
+    "byName": {
+      "commons": 0,
+      "static/runtime/webpack.js": 1,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/_app.js": 2,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/_error.js": 3,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/completed.js": 4,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/find.js": 5,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/index.js": 6,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/order.js": 7,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/pending.js": 8,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/processed.js": 9,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/products.js": 10,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/reset.js": 11,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/settings.js": 12,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/shop.js": 13,
+      "static/guNPHh1WrgBSJ_sS3ihwa/pages/shops.js": 14,
+      "static/runtime/main.js": 15
+    },
+    "bySource": {},
+    "usedIds": [
+      0,
+      1,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  }
+}
