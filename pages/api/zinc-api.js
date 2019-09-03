@@ -4,8 +4,6 @@ export default (req, res) => {
   //   fetch('https://jsonplaceholder.typicode.com/todos/1')
   //     .then(response => response.json())
   //     .then(json => res.status(200).json(json));
-  const token = '828B4F72F2104CD02B991B73';
-  console.log(req);
   try {
     fetch(
       `https://api.zinc.io/v1/search?query=${
@@ -13,7 +11,9 @@ export default (req, res) => {
       }&page=1&retailer=amazon`,
       {
         headers: {
-          Authorization: 'Basic ODI4QjRGNzJGMjEwNENEMDJCOTkxQjczOg==',
+          Authorization: `Basic ${Buffer.from(process.env.ZINC).toString(
+            'base64'
+          )}Og==`,
         },
       }
     )

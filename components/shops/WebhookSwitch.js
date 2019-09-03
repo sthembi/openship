@@ -2,8 +2,6 @@ import { useState, useEffect } from 'react';
 import fetch from 'isomorphic-unfetch';
 import { Pane, TextInput, Heading, Text, Code, Switch } from 'evergreen-ui';
 import PropTypes from 'prop-types';
-import { resultKeyNameFromField } from 'apollo-utilities';
-import Button from '../common/Button';
 import { front, prodFront, prodEndpoint } from '../../config';
 
 function getWebhooks(domain, accessToken, setResults) {

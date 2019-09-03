@@ -22,8 +22,8 @@ import Product from './findListItem/Product';
 import User from '../user/User';
 import Pagination from '../common/Pagination';
 import TextButton from '../common/Button';
-
 import { CardStyle } from '../common/DefaultStyles';
+import { front, prodFront } from '../../config';
 
 const getItems = gql`
   query getItems(
@@ -178,7 +178,11 @@ export default class Find extends Component {
   };
 
   amzFunc = searchEntry => {
-    fetch(`http://localhost:3000/api/zinc-api?search=${searchEntry}`)
+    fetch(
+      `${
+        process.env.NODE_ENV === 'development' ? front : prodFront
+      }/api/zinc-api?search=${searchEntry}`
+    )
       .then(res => res.json())
       .then(json => this.setState({ amzResults: json }))
       .catch(error => console.log('Error: ', error));

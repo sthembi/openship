@@ -467,13 +467,10 @@ __webpack_require__.r(__webpack_exports__);
   //   fetch('https://jsonplaceholder.typicode.com/todos/1')
   //     .then(response => response.json())
   //     .then(json => res.status(200).json(json));
-  const token = '828B4F72F2104CD02B991B73';
-  console.log(req);
-
   try {
     isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_0___default()(`https://api.zinc.io/v1/search?query=${req.query.search}&page=1&retailer=amazon`, {
       headers: {
-        Authorization: 'Basic ODI4QjRGNzJGMjEwNENEMDJCOTkxQjczOg=='
+        Authorization: `Basic ${Buffer.from("828B4F72F2104CD02B991B73").toString('base64')}Og==`
       }
     }).then(response => {
       if (response.status === 200) {
