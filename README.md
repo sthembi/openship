@@ -40,7 +40,7 @@ $ yarn install
 $ yarn dev
 ```
 
-Go to the ngrok.io URL from before and log into Openship using your ceredentials. Now you can customize the application and the results will be hotloaded on the ngrok.io URL. Check out the Micro Apps tutorial to build your first customization.
+Go to the ngrok.io URL from before and log into Openship using your credentials. Now you can customize the application and the results will be hotloaded on the ngrok.io URL. Check out the Micro Apps tutorial to build your first customization.
 
 ### Deployment
 
