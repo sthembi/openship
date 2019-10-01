@@ -13,7 +13,7 @@ export const OrdersQuery = gql`
       first: $first
       skip: $skip
       orderBy: createdAt_DESC
-      where: { mpCart: null }
+      where: { processed: true }
     ) {
       id
       orderId
@@ -38,6 +38,7 @@ export const OrdersQuery = gql`
       mpCheckout
       zincCart
       zincCheckout
+      processed
       shopName
     }
   }
@@ -45,7 +46,7 @@ export const OrdersQuery = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { mpCart: null }) {
+    ordersConnection(where: { processed: true }) {
       aggregate {
         count
       }

@@ -57,6 +57,14 @@ const UPDATE_URL_MUTATION = gql`
   }
 `;
 
+const UPDATE_ZINC_MUTATION = gql`
+  mutation updateZincToken($token: String!) {
+    updateZincToken(token: $token) {
+      zincToken
+    }
+  }
+`;
+
 export const shopQueryVars = {
   skip: 0,
   first: 10,
@@ -85,12 +93,13 @@ function stepCheck(user) {
 export default function Shop() {
   const [selectedSetting, setSelectedSetting] = useState(0);
   const [billSetting, setBillSetting] = useState(0);
+  const [developSetting, setDevelopSetting] = useState(0);
   const [addCard, setAddCard] = useState(false);
   const [shopName, setShopName] = useState('');
   const [reviews, setReviews] = useState('');
   const [threshold, setThreshold] = useState('');
   const [URL, setURL] = useState('');
-
+  const [ZincToken, setZincToken] = useState('');
   const stacked = useMedia('(min-width: 1090px)');
 
   return (
@@ -106,7 +115,9 @@ export default function Shop() {
             </Pane>
             <Pane paddingBottom={12}>
               <Pane display="flex" alignItems="center">
-                <Heading size={600}>Development</Heading>
+                <Heading size={600} color="#435567">
+                  Development
+                </Heading>
               </Pane>
               <Text size={400} color="muted">
                 Manage developmental options
@@ -122,12 +133,12 @@ export default function Shop() {
                     marginBottom: 5,
                   }}
                 >
-                  {['URL'].map((tab, index) => (
+                  {['URL', 'Zinc Token'].map((tab, index) => (
                     <Tab
                       key={tab}
                       id={tab}
-                      onSelect={() => setBillSetting(index)}
-                      isSelected={index === billSetting}
+                      onSelect={() => setDevelopSetting(index)}
+                      isSelected={index === developSetting}
                       aria-controls={`panel-${tab}`}
                       {...{
                         borderRadius: '.25rem!important',
@@ -143,85 +154,155 @@ export default function Shop() {
                   ))}
                 </Pane>
               </Tablist>
-              <Pane {...CardStyle} padding={25} background="tint1" flex="1">
-                {['URL'].map((tab, index) => (
+              <Pane
+                marginBottom={35}
+                {...CardStyle}
+                padding={25}
+                background="tint1"
+                flex="1"
+              >
+                {['URL', 'Zinc Token'].map((tab, index) => (
                   <Pane
                     key={tab}
                     id={`panel-${tab}`}
                     role="tabpanel"
                     aria-labelledby={tab}
-                    aria-hidden={index !== billSetting}
-                    display={index === billSetting ? 'block' : 'none'}
+                    aria-hidden={index !== developSetting}
+                    display={index === developSetting ? 'block' : 'none'}
                   >
-                    <Pane
-                      display="flex"
-                      position="relative"
-                      height={32}
-                      width="100%"
-                      borderRadius={5}
-                      // boxShadow="inset 0 0 0 1px rgb(54, 164, 110)"
-                      // boxShadow="0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06) !important"
-                    >
+                    {index === 0 && (
                       <Pane
-                        width={32}
-                        height={32}
-                        pointerEvents="none"
-                        position="absolute"
                         display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        <Icon
-                          icon="link"
-                          color="#8b949c"
-                          size={12}
-                          zIndex={3}
-                        />
-                      </Pane>
-                      <TextInput
-                        // className="clean-input"
-                        value={URL || me.url}
-                        onChange={e => setURL(e.target.value)}
-                        paddingLeft={32}
-                        id="shop"
-                        name="shop"
+                        position="relative"
+                        height={32}
                         width="100%"
-                        fontSize={15}
-                        // borderTopRightRadius={0}
-                        // borderBottomRightRadius={0}
-                        marginBottom={15}
-                        marginRight={10}
-                        placeholder="https://www.yourcustomfrontend.com"
-                      />
-                      <Mutation
-                        mutation={UPDATE_URL_MUTATION}
-                        refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+                        borderRadius={5}
                       >
-                        {(updateURL, { error, loading }) => (
-                          <Button
-                            intent="success"
-                            height={32}
-                            fontSize="14px"
-                            paddingX="14px"
-                            onClick={async () => {
-                              await updateURL({ variables: { url: URL } });
-                              toaster.notify('URL has been saved');
-                            }}
-                            disabled={!URL || me.url === URL}
-                            isLoading={loading}
-                          >
-                            Save
-                          </Button>
-                        )}
-                      </Mutation>
-                    </Pane>
+                        <Pane
+                          width={32}
+                          height={32}
+                          pointerEvents="none"
+                          position="absolute"
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <Icon
+                            icon="link"
+                            color="#8b949c"
+                            size={12}
+                            zIndex={3}
+                          />
+                        </Pane>
+                        <TextInput
+                          // className="clean-input"
+                          value={URL || me.url}
+                          onChange={e => setURL(e.target.value)}
+                          paddingLeft={32}
+                          id="shop"
+                          name="shop"
+                          width="100%"
+                          fontSize={15}
+                          marginBottom={15}
+                          marginRight={10}
+                          placeholder="https://www.yourcustomfrontend.com"
+                        />
+                        <Mutation
+                          mutation={UPDATE_URL_MUTATION}
+                          refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+                        >
+                          {(updateURL, { error, loading }) => (
+                            <Button
+                              intent="success"
+                              height={32}
+                              fontSize="14px"
+                              paddingX="14px"
+                              onClick={async () => {
+                                await updateURL({ variables: { url: URL } });
+                                toaster.notify('URL has been saved');
+                              }}
+                              disabled={!URL || me.url === URL}
+                              isLoading={loading}
+                            >
+                              Save
+                            </Button>
+                          )}
+                        </Mutation>
+                      </Pane>
+                    )}
+                    {index === 1 && (
+                      <Pane
+                        display="flex"
+                        position="relative"
+                        height={32}
+                        width="100%"
+                        borderRadius={5}
+                      >
+                        <Pane
+                          width={32}
+                          height={32}
+                          pointerEvents="none"
+                          position="absolute"
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                        >
+                          <Icon
+                            icon="code"
+                            color="#8b949c"
+                            size={12}
+                            zIndex={3}
+                          />
+                        </Pane>
+                        <TextInput
+                          // className="clean-input"
+                          value={ZincToken || me.zincToken}
+                          onChange={e => setZincToken(e.target.value)}
+                          paddingLeft={32}
+                          id="shop"
+                          name="shop"
+                          width="100%"
+                          fontSize={15}
+                          marginBottom={15}
+                          marginRight={10}
+                          placeholder="000000000000000000000000"
+                        />
+                        <Mutation
+                          mutation={UPDATE_ZINC_MUTATION}
+                          refetchQueries={[{ query: CURRENT_USER_QUERY }]}
+                        >
+                          {(updateZincToken, { error, loading }) => (
+                            <Button
+                              intent="success"
+                              height={32}
+                              fontSize="14px"
+                              paddingX="14px"
+                              onClick={async () => {
+                                await updateZincToken({
+                                  variables: { token: ZincToken },
+                                });
+                                toaster.notify('Token has been saved');
+                              }}
+                              disabled={
+                                !ZincToken || me.zincToken === ZincToken
+                              }
+                              isLoading={loading}
+                            >
+                              Save
+                            </Button>
+                          )}
+                        </Mutation>
+                      </Pane>
+                    )}
                   </Pane>
                 ))}
               </Pane>
             </Pane>
             <Pane paddingBottom={12}>
               <Pane display="flex" alignItems="center">
-                <Heading size={600}>Marketplace</Heading>
+                <Heading size={600} color="#435567">
+                  Marketplace
+                </Heading>
                 <Badge marginLeft={8} color="blue" isSolid textTransform="none">
                   βeta
                 </Badge>
@@ -322,7 +403,9 @@ export default function Shop() {
               </Pane>
               <Pane paddingBottom={12}>
                 <Pane display="flex" alignItems="center">
-                  <Heading size={600}>Billing</Heading>
+                  <Heading size={600} color="#435567">
+                    Billing
+                  </Heading>
                 </Pane>
                 <Text size={400} color="muted">
                   Manage plans and payment methods

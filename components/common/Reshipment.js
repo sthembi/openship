@@ -178,6 +178,7 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
                 createAt: order.processedAt,
                 mpCart: '{}',
                 zincCart: '{}',
+                processed: false,
               },
             });
             onCloseComplete();

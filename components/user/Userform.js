@@ -30,11 +30,11 @@ const Userform = ({
   <>
     <Pane
       width={350}
-      background="white"
       alignItems="center"
-      padding={25}
-      borderRadius={5}
-      boxShadow="0 0 1px rgba(67,90,111,.47), 0 2px 4px -2px rgba(67,90,111,.3)"
+      // background="white"
+      // padding={25}
+      // borderRadius={5}
+      // boxShadow="0 0 1px rgba(67,90,111,.47), 0 2px 4px -2px rgba(67,90,111,.3)"
     >
       <Pane
         marginBottom={20}
@@ -108,7 +108,7 @@ const Userform = ({
       )}
     </Pane>
     {handleToggleClick && (
-      <Pane paddingX={20} paddingY={15}>
+      <Pane paddingY={15}>
         <Pane alignItems="center" marginBottom={1}>
           <Text width="100%" color="muted" textAlign="center">
             {bottomText}

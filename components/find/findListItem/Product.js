@@ -8,7 +8,6 @@ class Product extends Component {
   static propTypes = {
     product: PropTypes.object,
     addVariantToCart: PropTypes.func,
-    addWidget: PropTypes.func,
     atcDisabled: PropTypes.bool,
   };
 
@@ -81,7 +80,7 @@ class Product extends Component {
   };
 
   render() {
-    const { product, addVariantToCart, atcDisabled, addWidget } = this.props;
+    const { product, addVariantToCart, atcDisabled } = this.props;
     const {
       selectedVariantImage,
       selectedVariantQuantity,
@@ -124,37 +123,9 @@ class Product extends Component {
               ${variant.price}
             </Heading>
             <Pane display="flex" marginTop={3} marginBottom={7}>
-              {/* {product.options.map(option => (
-                  <Pane marginRight={10}>
-                    <Heading size={100}>{option.name}</Heading>
-                    <Select
-                      value={selected}
-                      height={20}
-                      onChange={event =>
-                        this.setState({ selected: event.target.value, quantity: 0 })
-                      }
-                    >
-                      {option.values.map((value, index) => (
-                        <option value={index}>{value}</option>
-                      ))}
-                    </Select>
-                  </Pane>
-                ))} */}
               {variantSelectors}
-
-              {/* <button
-              className="Product__buy button"
-              onClick={() =>
-                this.props.addVariantToCart(
-                  variant.id,
-                  this.state.selectedVariantQuantity
-                )
-              }
-            >
-              Add to Cart
-            </button> */}
             </Pane>
-            {addWidget && (
+            {!atcDisabled && (
               <Pane display="flex">
                 <Pane
                   display="flex"
@@ -210,210 +181,8 @@ class Product extends Component {
                 </Pane>
               </Pane>
             )}
-            {/* <Pane
-            display="flex"
-            alignItems="center"
-            background="tint2"
-            marginTop={5}
-            padding={5}
-          >
-            <Pane marginLeft={5} display="flex">
-              <Text size={500} fontSize="12px">
-                Quantity:
-              </Text>
-              <Pane
-                display="flex"
-                alignItems="center"
-                background="#fff"
-                marginX={6}
-                paddingX={5}
-                borderRadius={2}
-                boxShadow="0 0 2px rgba(67, 90, 111, 0.3)"
-              >
-                <Icon
-                  color="#425A70"
-                  icon="minus"
-                  appearance="minimal"
-                  size={12}
-                  onClick={this.handleQuantityDown}
-                />
-                <Text size={300} marginX={9}>
-                  {this.state.selectedVariantQuantity}
-                </Text>
-                <Icon
-                  color="#425A70"
-                  icon="plus"
-                  appearance="minimal"
-                  size={12}
-                  onClick={this.handleQuantityUp}
-                />
-              </Pane>
-            </Pane>
-            <Pane height={20}>
-              <Button
-                intent="primary"
-                height={20}
-                onClick={() =>
-                  this.props.addVariantToCart(
-                    variant.id,
-                    this.state.selectedVariantQuantity
-                  )
-                }
-                disabled={!this.props.checkoutID}
-              >
-                Add to Cart
-              </Button>
-            </Pane>
-          </Pane> */}
           </Pane>
-          {/* <Pane
-          display="flex"
-          alignItems="center"
-          justifyContent="right"
-          marginBottom="auto"
-          flexWrap="wrap"
-          marginLeft="auto"
-        >
-          <Heading
-            marginLeft="auto"
-            marginRight={5}
-            size={100}
-            lineHeight="24px"
-            fontWeight={500}
-          >
-            {this.props.client}
-          </Heading>
-          <Pane marginLeft="auto" height={20}>
-            <AddProduct product={this.props.product} />
-          </Pane>
-          {this.props.buttons}
-        </Pane> */}
-          {/* {this.props.addWidget && (
-            <Pane
-              marginLeft="auto"
-              boxShadow="0px 0px 4px 0px rgba(67, 90, 111, 0.3)"
-              display="flex"
-              alignItems="stretch"
-            >
-              <Pane
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                background="#F7F9FD"
-                padding={5}
-              >
-                <Pane marginBottom={5} display="flex" flexDirection="column">
-                  <Text size={500} fontSize="12px" marginBottom={4}>
-                    QTY
-                  </Text>
-                  <Pane
-                    display="flex"
-                    flexDirection="column"
-                    alignItems="center"
-                    background="#fff"
-                    paddingY={5}
-                    borderRadius={2}
-                    boxShadow="0 0 2px rgba(67, 90, 111, 0.3)"
-                  >
-                    <Icon
-                      color="#425A70"
-                      icon="plus"
-                      appearance="minimal"
-                      size={12}
-                      onClick={this.handleQuantityUp}
-                    />
-
-                    <Text size={300} marginY={9}>
-                      {this.state.selectedVariantQuantity}
-                    </Text>
-                    <Icon
-                      color="#425A70"
-                      icon="minus"
-                      appearance="minimal"
-                      size={12}
-                      onClick={this.handleQuantityDown}
-                    />
-                  </Pane>
-                </Pane>
-                <Pane height={20}>
-                  <Button
-                    intent="success"
-                    height={20}
-                    paddingX={1}
-                    onClick={() =>
-                      this.props.addVariantToCart(
-                        variant.id,
-                        this.state.selectedVariantQuantity
-                      )
-                    }
-                    disabled={!this.props.checkoutID}
-                  >
-                    <Icon icon="plus" />
-                  </Button>
-                </Pane>
-              </Pane>
-            </Pane>
-          )} */}
         </Pane>
-        {/* <Pane paddingTop={0}>
-          <Pane
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            background="tint2"
-            marginTop={5}
-            padding={5}
-          >
-            <Pane marginLeft={5} display="flex">
-              <Text size={500} fontSize="12px">
-                Quantity:
-              </Text>
-              <Pane
-                display="flex"
-                alignItems="center"
-                background="#fff"
-                marginX={6}
-                paddingX={5}
-                borderRadius={2}
-                boxShadow="0 0 2px rgba(67, 90, 111, 0.3)"
-              >
-                <Icon
-                  color="#425A70"
-                  icon="minus"
-                  appearance="minimal"
-                  size={12}
-                  onClick={this.handleQuantityDown}
-                />
-                <Text size={300} marginX={9}>
-                  {this.state.selectedVariantQuantity}
-                </Text>
-                <Icon
-                  color="#425A70"
-                  icon="plus"
-                  appearance="minimal"
-                  size={12}
-                  onClick={this.handleQuantityUp}
-                />
-              </Pane>
-            </Pane>
-            <Pane height={20}>
-              <Button
-                intent="primary"
-                height={20}
-                onClick={() =>
-                  this.props.addVariantToCart(
-                    variant.id,
-                    this.state.selectedVariantQuantity
-                  )
-                }
-                disabled={!this.props.checkoutID}
-              >
-                Add to Cart
-              </Button>
-            </Pane>
-          </Pane>
-        </Pane> */}
       </>
     );
   }

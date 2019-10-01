@@ -38,8 +38,14 @@ function Signin() {
       )`,
       }}
     >
-      <Pane margin={16}>
-        <Pane width={180} marginX="15px" marginBottom="15px">
+      <Pane
+        margin={16}
+        background="white"
+        padding={25}
+        borderRadius={5}
+        boxShadow="0 0 1px rgba(67,90,111,.47), 0 2px 4px -2px rgba(67,90,111,.3)"
+      >
+        <Pane width={180} marginBottom="15px">
           <Logo color="#162b4c" />
         </Pane>
         {form === 'signup' && <Signup formChange={() => setForm('signin')} />}

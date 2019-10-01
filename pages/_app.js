@@ -86,8 +86,8 @@ class MyApp extends App {
             color: #2e669a;
           }
 
-          .clean-input{
-            box-shadow: none
+          .clean-input {
+            box-shadow: none;
           }
 
           @-webkit-keyframes placeholderShimmer {
@@ -133,6 +133,56 @@ class MyApp extends App {
             /* Firefox 18- */
             color: #8b949c !important;
             opacity: 1 !important;
+          }
+          .dot-flashing {
+            position: relative;
+            width: 6px;
+            height: 6px;
+            border-radius: 5px;
+            background-color: #d0d5da;
+            color: #9880ff;
+            animation: dotFlashing 1s infinite linear alternate;
+            animation-delay: 0.5s;
+          }
+
+          .dot-flashing::before,
+          .dot-flashing::after {
+            content: "";
+            display: inline-block;
+            position: absolute;
+            top: 0;
+          }
+
+          .dot-flashing::before {
+            left: -12px;
+            width: 6px;
+            height: 6px;
+            border-radius: 5px;
+            background-color: #d0d5da;
+            color: #9880ff;
+            animation: dotFlashing 1s infinite alternate;
+            animation-delay: 0s;
+          }
+
+          .dot-flashing::after {
+            left: 12px;
+            width: 6px;
+            height: 6px;
+            border-radius: 5px;
+            background-color: #d0d5da;
+            color: #9880ff;
+            animation: dotFlashing 1s infinite alternate;
+            animation-delay: 1s;
+          }
+
+          @keyframes dotFlashing {
+            0% {
+              background-color: #425a70;
+            }
+            50%,
+            100% {
+              background-color: #d0d5da;
+            }
           }
         `}</style>
         <ApolloProvider client={apollo}>{pathCheck(path)}</ApolloProvider>

@@ -15,10 +15,25 @@ import {
 } from 'evergreen-ui';
 import OrderListItem from '../common/orderListItem/OrderListItem';
 import Find from '../find/Find';
+import User from '../user/User';
 import OrderLine from '../common/orderListItem/OrderLine';
 import Button from '../common/Button';
 import { CardStyle } from '../common/DefaultStyles';
-import Cart from './Cart/Cart';
+import MPCart from './Cart/MPCart';
+import ZincCart from './Cart/ZincCart';
+import { front, prodFront } from '../../config';
+
+function placeZincOrder(data, token) {
+  fetch(
+    `${
+      process.env.NODE_ENV === 'development' ? front : prodFront
+    }/api/zinc/purchase?token=${token}`,
+    { body: JSON.stringify(data), method: 'POST' }
+  )
+    .then(res => JSON.stringify(res))
+    .then(json => console.log(json))
+    .catch(error => console.log('Error: ', error));
+}
 
 export const ORDER_QUERY = gql`
   query OrdersQuery($skip: Int, $first: Int, $orderBy: OrderOrderByInput) {
@@ -26,7 +41,7 @@ export const ORDER_QUERY = gql`
       first: $first
       skip: $skip
       orderBy: $orderBy
-      where: { mpCart_not: null }
+      where: { processed: false }
     ) {
       id
       orderId
@@ -51,6 +66,7 @@ export const ORDER_QUERY = gql`
       mpCheckout
       zincCart
       zincCheckout
+      processed
       shopName
     }
   }
@@ -58,7 +74,7 @@ export const ORDER_QUERY = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { mpCart_not: null }) {
+    ordersConnection(where: { processed: false }) {
       aggregate {
         count
       }
@@ -69,7 +85,8 @@ const PAGINATION_QUERY = gql`
 const UPDATE_ORDER_MUTATION = gql`
   mutation updateOrder(
     $id: ID!
-    $mpCart: String!
+    $mpCart: String
+    $zincCart: String
     $first_name: String
     $last_name: String
     $streetAddress1: String
@@ -81,6 +98,7 @@ const UPDATE_ORDER_MUTATION = gql`
     updateOrder(
       id: $id
       mpCart: $mpCart
+      zincCart: $zincCart
       first_name: $first_name
       last_name: $last_name
       streetAddress1: $streetAddress1
@@ -232,27 +250,6 @@ function PendingOrders() {
   async function overwrite(errorText, lineItems, upsertMatchMutation) {
     setCartLoading(true);
 
-    // const res = await updateOrderMutation({
-    //   variables: {
-    //     id: selectedOrderIndex,
-    //     errorText: JSON.stringify(checkout)
-    //   }
-    // });
-
-    // if (check) {
-    //   const upsertMatchRes = await upsertMatchMutation({
-    //     variables: {
-    //       shopify: lineItems.map(a => ({
-    //         shopify_id: a.product_id,
-    //         quantity: a.quantity,
-    //       })),
-    //       market: cart.map(a => ({
-    //         market_id: a.itemId.slice(3),
-    //         quantity: a.stateQuantity,
-    //       })),
-    //     },
-    //   });
-    // }
     const upsertMatchRes = await upsertMatchMutation({
       variables: {
         shopify: lineItems.map(a => ({
@@ -309,6 +306,8 @@ function PendingOrders() {
     checkoutLineItemsAddFunc,
     updateOrderFunc
   ) {
+    toaster.success("checkout does exist");
+
     const varCheck = await checkoutLineItemsAddFunc({
       variables: {
         checkoutId: checkoutID,
@@ -331,7 +330,69 @@ function PendingOrders() {
     });
   }
 
-  async function removeItem(
+  async function addZincItem(
+    id,
+    quantity,
+    title,
+    src,
+    price,
+    cart,
+    updateOrderFunc
+  ) {
+    // if (cart && cart.products && cart.products.length) {
+    // const find = cart.products.find(obj => {
+    //   return obj.product_id === id;
+    // });
+    // }
+
+    const find =
+      cart &&
+      cart.products &&
+      cart.products.length &&
+      cart.products.find(obj => {
+        return obj.product_id === id;
+      });
+
+    if (cart && cart.products && cart.products.length && find !== undefined) {
+      console.log(true);
+      console.log(find);
+      const newQ = find.quantity + quantity;
+      find.quantity = newQ;
+      console.log(find);
+      const res = await updateOrderFunc({
+        variables: {
+          id: selectedOrderIndex,
+          zincCart: JSON.stringify({
+            products: [find, ...cart.products.filter(a => a.product_id !== id)]
+          })
+        }
+      });
+    } else {
+      console.log(false);
+
+      const res = await updateOrderFunc({
+        variables: {
+          id: selectedOrderIndex,
+          zincCart: JSON.stringify({
+            products: [
+              {
+                product_id: id,
+                quantity: quantity,
+                title: title,
+                price: price,
+                src: src
+              },
+              ...(cart && cart.products && cart.products.length
+                ? cart.products
+                : [])
+            ]
+          })
+        }
+      });
+    }
+  }
+
+  async function removeMPItem(
     lineItemIds,
     checkoutID,
     checkoutLineItemsRemoveFunc,
@@ -347,14 +408,12 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(
-          varCheck.data.checkoutLineItemsRemove.checkout
-        )
+        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsRemove.checkout)
       }
     });
   }
 
-  async function updateItem(
+  async function updateMPItem(
     lineItems,
     checkoutID,
     checkoutLineItemsUpdateFunc,
@@ -370,9 +429,7 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(
-          varCheck.data.checkoutLineItemsUpdate.checkout
-        )
+        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsUpdate.checkout)
       }
     });
   }
@@ -650,33 +707,34 @@ function PendingOrders() {
                                               firstQ !== 1 || skip + 1 === count
                                             }
                                             isLoading={loading}
-                                            onClick={() => {
-                                              doPurchase(
-                                                orders
-                                                  .filter(
-                                                    order =>
-                                                      JSON.parse(
-                                                        order.mpCart
-                                                      ).length > 0 &&
-                                                      JSON.parse(
-                                                        order.mpCart
-                                                      )[0].status === "matched"
-                                                  )
-                                                  .map(a => a.id),
-                                                purchaseOrder
-                                              );
-                                              setSkip(skip + 1);
-                                            }}
+                                            // onClick={() => {
+                                            //   doPurchase(
+                                            //     orders
+                                            //       .filter(
+                                            //         order =>
+                                            //           order.mpCart &&
+                                            //           JSON.parse(order.mpCart)
+                                            //             .length > 0 &&
+                                            //           JSON.parse(
+                                            //             order.mpCart
+                                            //           )[0].status === "matched"
+                                            //       )
+                                            //       .map(a => a.id),
+                                            //     purchaseOrder
+                                            //   );
+                                            //   setSkip(skip + 1);
+                                            // }}
                                           >
                                             Multi |{" "}
-                                            {orders &&
+                                            {/* {orders &&
+                                              order.mpCart &&
                                               orders.filter(
                                                 order =>
                                                   JSON.parse(order.mpCart)
                                                     .length > 0 &&
                                                   JSON.parse(order.mpCart)[0]
                                                     .status === "matched"
-                                              ).length}
+                                              ).length} */}
                                           </Button>
                                         )}
                                       </Mutation>
@@ -691,11 +749,6 @@ function PendingOrders() {
                           orders.map(order => (
                             <Pane key={order.id}>
                               <Pane
-                                // opacity={
-                                //   (purchaseOrder.result.loading ||
-                                //     deleteOrder.result.loading) &&
-                                //   "0.2"
-                                // }
                                 opacity={processingOrder === order.id && "0.2"}
                                 width="100%"
                                 height="100%"
@@ -769,26 +822,96 @@ function PendingOrders() {
                                               setProcessingOrder(null);
                                             }}
                                           />
-                                          <IconButton
-                                            height={20}
-                                            appearance="minimal"
-                                            icon="tick"
-                                            iconSize={15}
-                                            marginLeft={6}
-                                            pointerEvents={
-                                              loading ? "none" : "visible"
-                                            }
-                                            onClick={async e => {
-                                              e.stopPropagation();
-                                              setProcessingOrder(order.id);
-                                              setSelectedOrderIndex(null);
-                                              await doPurchase(
-                                                [order.id],
-                                                purchaseOrder.mutation
+                                          <User>
+                                            {({ data: { me } }) => {
+                                              return (
+                                                <IconButton
+                                                  height={20}
+                                                  appearance="minimal"
+                                                  icon="tick"
+                                                  iconSize={15}
+                                                  marginLeft={6}
+                                                  pointerEvents={
+                                                    loading ? "none" : "visible"
+                                                  }
+                                                  onClick={async e => {
+                                                    e.stopPropagation();
+                                                    setProcessingOrder(
+                                                      order.id
+                                                    );
+                                                    setSelectedOrderIndex(null);
+                                                    if (
+                                                      JSON.parse(order.mpCart)
+                                                        .lineItems.edges
+                                                        .length > 0
+                                                    ) {
+                                                      await doPurchase(
+                                                        [order.id],
+                                                        purchaseOrder.mutation
+                                                      );
+                                                    } else if (
+                                                      JSON.parse(order.zincCart)
+                                                        .products.length > 0
+                                                    ) {
+                                                      toaster.success(
+                                                        "zinc called"
+                                                      );
+                                                      placeZincOrder(
+                                                        {
+                                                          retailer: "amazon",
+                                                          products: JSON.parse(
+                                                            order.zincCart
+                                                          ).products,
+                                                          shipping_address: {
+                                                            first_name:
+                                                              order.first_name,
+                                                            last_name:
+                                                              order.last_name,
+                                                            address_line1:
+                                                              order.streetAddress1,
+                                                            address_line2:
+                                                              order.streetAddress2,
+                                                            zip_code: order.zip,
+                                                            city: order.city,
+                                                            state: order.state,
+                                                            country: "US",
+                                                            phone_number:
+                                                              order.state
+                                                          },
+                                                          is_gift: true,
+                                                          gift_message:
+                                                            "Here is your package, Tim! Enjoy!",
+                                                          shipping: {
+                                                            order_by: "price",
+                                                            max_days: 5,
+                                                            max_price: 1000
+                                                          },
+                                                          webhooks: {
+                                                            request_succeeded:
+                                                              "https://hooks.zapier.com/hooks/catch/1902946/o2z8bdq/",
+                                                            request_failed:
+                                                              "https://hooks.zapier.com/hooks/catch/1902946/o2z8bdq/",
+                                                            tracking_obtained:
+                                                              "https://hooks.zapier.com/hooks/catch/1902946/o2z8bdq/"
+                                                          },
+                                                          client_notes: {
+                                                            our_internal_order_id:
+                                                              "abc123"
+                                                          }
+                                                        },
+                                                        me.ZincToken
+                                                      );
+                                                    } else {
+                                                      toaster.success(
+                                                        "not called"
+                                                      );
+                                                    }
+                                                    setProcessingOrder(null);
+                                                  }}
+                                                />
                                               );
-                                              setProcessingOrder(null);
                                             }}
-                                          />
+                                          </User>
                                         </>
                                       }
                                     />
@@ -813,14 +936,7 @@ function PendingOrders() {
                         )}
                       </Pane>
                     </Pane>
-                    {/* <Adopt mapper={mapper}>
-                  {({
-                    updateOrder,
-                    upsertMatch,
-                    checkoutLineItemsRemove,
-                    checkoutLineItemsUpdate
-                  }) => {
-                    return ( */}
+
                     <Pane {...Layout}>
                       {selectedOrderIndex ? (
                         <Pane>
@@ -860,12 +976,6 @@ function PendingOrders() {
                                   justifyContent="center"
                                   marginLeft={4}
                                 >
-                                  {/* <Switch
-                                    height={16}
-                                    checked={check}
-                                    onChange={e => setCheck(e.target.checked)}
-                                  /> */}
-
                                   <Text
                                     size={300}
                                     fontWeight={500}
@@ -880,7 +990,6 @@ function PendingOrders() {
                                   >
                                     Empty
                                   </Text>
-
                                   <Button
                                     intent="primary"
                                     height={20}
@@ -920,13 +1029,11 @@ function PendingOrders() {
                               <Text contenteditable="true" size={300}>
                                 {theOrder.streetAddress1}
                               </Text>
-
                               {theOrder.streetAddress2 && (
                                 <Text contenteditable="true" size={300}>
                                   {theOrder.streetAddress2}
                                 </Text>
                               )}
-
                               <Pane display="flex">
                                 <Text
                                   contenteditable="true"
@@ -970,54 +1077,87 @@ function PendingOrders() {
                                     item={a.node ? a.node : a}
                                   />
                                 ))}
-                                {/* <LineItemList
-                                      processText={processText}
-                                      errorText={errorText && JSON.parse(errorText)}
-                                      lineItems={lineItems}
-                                      onChange={
-                                        !disabled
-                                          ? e =>
-                                              onChange(
-                                                e,
-                                                updateIndex,
-                                                updateLine,
-                                                createCheckout,
-                                                setCheckout,
-                                                errorText
-                                              )
-                                          : undefined
-                                      }
-                                      selected={selectedLineIndex}
-                                      disabled={selectedLineIndex.length ? false : !!disabled}
-                                      cursor={!disabled ? 'pointer' : undefined}
-                                    /> */}
                               </Pane>
                             </Pane>
-                            <Cart
+                            <MPCart
+                              checkout={JSON.parse(theOrder.mpCart)}
                               removeItem={a =>
-                                removeItem(
+                                removeMPItem(
                                   a,
                                   JSON.parse(theOrder.mpCart).id,
-
                                   checkoutLineItemsRemove,
                                   updateOrder.mutation
                                 )
                               }
-                              checkout={JSON.parse(theOrder.mpCart)}
                               checkoutLineItemsUpdate={a =>
-                                updateItem(
+                                updateMPItem(
                                   a,
                                   JSON.parse(theOrder.mpCart).id,
                                   checkoutLineItemsUpdate,
                                   updateOrder.mutation
                                 )
                               }
-
-                              // createCheckout={createCheckout}
-                              // setCheckout={setCheckout}
-                              // isCartOpen={this.state.isCartOpen}
-                              // handleCartClose={this.handleCartClose}
-                              // customerAccessToken={this.state.customerAccessToken}
+                              loading={updateOrder.result.loading}
+                            />
+                            <ZincCart
+                              cart={JSON.parse(theOrder.zincCart)}
+                              removeItem={async productID => {
+                                const res = await updateOrder.mutation({
+                                  variables: {
+                                    id: selectedOrderIndex,
+                                    zincCart: JSON.stringify({
+                                      products: JSON.parse(
+                                        theOrder.zincCart
+                                      ).products.filter(
+                                        a => a.product_id !== productID
+                                      )
+                                    })
+                                  }
+                                });
+                              }}
+                              checkoutLineItemsUpdate={async (
+                                productID,
+                                quantity
+                              ) => {
+                                if (quantity === 0) {
+                                  const res = await updateOrder.mutation({
+                                    variables: {
+                                      id: selectedOrderIndex,
+                                      zincCart: JSON.stringify({
+                                        products: JSON.parse(
+                                          theOrder.zincCart
+                                        ).products.filter(
+                                          a => a.product_id !== productID
+                                        )
+                                      })
+                                    }
+                                  });
+                                } else {
+                                  const find = JSON.parse(
+                                    theOrder.zincCart
+                                  ).products.find(obj => {
+                                    return obj.product_id === productID;
+                                  });
+                                  const newQ = quantity;
+                                  find.quantity = newQ;
+                                  const res = await updateOrder.mutation({
+                                    variables: {
+                                      id: selectedOrderIndex,
+                                      zincCart: JSON.stringify({
+                                        products: [
+                                          find,
+                                          ...JSON.parse(
+                                            theOrder.zincCart
+                                          ).products.filter(
+                                            a => a.product_id !== productID
+                                          )
+                                        ]
+                                      })
+                                    }
+                                  });
+                                }
+                              }}
+                              loading={updateOrder.result.loading}
                             />
                           </Pane>
                         </Pane>
@@ -1034,12 +1174,55 @@ function PendingOrders() {
                           <Find
                             headerSize={600}
                             atcDisabled={!theOrder}
-                            addVariant={(a, b) =>
-                              addVariant(
+                            addMPItem={(a, b) => {
+                              if (
+                                theOrder.mpCart &&
+                                JSON.parse(theOrder.mpCart).id
+                              ) {
+                                addVariant(
+                                  a,
+                                  b,
+                                  JSON.parse(theOrder.mpCart).id,
+                                  checkoutLineItemsAdd,
+                                  updateOrder.mutation
+                                );
+                              } else {
+                                toaster.success("checkout does not exist");
+                                createCheck(
+                                  {
+                                    shippingAddress: {
+                                      address1: theOrder.streetAddress1,
+                                      address2:
+                                        theOrder.streetAddress2 &&
+                                        theOrder.streetAddress2,
+                                      city: theOrder.city,
+                                      province: theOrder.state,
+                                      country: "US",
+                                      zip: theOrder.zip,
+                                      firstName: theOrder.first_name,
+                                      lastName: theOrder.last_name
+                                    },
+                                    lineItems: [
+                                      {
+                                        variantId: a,
+                                        quantity: b
+                                      }
+                                    ]
+                                  },
+                                  theOrder.id,
+                                  createCheckout.mutation,
+                                  updateOrder.mutation
+                                );
+                              }
+                            }}
+                            addZincItem={(a, b, c, d, e) =>
+                              addZincItem(
                                 a,
                                 b,
-                                JSON.parse(theOrder.mpCart).id,
-                                checkoutLineItemsAdd,
+                                c,
+                                d,
+                                e,
+                                JSON.parse(theOrder.zincCart),
                                 updateOrder.mutation
                               )
                             }
@@ -1047,9 +1230,6 @@ function PendingOrders() {
                         )}
                       </Mutation>
                     </Pane>
-                    {/* );
-                   }}
-                 </Adopt> */}
                   </>
                 );
               }}

@@ -8,7 +8,9 @@ import {
   Avatar,
 } from 'evergreen-ui';
 import PropTypes from 'prop-types';
-import Cart from '../../pending/Cart/Cart';
+import MPCart from '../../pending/Cart/MPCart';
+import ZincCart from '../../pending/Cart/ZincCart';
+
 import OrderLine from './OrderLine';
 
 const priceString = (price, quantity) => {
@@ -24,42 +26,6 @@ export default function OrderListItem(props) {
   useEffect(() => {
     setOpen(props.open);
   }, [props.open]);
-
-  // async function onChange(
-  //   selected,
-  //   updateIndexFunc,
-  //   updateLineFunc,
-  //   createCheckoutFunc,
-  //   setCheckoutFunc,
-  //   errorTextObj
-  // ) {
-  //   updateIndexFunc(selected.length > 0 ? props.index : null);
-  //   updateLineFunc(selected);
-  //   if (errorTextObj !== '{}') {
-  //     setCheckoutFunc(JSON.parse(errorTextObj));
-  //   } else if (selected.length > 0) {
-  //     const checkout = await createCheckoutFunc({
-  //       variables: {
-  //         input: {
-  //           shippingAddress: {
-  //             address1: props.streetAddress1,
-  //             address2: props.streetAddress2 && props.streetAddress2,
-  //             city: props.city,
-  //             province: props.state,
-  //             country: 'US',
-  //             zip: props.zip,
-  //             firstName: props.first_name,
-  //             lastName: props.last_name,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     setCheckoutFunc(checkout.data.createCheckout.checkout);
-  //   } else {
-  //     setCheckoutFunc({});
-  //   }
-  // }
 
   async function onCheckAllChange(
     e,
@@ -90,9 +56,14 @@ export default function OrderListItem(props) {
     setOpen(prevOpen => !prevOpen);
   }
 
-  function cart(string) {
+  function parseMP(string) {
     const parsedError = JSON.parse(string);
-    return parsedError.lineItems && <Cart checkout={parsedError} />;
+    return parsedError.lineItems && <MPCart checkout={parsedError} />;
+  }
+  function parseZinc(string) {
+    const parsedError = JSON.parse(string);
+    console.log(parsedError);
+    return parsedError.products && <ZincCart cart={parsedError} />;
   }
 
   const {
@@ -118,6 +89,8 @@ export default function OrderListItem(props) {
     createAt,
     mpCheckout,
     mpCart,
+    zincCheckout,
+    zincCart,
     note,
     disabled,
     buttons,
@@ -224,7 +197,8 @@ export default function OrderListItem(props) {
               <OrderLine key={a.id} item={a.node ? a.node : a} />
             ))}
           </Pane>
-          {mpCart && cart(mpCart)}
+          {mpCart && parseMP(mpCart)}
+          {zincCart && parseZinc(zincCart)}
           {mpCheckout && (
             <Pane
               marginLeft="-3px"

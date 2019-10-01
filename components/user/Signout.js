@@ -18,11 +18,6 @@ const Signout = () => (
     refetchQueries={[{ query: CURRENT_USER_QUERY }]}
   >
     {signout => (
-      // <NavItem
-      //   icon="arrow-left"
-      //   title="Sign Out"
-      //   onClick={() => signout().then(() => (window.location.href = '/'))}
-      // />
       <Pane
         height={30}
         cursor="pointer"
@@ -36,7 +31,12 @@ const Signout = () => (
             justifyContent="center"
             display="flex"
           >
-            <Icon size={15} icon="log-in" color="#EC4C47" marginRight={16} />
+            <Icon
+              size={15}
+              icon="arrow-left"
+              color="#EC4C47"
+              marginRight={16}
+            />
           </Pane>
           <Heading
             color="#fff"

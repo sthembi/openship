@@ -19,6 +19,7 @@ import {
 import PropTypes from 'prop-types';
 import { Query } from 'react-apollo';
 import Product from './findListItem/Product';
+import AmzProduct from './findListItem/AmzProduct';
 import User from '../user/User';
 import Pagination from '../common/Pagination';
 import TextButton from '../common/Button';
@@ -89,7 +90,6 @@ const option = (name, options, update, selected) => (
           marginLeft={0}
           height="20px"
           fontSize="10px"
-          // lineHeight="16px"
           marginBottom={3}
           letterSpacing="0.3px"
           fontWeight={400}
@@ -105,51 +105,6 @@ const option = (name, options, update, selected) => (
   </Pane>
 );
 
-// fetch('http://localhost:3000/api/zinc-api?search=shoes')
-//   .then(response => response.json())
-//   .then(json =>
-//     json.map(
-//       item => <div>{item.product_id}</div>
-//   (
-// <Pane
-//   display="flex"
-//   alignItems="center"
-//   borderTop="0.1rem solid #dfe3e8"
-// >
-//   <Pane padding={15}>
-//     {item.image && (
-//       <Avatar
-//         src={item.image}
-//         alt={`${item.title} product shot`}
-//         borderStyle="solid"
-//         borderWidth="1px"
-//         borderRadius={3}
-//         borderColor="#e8e9ea"
-//         size={90}
-//       />
-//     )}
-//   </Pane>
-//   <Pane
-//     padding={15}
-//     paddingLeft={0}
-//     marginTop={3}
-//     marginBottom="auto"
-//   >
-//     <Heading size={500}>
-//       {item.product_id}
-//     </Heading>
-//     <Heading
-//       size={400}
-//       marginRight={10}
-//       color="green"
-//     >
-//       ${item.price}
-//     </Heading>
-//   </Pane>
-// </Pane>
-// )
-//   )
-// );
 export default class Find extends Component {
   static propTypes = {
     headerSize: PropTypes.number,
@@ -174,70 +129,23 @@ export default class Find extends Component {
     include: [],
     exclude: [],
     selectedChannel: 'zinc',
-    amzResults: [],
+    zincResults: [],
   };
 
-  amzFunc = searchEntry => {
+  zincSearch = (searchEntry, token) => {
+    console.log('called');
     fetch(
       `${
         process.env.NODE_ENV === 'development' ? front : prodFront
-      }/api/zinc-api?search=${searchEntry}`
+      }/api/zinc/search?query=${searchEntry}&token=${token}`
     )
       .then(res => res.json())
-      .then(json => this.setState({ amzResults: json }))
+      .then(json => this.setState({ zincResults: json }))
       .catch(error => console.log('Error: ', error));
-
-    if (this.state.amzResults) {
-      return this.state.amzResults.map(item => (
-        <Pane
-          display="flex"
-          alignItems="center"
-          borderTop="0.1rem solid #dfe3e8"
-        >
-          <Pane padding={15}>
-            {item.image && (
-              <Avatar
-                src={item.image}
-                alt={`${item.title} product shot`}
-                borderStyle="solid"
-                borderWidth="1px"
-                borderRadius={3}
-                borderColor="#e8e9ea"
-                size={90}
-              />
-            )}
-          </Pane>
-          <Pane padding={15} paddingLeft={0} marginTop={3} marginBottom="auto">
-            <Heading size={500}>{`${item.title.slice(0, 70)}...`}</Heading>
-            <Pane color="#F7D154" display="flex" alignItems="center">
-              <Icon icon="star" size={15} paddingRight={3} />
-              <Text paddingRight={12} lineHeight="unset">
-                {item.stars}
-              </Text>
-              <Text size={300} color="muted" lineHeight="unset">
-                {item.num_reviews} reviews
-              </Text>
-            </Pane>
-            <a
-              href={`https://amazon.com/gp/product/${item.product_id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Text size={300} lineHeight="12px">
-                {item.product_id}
-              </Text>
-            </a>
-            <Heading size={400} marginRight={10} color="green">
-              ${item.price / 100}
-            </Heading>
-          </Pane>
-        </Pane>
-      ));
-    }
   };
 
   render() {
-    const { headerSize, atcDisabled, addVariant } = this.props;
+    const { headerSize, atcDisabled, addMPItem, addZincItem } = this.props;
     const {
       pageNum,
       searchBar,
@@ -252,7 +160,7 @@ export default class Find extends Component {
       searchEntry,
       priceCurrency,
       price,
-      amzResults,
+      zincResults,
     } = this.state;
     return (
       <>
@@ -305,142 +213,15 @@ export default class Find extends Component {
                               this.setState(state => ({
                                 searchEntry: state.searchBar,
                               }));
+                              if (selectedChannel === 'zinc') {
+                                this.zincSearch(searchBar, me.zincToken);
+                              }
                             }
                           }}
                         />
                       </Pane>
                     </Pane>
-                    {/* <Pane
-                      display="block"
-                      paddingX="1em"
-                      paddingY=".5em"
-                      maxWidth="100%"
-                    >
-                      <Pane
-                        display="flex"
-                        flexWrap="wrap"
-                        alignContent="space-around"
-                      >
-                        <Pane marginRight={10} marginBottom={4}>
-                          <SelectMenu
-                            hasFilter={false}
-                            title="Sort by..."
-                            options={sortOptions.map(option => ({
-                              label: option.label,
-                              value: option.value,
-                            }))}
-                            selected={sort.value}
-                            onSelect={item => this.setState({ sort: item })}
-                          >
-                            <Button height={24}>
-                              {sort.label || 'Sort by...'}
-                            </Button>
-                          </SelectMenu>
-                        </Pane>
-                        <Pane marginRight={10} marginBottom={7}>
-                          <SelectMenu
-                            hasFilter={false}
-                            title="Items per page..."
-                            options={[10, 50, 100].map(label => ({
-                              label,
-                              value: label,
-                            }))}
-                            selected={limit}
-                            onSelect={item =>
-                              this.setState({ limit: item.value })
-                            }
-                          >
-                            <Button height={24}>
-                              {`${limit} per page` || 'Items per page...'}
-                            </Button>
-                          </SelectMenu>
-                        </Pane>
-                        <Pane marginRight={10} marginBottom={4}>
-                          <SelectMenu
-                            hasFilter={false}
-                            title="Location"
-                            options={['US', 'CN', 'All'].map(label => ({
-                              label,
-                              value: label,
-                            }))}
-                            selected={
-                              itemLocationCountry === null
-                                ? 'All'
-                                : itemLocationCountry
-                            }
-                            onSelect={item =>
-                              this.setState({
-                                itemLocationCountry:
-                                  item.value === 'All' ? null : item.value,
-                              })
-                            }
-                          >
-                            <Button height={24}>
-                              {itemLocationCountry == null
-                                ? 'All'
-                                : itemLocationCountry || 'Location'}
-                            </Button>
-                          </SelectMenu>
-                        </Pane>
-                        <Pane display="flex" marginBottom={7} marginRight={10}>
-                          <TextInput
-                            height={24}
-                            width={40}
-                            placeholder="min"
-                            value={min}
-                            onChange={e =>
-                              this.setState({ min: e.target.value })
-                            }
-                          />
-                          <TextInput
-                            height={24}
-                            marginLeft={6}
-                            width={40}
-                            placeholder="max"
-                            value={max}
-                            onChange={e =>
-                              this.setState({ max: e.target.value })
-                            }
-                          />
-                          <IconButton
-                            height={24}
-                            marginLeft={6}
-                            icon="tick"
-                            intent="success"
-                            onClick={() =>
-                              this.setState(state => ({
-                                price: `[${state.min}..${state.max}]`,
-                              }))
-                            }
-                          />
-                        </Pane>
-                      </Pane>
-                      <Pane display="flex" flexWrap="wrap">
-                        <TagInput
-                          marginRight={8}
-                          marginBottom={5}
-                          maxHeight={32}
-                          overflow="auto"
-                          inputProps={{ placeholder: 'Only Include...' }}
-                          values={include}
-                          onChange={value => {
-                            this.setState({ include: value });
-                          }}
-                          type="search"
-                        />
-                        <TagInput
-                          inputProps={{ placeholder: 'Exclude...' }}
-                          marginBottom={5}
-                          maxHeight={32}
-                          overflow="auto"
-                          values={exclude}
-                          onChange={value => {
-                            this.setState({ exclude: value });
-                          }}
-                          type="search"
-                        />
-                      </Pane>
-                    </Pane> */}
+
                     <Pane
                       display="flex"
                       flexWrap="wrap"
@@ -448,45 +229,6 @@ export default class Find extends Component {
                       paddingY=".7em"
                       paddingX="1em"
                     >
-                      {/* <Pane marginBottom={10} marginRight={10}>
-                        <Heading
-                          size={500}
-                          fontSize="12px"
-                          fontWeight={500}
-                          marginBottom={2}
-                        >
-                          Channel
-                        </Heading>
-                        <Tablist
-                        // marginBottom={10}
-                        // display="flex"
-                        // alignItems="center"
-                        // flexBasis={240}
-                        // marginRight={24}
-                        >
-                          {this.state.channels.map((channel, index) => (
-                            <Tab
-                              key={channel}
-                              id={channel}
-                              marginLeft={0}
-                              height="20px"
-                              fontSize="10px"
-                              // lineHeight="16px"
-                              marginBottom={3}
-                              letterSpacing="0.3px"
-                              fontWeight={400}
-                              textTransform="uppercase"
-                              onSelect={() =>
-                                this.setState({ selectedChannel: index })
-                              }
-                              isSelected={index === this.state.selectedChannel}
-                              aria-controls={`panel-${channel}`}
-                            >
-                              {channel}
-                            </Tab>
-                          ))}
-                        </Tablist>
-                      </Pane> */}
                       {option(
                         'Channel',
                         ['zinc', 'marketplace'],
@@ -558,30 +300,13 @@ export default class Find extends Component {
                             <>
                               {data.getItems.item.data.products.edges.map(
                                 product => (
-                                  // <FindListItem
-                                  //   addToCart={this.props.addToCart}
-                                  //   client="Marketplace"
-                                  //   product={product.node}
-                                  // />
                                   <Product
-                                    // addVariantToCart={(a, b) =>
-                                    //   toaster.success(`${a} ${b} addVariantToCart`)
-                                    // }
-                                    addWidget={addVariant}
-                                    addVariantToCart={(a, b) =>
-                                      addVariant(a, b)
-                                    }
+                                    addVariantToCart={(a, b) => addMPItem(a, b)}
                                     checkout={() => toaster.success(`checkout`)}
-                                    // checkout={this.props.checkout}
                                     key={product.node.id.toString()}
                                     product={product.node}
                                     client="Marketplace"
                                     atcDisabled={atcDisabled}
-                                    // buttons={
-                                    //   <Pane marginLeft="auto" height={20}>
-                                    //     <AddProduct product={product.node} />
-                                    //   </Pane>
-                                    // }
                                   />
                                 )
                               )}
@@ -590,9 +315,33 @@ export default class Find extends Component {
                         }}
                       </Query>
                     )}
-                    {searchEntry &&
-                      selectedChannel === 'zinc' &&
-                      this.amzFunc(searchEntry)}
+                    {selectedChannel === 'zinc' && zincResults.length ? (
+                      zincResults.map(product => (
+                        <AmzProduct
+                          product={product}
+                          addVariantToCart={a => toaster.success(a)}
+                          atcDisabled={atcDisabled}
+                          addZincItem={(a, b, c, d, e) =>
+                            addZincItem(a, b, c, d, e)
+                          }
+                        />
+                      ))
+                    ) : (
+                      <Pane paddingX="1em" paddingBottom="1em">
+                        <Pane
+                          background="tint2"
+                          display="flex"
+                          justifyContent="center"
+                          alignItems="center"
+                          flexDirection="column"
+                          borderRadius={3}
+                        >
+                          <Heading margin="1em" size={600}>
+                            No items found
+                          </Heading>
+                        </Pane>
+                      </Pane>
+                    )}
                   </>
                 );
               }
