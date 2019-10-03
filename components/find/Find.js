@@ -281,7 +281,7 @@ export default class Find extends Component {
                             data.getItems.item.length < 1
                           )
                             return (
-                              <Pane paddingX="1em" paddingBottom="1em">
+                              <Pane paddingX="1em" paddingY="1em">
                                 <Pane
                                   background="tint2"
                                   display="flex"
@@ -327,7 +327,7 @@ export default class Find extends Component {
                         />
                       ))
                     ) : (
-                      <Pane paddingX="1em" paddingBottom="1em">
+                      <Pane paddingX="1em" paddingY="1em">
                         <Pane
                           background="tint2"
                           display="flex"

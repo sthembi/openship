@@ -28,7 +28,13 @@ function placeZincOrder(data, token) {
     `${
       process.env.NODE_ENV === 'development' ? front : prodFront
     }/api/zinc/purchase?token=${token}`,
-    { body: JSON.stringify(data), method: 'POST' }
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }
   )
     .then(res => JSON.stringify(res))
     .then(json => console.log(json))
@@ -899,7 +905,7 @@ function PendingOrders() {
                                                               "abc123"
                                                           }
                                                         },
-                                                        me.ZincToken
+                                                        me.zincToken
                                                       );
                                                     } else {
                                                       toaster.success(
