@@ -23,22 +23,49 @@ import MPCart from './Cart/MPCart';
 import ZincCart from './Cart/ZincCart';
 import { front, prodFront } from '../../config';
 
-function placeZincOrder(data, token) {
-  fetch(
-    `${
-      process.env.NODE_ENV === 'development' ? front : prodFront
-    }/api/zinc/purchase?token=${token}`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+async function placeZincOrder(data, token) {
+  // fetch(
+  //   `${
+  //     process.env.NODE_ENV === 'development' ? front : prodFront
+  // }/api/purchase/purchase?token=${token}`,
+  // {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify(data),
+  // }
+  // )
+  //   .then(res => JSON.stringify(res))
+  //   .then(json => console.log(json))
+  //   .catch(error => console.log('Error: ', error));
+  /* eslint-disable */
+  const settings = {
+    method: "POST",
+    body: JSON.stringify({ friend: "Jerry" }),
+    headers: {
+      "Content-Type": "application/json"
     }
-  )
-    .then(res => JSON.stringify(res))
-    .then(json => console.log(json))
-    .catch(error => console.log('Error: ', error));
+  };
+  /* eslint-disable */
+
+  try {
+    const response = await fetch(
+      `http://localhost:3000/api/zinc/purchase?token=${token}`,
+      // settings
+      // {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify({}),
+      // }
+    );
+    // const res = await response.json();
+    console.log("first2", response);
+  } catch (e) {
+    console.log("error", e);
+  }
 }
 
 export const ORDER_QUERY = gql`
@@ -180,9 +207,9 @@ const DELETE_ORDER = gql`
 `;
 
 const Layout = {
-  flex: '1 1 10rem',
-  marginLeft: '2rem',
-  marginTop: '2rem',
+  flex: "1 1 10rem",
+  marginLeft: "2rem",
+  marginTop: "2rem"
 };
 /* eslint-disable */
 const mapper = {

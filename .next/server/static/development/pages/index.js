@@ -88,7 +88,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -1884,14 +1884,50 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-function placeZincOrder(data, token) {
-  fetch(`${ true ? _config__WEBPACK_IMPORTED_MODULE_15__["front"] : undefined}/api/zinc/purchase?token=${token}`, {
-    method: 'POST',
+async function placeZincOrder(data, token) {
+  // fetch(
+  //   `${
+  //     process.env.NODE_ENV === 'development' ? front : prodFront
+  // }/api/purchase/purchase?token=${token}`,
+  // {
+  //   method: 'POST',
+  //   headers: {
+  //     'Content-Type': 'application/json',
+  //   },
+  //   body: JSON.stringify(data),
+  // }
+  // )
+  //   .then(res => JSON.stringify(res))
+  //   .then(json => console.log(json))
+  //   .catch(error => console.log('Error: ', error));
+
+  /* eslint-disable */
+  const settings = {
+    method: "POST",
+    body: _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_1___default()({
+      friend: "Jerry"
+    }),
     headers: {
-      'Content-Type': 'application/json'
-    },
-    body: _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_1___default()(data)
-  }).then(res => _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_1___default()(res)).then(json => console.log(json)).catch(error => console.log('Error: ', error));
+      "Content-Type": "application/json"
+    }
+  };
+  /* eslint-disable */
+
+  try {
+    const response = await fetch(`http://localhost:3000/api/zinc/purchase?token=${token}` // settings
+    // {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({}),
+    // }
+    ); // const res = await response.json();
+
+    console.log("first2", response);
+  } catch (e) {
+    console.log("error", e);
+  }
 }
 
 const ORDER_QUERY = apollo_boost__WEBPACK_IMPORTED_MODULE_3__["gql"]`
@@ -2023,9 +2059,9 @@ const DELETE_ORDER = apollo_boost__WEBPACK_IMPORTED_MODULE_3__["gql"]`
   }
 `;
 const Layout = {
-  flex: '1 1 10rem',
-  marginLeft: '2rem',
-  marginTop: '2rem'
+  flex: "1 1 10rem",
+  marginLeft: "2rem",
+  marginTop: "2rem"
 };
 /* eslint-disable */
 
@@ -3703,7 +3739,7 @@ const Home = () => react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("d
 
 /***/ }),
 
-/***/ 4:
+/***/ 3:
 /*!******************************!*\
   !*** multi ./pages/index.js ***!
   \******************************/
