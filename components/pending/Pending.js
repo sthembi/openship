@@ -49,18 +49,20 @@ async function placeZincOrder(data, token) {
   };
   /* eslint-disable */
 
-  try {
-    const response = await fetch(
-      `http://localhost:3000/api/zinc/purchase?token=${token}`,
-      // settings
-      // {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({}),
-      // }
-    );
+  try {    
+    const response = await fetch(`http://localhost:3000/api/zinc/purchase?token=${token}`, {
+      credentials: 'same-origin',
+      mode: 'cors', 
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+        'X-Requested-With': 'Fetch'
+      },
+      body: JSON.stringify({
+        data
+      })
+    });
     // const res = await response.json();
     console.log("first2", response);
   } catch (e) {

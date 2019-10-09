@@ -1,1 +1,0 @@
-{"ast":null,"code":"import React from \"react\";\nimport Reset from '../components/user/Reset';\n\nconst ResetPage = ({\n  query\n}) => React.createElement(\"div\", null, React.createElement(Reset, {\n  resetToken: query.resetToken\n}));\n\nexport default ResetPage;","map":null,"metadata":{},"sourceType":"module"}

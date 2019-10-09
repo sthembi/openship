@@ -1,1 +1,0 @@
-{"ast":null,"code":"import React from \"react\";\nimport Completed from '../../components/completed/Completed';\n\nconst CompletedPage = ({\n  query\n}) => React.createElement(\"div\", null, React.createElement(Completed, query));\n\nexport default CompletedPage;","map":null,"metadata":{},"sourceType":"module"}

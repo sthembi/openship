@@ -155,6 +155,13 @@ app.prepare().then(() => {
     }
   });
 
+  router.post('*', async ctx => {
+    if (!ctx.path.match('/_shopify')) {
+      await handle(ctx.req, ctx.res);
+      ctx.respond = false;
+    }
+  });
+
   server.use(async (ctx, next) => {
     ctx.res.statusCode = 200;
     await next();

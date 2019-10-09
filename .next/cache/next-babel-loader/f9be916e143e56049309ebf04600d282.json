@@ -1,1 +1,0 @@
-{"ast":null,"code":"import React from \"react\";\nimport Order from '../components/order/Order';\n\nconst OrderPage = ({\n  query\n}) => React.createElement(Order, query);\n\nexport default OrderPage;","map":null,"metadata":{},"sourceType":"module"}
