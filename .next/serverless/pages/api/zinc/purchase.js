@@ -1437,18 +1437,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ __webpack_exports__["default"] = (async (req, res) => {
-  console.log('hello'); //   res.status(200).json([
-  //     {
-  //       id: '1',
-  //       name: 'hello',
-  //       height: '172',
-  //       mass: '77',
-  //       hair_color: 'blond',
-  //       skin_color: 'fair',
-  //       eye_color: 'blue',
-  //       gender: 'male',
-  //     },
-  //   ]);
+  console.log('committed');
 
   async function _request(method, path, data, auth) {
     console.log(data);
@@ -1460,28 +1449,12 @@ __webpack_require__.r(__webpack_exports__);
         Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded'
       }
-    }; // if (!_.isUndefined(data) && !_.isEmpty(data)) {
-    //   data = JSON.stringify(data);
-    //   reqOptions.body = data;
-    // }
-
+    };
     const response = await isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_1___default()(path, reqOptions);
     const people = await response.json();
     console.log('second', people);
-    res.status(200).send(people); // return fetch(path, reqOptions)
-    //   .then(res => res.json())
-    //   .then(json => json)
-    //   .catch(err => {
-    //     console.log(err);
-    //     return { error: `error with fetch request!: ${err}` };
-    //   });
-  } //   await _request(
-  //     'POST',
-  //     `https://api.zinc.io/v1/orders`,
-  //     JSON.parse(req.body),
-  //     `Basic ${Buffer.from(`${req.query.token}:`).toString('base64')}`
-  //   );
-
+    res.status(200).send(people);
+  }
 
   try {
     await _request('POST', `https://api.zinc.io/v1/orders`, req.body.data, `Basic ${Buffer.from(`${req.query.token}:`).toString('base64')}`);
