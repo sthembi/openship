@@ -56,14 +56,13 @@ export default function OrderListItem(props) {
     setOpen(prevOpen => !prevOpen);
   }
 
-  function parseMP(string) {
-    const parsedError = JSON.parse(string);
-    return parsedError.lineItems && <MPCart checkout={parsedError} />;
+  function parseMP(string, checkout) {
+    const parse = JSON.parse(string);
+    return parse.lineItems && <MPCart cart={parse} checkout={checkout} />;
   }
-  function parseZinc(string) {
-    const parsedError = JSON.parse(string);
-    console.log(parsedError);
-    return parsedError.products && <ZincCart cart={parsedError} />;
+  function parseZinc(string, checkout) {
+    const parse = JSON.parse(string);
+    return parse.products && <ZincCart cart={parse} checkout={checkout} />;
   }
 
   const {
@@ -198,7 +197,7 @@ export default function OrderListItem(props) {
             ))}
           </Pane>
           {mpCart && parseMP(mpCart)}
-          {zincCart && parseZinc(zincCart)}
+          {zincCart && parseZinc(zincCart, zincCheckout)}
           {mpCheckout && (
             <Pane
               marginLeft="-3px"

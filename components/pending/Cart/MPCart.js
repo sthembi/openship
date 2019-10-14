@@ -13,6 +13,7 @@ class Cart extends Component {
 
   render() {
     const {
+      cart,
       checkout,
       removeItem,
       checkoutLineItemsUpdate,
@@ -32,11 +33,11 @@ class Cart extends Component {
             Marketplace Cart
           </Text>
         </Pane>
-        {checkout && checkout.lineItems && checkout.lineItems.edges.length ? (
-          checkout.lineItems.edges.map(a => (
+        {cart && cart.lineItems && cart.lineItems.edges.length ? (
+          cart.lineItems.edges.map(a => (
             <CartItem
               removeItem={removeItem ? a => removeItem(a) : undefined}
-              checkoutID={checkout.id}
+              checkoutID={cart.id}
               checkoutLineItemsUpdate={
                 checkoutLineItemsUpdate
                   ? a => checkoutLineItemsUpdate(a)

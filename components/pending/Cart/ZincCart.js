@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Pane, Text, Heading } from 'evergreen-ui';
+import { Pane, Text, Badge } from 'evergreen-ui';
 import CartItem from './ZincCartItem';
 
 class Cart extends Component {
@@ -11,7 +11,13 @@ class Cart extends Component {
   };
 
   render() {
-    const { cart, removeItem, checkoutLineItemsUpdate, loading } = this.props;
+    const {
+      cart,
+      checkout,
+      removeItem,
+      checkoutLineItemsUpdate,
+      loading,
+    } = this.props;
 
     return (
       <Pane
@@ -21,10 +27,36 @@ class Cart extends Component {
         paddingY=".7em"
         paddingX="1em"
       >
-        <Pane marginBottom={10}>
+        <Pane marginBottom={10} display="flex" alignItems="center">
           <Text size={400} fontWeight={500} color="#1A202C">
             Zinc Cart
           </Text>
+          {checkout && checkout._type === 'error' ? (
+            <Pane marginLeft="auto">
+              <a
+                href={`https://dash.zinc.io/orders/${checkout.request_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Badge color="red">Status: Error</Badge>
+              </a>
+            </Pane>
+          ) : (
+            checkout.tracking && (
+              <Pane marginLeft="auto">
+                <a
+                  href={`https://dash.zinc.io/orders/${checkout.request_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Badge color="neutral">
+                    Status:{' '}
+                    {checkout.tracking.length > 0 ? 'Shipped' : 'Pending'}
+                  </Badge>
+                </a>
+              </Pane>
+            )
+          )}
         </Pane>
         {cart && cart.products && cart.products.length ? (
           cart.products.map(a => (

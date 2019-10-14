@@ -23,60 +23,52 @@ import MPCart from './Cart/MPCart';
 import ZincCart from './Cart/ZincCart';
 import { front, prodFront } from '../../config';
 
-async function placeZincOrder(data, token) {
-  // fetch(
-  //   `${
-  //     process.env.NODE_ENV === 'development' ? front : prodFront
-  // }/api/purchase/purchase?token=${token}`,
-  // {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify(data),
-  // }
-  // )
-  //   .then(res => JSON.stringify(res))
-  //   .then(json => console.log(json))
-  //   .catch(error => console.log('Error: ', error));
-  /* eslint-disable */
-  const settings = {
-    method: "POST",
-    body: JSON.stringify({ friend: "Jerry" }),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  };
-  /* eslint-disable */
-
-  try {    
-    const response = await fetch(`http://localhost:3000/api/zinc/purchase?token=${token}`, {
-      credentials: 'same-origin',
-      mode: 'cors', 
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json',
-        'X-Requested-With': 'Fetch'
+async function placeZincOrder(data, token, updateOrderFunc) {
+  try {
+    const response = await fetch(
+      `${
+        process.env.NODE_ENV === 'development' ? front : prodFront
+      }/api/zinc/purchase?token=${token}`,
+      {
+        credentials: 'same-origin',
+        mode: 'cors',
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+          'X-Requested-With': 'Fetch',
+        },
+        body: JSON.stringify({
+          data,
+        }),
+      }
+    );
+    const res = await response.json();
+    const update = await updateOrderFunc({
+      variables: {
+        id: data.client_notes.os_order_id,
+        zincCheckout: res,
+        processed: true,
       },
-      body: JSON.stringify({
-        data
-      })
     });
-    // const res = await response.json();
-    console.log("first2", response);
+    console.log('first2', res);
   } catch (e) {
-    console.log("error", e);
+    console.log('error', e);
   }
 }
 
 export const ORDER_QUERY = gql`
-  query OrdersQuery($skip: Int, $first: Int, $orderBy: OrderOrderByInput) {
+  query OrdersQuery(
+    $skip: Int
+    $first: Int
+    $orderBy: OrderOrderByInput
+    $processed: Boolean
+  ) {
     orders(
       first: $first
       skip: $skip
       orderBy: $orderBy
-      where: { processed: false }
+      where: { processed: $processed }
     ) {
       id
       orderId
@@ -122,6 +114,7 @@ const UPDATE_ORDER_MUTATION = gql`
     $id: ID!
     $mpCart: String
     $zincCart: String
+    $zincCheckout: Json
     $first_name: String
     $last_name: String
     $streetAddress1: String
@@ -129,11 +122,13 @@ const UPDATE_ORDER_MUTATION = gql`
     $city: String
     $state: String
     $zip: String
+    $processed: Boolean
   ) {
     updateOrder(
       id: $id
       mpCart: $mpCart
       zincCart: $zincCart
+      zincCheckout: $zincCheckout
       first_name: $first_name
       last_name: $last_name
       streetAddress1: $streetAddress1
@@ -141,6 +136,7 @@ const UPDATE_ORDER_MUTATION = gql`
       city: $city
       state: $state
       zip: $zip
+      processed: $processed
     ) {
       id
       email
@@ -209,68 +205,16 @@ const DELETE_ORDER = gql`
 `;
 
 const Layout = {
-  flex: "1 1 10rem",
-  marginLeft: "2rem",
-  marginTop: "2rem"
+  flex: '1 1 10rem',
+  marginLeft: '2rem',
+  marginTop: '2rem',
 };
-/* eslint-disable */
-const mapper = {
-  updateOrder: ({ render }) => (
-    <Mutation
-      mutation={UPDATE_ORDER_MUTATION}
-      refetchQueries={() => [
-        {
-          query: ORDER_QUERY,
-          variables: { skip: 0 }
-        }
-      ]}
-    >
-      {/* this is an arbitrary render where you will pass your two arguments into a single one */}
-      {(mutation, result) => render({ mutation, result })}
-    </Mutation>
-  ),
-  upsertMatch: ({ render }) => (
-    <Mutation mutation={UPSERT_MUTATION}>
-      {/* this is an arbitrary render where you will pass your two arguments into a single one */}
-      {(mutation, result) => render({ mutation, result })}
-    </Mutation>
-  ),
-  checkoutLineItemsRemove: ({ render }) => (
-    <Mutation
-      mutation={CHECKOUT_REMOVE_MUTATION}
-      refetchQueries={() => [
-        {
-          query: ORDER_QUERY,
-          variables: { skip: 0 }
-        }
-      ]}
-    >
-      {/* this is an arbitrary render where you will pass your two arguments into a single one */}
-      {(mutation, result) => render({ mutation, result })}
-    </Mutation>
-  ),
-  checkoutLineItemsUpdate: ({ render }) => (
-    <Mutation
-      mutation={CHECKOUT_UPDATE_MUTATION}
-      refetchQueries={() => [
-        {
-          query: ORDER_QUERY,
-          variables: { skip: 0 }
-        }
-      ]}
-    >
-      {/* this is an arbitrary render where you will pass your two arguments into a single one */}
-      {(mutation, result) => render({ mutation, result })}
-    </Mutation>
-  )
-};
-/* eslint-disable */
 
 function PendingOrders() {
   const [selectedOrderIndex, setSelectedOrderIndex] = useState(null);
   // const [selectedLineIndex, setSelectedLineIndex] = useState([]);
   const [skip, setSkip] = useState(0);
-  const [orderBy, setOrderBy] = useState("createdAt_ASC");
+  const [orderBy, setOrderBy] = useState('createdAt_ASC');
   const [firstQ, setFirstQ] = useState(100);
   // const [check, setCheck] = useState(true);
   const [open, setOpen] = useState(false);
@@ -290,16 +234,16 @@ function PendingOrders() {
         shopify: lineItems.map(a => ({
           product_id: a.product_id,
           variant_id: a.variant_id,
-          quantity: a.quantity
+          quantity: a.quantity,
         })),
         marketplace: mpCart.lineItems.edges.map(a => ({
           product_id: a.node.id,
           variant_id: a.node.variant.id,
-          quantity: a.node.quantity
-        }))
-      }
+          quantity: a.node.quantity,
+        })),
+      },
     });
-    toaster.notify("Line items have been matched to cart items");
+    toaster.notify('Line items have been matched to cart items');
     // setSelectedOrderIndex(null);
     setCartLoading(false);
   }
@@ -307,8 +251,8 @@ function PendingOrders() {
   async function doPurchase(ids, purchaseOrderMutation) {
     const res = await purchaseOrderMutation({
       variables: {
-        ids: ids
-      }
+        ids,
+      },
     });
   }
 
@@ -320,8 +264,8 @@ function PendingOrders() {
   ) {
     const varCheck = await createCheckoutFunc({
       variables: {
-        input: input
-      }
+        input,
+      },
     });
 
     const newCheck = varCheck.data.createCheckout.checkout;
@@ -329,8 +273,8 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: orderID,
-        mpCart: JSON.stringify(newCheck)
-      }
+        mpCart: JSON.stringify(newCheck),
+      },
     });
   }
 
@@ -341,7 +285,7 @@ function PendingOrders() {
     checkoutLineItemsAddFunc,
     updateOrderFunc
   ) {
-    toaster.success("checkout does exist");
+    toaster.success('checkout does exist');
 
     const varCheck = await checkoutLineItemsAddFunc({
       variables: {
@@ -349,10 +293,10 @@ function PendingOrders() {
         lineItems: [
           {
             variantId: id,
-            quantity
-          }
-        ]
-      }
+            quantity,
+          },
+        ],
+      },
     });
 
     const newCheck = varCheck.data.checkoutLineItemsAdd.checkout;
@@ -360,8 +304,8 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(newCheck)
-      }
+        mpCart: JSON.stringify(newCheck),
+      },
     });
   }
 
@@ -384,9 +328,7 @@ function PendingOrders() {
       cart &&
       cart.products &&
       cart.products.length &&
-      cart.products.find(obj => {
-        return obj.product_id === id;
-      });
+      cart.products.find(obj => obj.product_id === id);
 
     if (cart && cart.products && cart.products.length && find !== undefined) {
       console.log(true);
@@ -398,9 +340,9 @@ function PendingOrders() {
         variables: {
           id: selectedOrderIndex,
           zincCart: JSON.stringify({
-            products: [find, ...cart.products.filter(a => a.product_id !== id)]
-          })
-        }
+            products: [find, ...cart.products.filter(a => a.product_id !== id)],
+          }),
+        },
       });
     } else {
       console.log(false);
@@ -412,17 +354,17 @@ function PendingOrders() {
             products: [
               {
                 product_id: id,
-                quantity: quantity,
-                title: title,
-                price: price,
-                src: src
+                quantity,
+                title,
+                price,
+                src,
               },
               ...(cart && cart.products && cart.products.length
                 ? cart.products
-                : [])
-            ]
-          })
-        }
+                : []),
+            ],
+          }),
+        },
       });
     }
   }
@@ -436,15 +378,15 @@ function PendingOrders() {
     const varCheck = await checkoutLineItemsRemoveFunc.mutation({
       variables: {
         checkoutId: checkoutID,
-        lineItemIds: lineItemIds
-      }
+        lineItemIds,
+      },
     });
 
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsRemove.checkout)
-      }
+        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsRemove.checkout),
+      },
     });
   }
 
@@ -457,15 +399,15 @@ function PendingOrders() {
     const varCheck = await checkoutLineItemsUpdateFunc.mutation({
       variables: {
         checkoutId: checkoutID,
-        lineItems: lineItems
-      }
+        lineItems,
+      },
     });
 
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsUpdate.checkout)
-      }
+        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsUpdate.checkout),
+      },
     });
   }
 
@@ -489,7 +431,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip, first: firstQ, orderBy }
+            variables: { skip, first: firstQ, orderBy, processed: false }
           },
           {
             query: PAGINATION_QUERY
@@ -506,7 +448,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip, first: firstQ, orderBy }
+            variables: { skip, first: firstQ, orderBy, processed: false }
           },
           {
             query: PAGINATION_QUERY
@@ -523,7 +465,10 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip: 0 }
+            variables: { skip, first: firstQ, orderBy, processed: false }
+          },
+          {
+            query: PAGINATION_QUERY
           }
         ]}
       >
@@ -543,7 +488,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip: 0 }
+            variables: { skip: 0, processed: false }
           }
         ]}
       >
@@ -605,7 +550,8 @@ function PendingOrders() {
               variables={{
                 skip,
                 first: firstQ,
-                orderBy
+                orderBy,
+                processed: false
               }}
             >
               {({ loading, error, data }) => {
@@ -891,7 +837,13 @@ function PendingOrders() {
                                                       toaster.success(
                                                         "zinc called"
                                                       );
-                                                      placeZincOrder(
+                                                      // const update = await updateOrder.mutation({
+                                                      //   variables: {
+                                                      //     id: 'cjvhp95z5000n0772cx2kqwnv',
+                                                      //     processed: true,
+                                                      //   },
+                                                      // });
+                                                      await placeZincOrder(
                                                         {
                                                           retailer: "amazon",
                                                           products: JSON.parse(
@@ -911,11 +863,13 @@ function PendingOrders() {
                                                             state: order.state,
                                                             country: "US",
                                                             phone_number:
-                                                              order.state
+                                                              "281-337-9862"
                                                           },
+                                                          addax: true,
                                                           is_gift: true,
-                                                          gift_message:
-                                                            "Here is your package, Tim! Enjoy!",
+                                                          gift_message: `Here is your package, ${
+                                                            order.first_name
+                                                          }! Enjoy!`,
                                                           shipping: {
                                                             order_by: "price",
                                                             max_days: 5,
@@ -923,18 +877,21 @@ function PendingOrders() {
                                                           },
                                                           webhooks: {
                                                             request_succeeded:
-                                                              "https://hooks.zapier.com/hooks/catch/1902946/o2z8bdq/",
+                                                              "https://webhook.site/3d977945-5b89-4734-8a64-146d321a100c",
                                                             request_failed:
-                                                              "https://hooks.zapier.com/hooks/catch/1902946/o2z8bdq/",
+                                                              "https://webhook.site/3d977945-5b89-4734-8a64-146d321a100c",
                                                             tracking_obtained:
-                                                              "https://hooks.zapier.com/hooks/catch/1902946/o2z8bdq/"
+                                                              "https://webhook.site/3d977945-5b89-4734-8a64-146d321a100c"
                                                           },
                                                           client_notes: {
-                                                            our_internal_order_id:
-                                                              "abc123"
+                                                            shopify_order_id:
+                                                              order.orderId,
+                                                            os_order_id:
+                                                              order.id
                                                           }
                                                         },
-                                                        me.zincToken
+                                                        me.zincToken,
+                                                        updateOrder.mutation
                                                       );
                                                     } else {
                                                       toaster.success(

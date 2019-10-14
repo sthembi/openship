@@ -816,6 +816,13 @@ module.exports = function (it) {
 
 /***/ }),
 
+/***/ "9Jkg":
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__("oh+g");
+
+/***/ }),
+
 /***/ "9RKe":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1423,8 +1430,11 @@ module.exports = function (it, S) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("GXyi");
-/* harmony import */ var isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("9Jkg");
+/* harmony import */ var _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("GXyi");
+/* harmony import */ var isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_1__);
+
 
 /* harmony default export */ __webpack_exports__["default"] = (async (req, res) => {
   console.log('hello'); //   res.status(200).json([
@@ -1440,9 +1450,11 @@ __webpack_require__.r(__webpack_exports__);
   //     },
   //   ]);
 
-  async function _request(method, path, auth) {
+  async function _request(method, path, data, auth) {
+    console.log(data);
     const reqOptions = {
       method,
+      body: _babel_runtime_corejs2_core_js_json_stringify__WEBPACK_IMPORTED_MODULE_0___default()(data),
       headers: {
         Authorization: auth,
         Accept: 'application/json',
@@ -1453,7 +1465,7 @@ __webpack_require__.r(__webpack_exports__);
     //   reqOptions.body = data;
     // }
 
-    const response = await isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_0___default()(path, reqOptions);
+    const response = await isomorphic_unfetch__WEBPACK_IMPORTED_MODULE_1___default()(path, reqOptions);
     const people = await response.json();
     console.log('second', people);
     res.status(200).send(people); // return fetch(path, reqOptions)
@@ -1472,8 +1484,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
   try {
-    await _request('POST', `https://api.zinc.io/v1/orders`, //   JSON.parse(req.body),
-    `Basic ${Buffer.from(`${req.query.token}:`).toString('base64')}`);
+    await _request('POST', `https://api.zinc.io/v1/orders`, req.body.data, `Basic ${Buffer.from(`${req.query.token}:`).toString('base64')}`);
   } catch (e) {
     console.error(`Error getResults:${e}`);
   }
@@ -6669,6 +6680,18 @@ module.exports = require("stream");
 /***/ (function(module, exports) {
 
 module.exports = require("fs");
+
+/***/ }),
+
+/***/ "oh+g":
+/***/ (function(module, exports, __webpack_require__) {
+
+var core = __webpack_require__("WEpk");
+var $JSON = core.JSON || (core.JSON = { stringify: JSON.stringify });
+module.exports = function stringify(it) { // eslint-disable-line no-unused-vars
+  return $JSON.stringify.apply($JSON, arguments);
+};
+
 
 /***/ }),
 

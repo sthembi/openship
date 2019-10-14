@@ -2,6 +2,7 @@ import fetch from 'isomorphic-unfetch';
 
 export default async (req, res) => {
   console.log('hello');
+
   //   res.status(200).json([
   //     {
   //       id: '1',
@@ -15,9 +16,11 @@ export default async (req, res) => {
   //     },
   //   ]);
 
-  async function _request(method, path, auth) {
+  async function _request(method, path, data, auth) {
+    console.log(data);
     const reqOptions = {
       method,
+      body: JSON.stringify(data),
       headers: {
         Authorization: auth,
         Accept: 'application/json',
@@ -54,7 +57,7 @@ export default async (req, res) => {
     await _request(
       'POST',
       `https://api.zinc.io/v1/orders`,
-      //   JSON.parse(req.body),
+      req.body.data,
       `Basic ${Buffer.from(`${req.query.token}:`).toString('base64')}`
     );
   } catch (e) {
