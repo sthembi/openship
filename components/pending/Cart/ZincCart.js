@@ -31,7 +31,7 @@ class Cart extends Component {
           <Text size={400} fontWeight={500} color="#1A202C">
             Zinc Cart
           </Text>
-          {checkout && checkout._type === 'error' ? (
+          {checkout && checkout._type === 'error' && (
             <Pane marginLeft="auto">
               <a
                 href={`https://dash.zinc.io/orders/${checkout.request_id}`}
@@ -41,21 +41,19 @@ class Cart extends Component {
                 <Badge color="red">Status: Error</Badge>
               </a>
             </Pane>
-          ) : (
-            checkout.tracking && (
-              <Pane marginLeft="auto">
-                <a
-                  href={`https://dash.zinc.io/orders/${checkout.request_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Badge color="neutral">
-                    Status:{' '}
-                    {checkout.tracking.length > 0 ? 'Shipped' : 'Pending'}
-                  </Badge>
-                </a>
-              </Pane>
-            )
+          )}
+          {checkout && checkout.tracking && (
+            <Pane marginLeft="auto">
+              <a
+                href={`https://dash.zinc.io/orders/${checkout.request_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Badge color="neutral">
+                  Status: {checkout.tracking.length > 0 ? 'Shipped' : 'Pending'}
+                </Badge>
+              </a>
+            </Pane>
           )}
         </Pane>
         {cart && cart.products && cart.products.length ? (

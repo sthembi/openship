@@ -315,7 +315,8 @@ export default class Find extends Component {
                         }}
                       </Query>
                     )}
-                    {selectedChannel === 'zinc' && zincResults.length ? (
+                    {selectedChannel === 'zinc' &&
+                      zincResults.length > 0 &&
                       zincResults.map(product => (
                         <AmzProduct
                           product={product}
@@ -325,23 +326,7 @@ export default class Find extends Component {
                             addZincItem(a, b, c, d, e)
                           }
                         />
-                      ))
-                    ) : (
-                      <Pane paddingX="1em" paddingY="1em">
-                        <Pane
-                          background="tint2"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          flexDirection="column"
-                          borderRadius={3}
-                        >
-                          <Heading margin="1em" size={600}>
-                            No items found
-                          </Heading>
-                        </Pane>
-                      </Pane>
-                    )}
+                      ))}
                   </>
                 );
               }
