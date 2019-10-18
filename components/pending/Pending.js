@@ -48,7 +48,7 @@ async function placeZincOrder(data, token, updateOrderFunc) {
       variables: {
         id: data.client_notes.os_order_id,
         zincCheckout: res,
-        processed: true,
+        processed: 'TRUE',
       },
     });
     console.log('first2', res);
@@ -62,7 +62,7 @@ export const ORDER_QUERY = gql`
     $skip: Int
     $first: Int
     $orderBy: OrderOrderByInput
-    $processed: Boolean
+    $processed: Processed
   ) {
     orders(
       first: $first
@@ -101,7 +101,7 @@ export const ORDER_QUERY = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { processed: false }) {
+    ordersConnection(where: { processed: FALSE }) {
       aggregate {
         count
       }
@@ -431,7 +431,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip, first: firstQ, orderBy, processed: false }
+            variables: { skip, first: firstQ, orderBy, processed: "FALSE" }
           },
           {
             query: PAGINATION_QUERY
@@ -448,7 +448,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip, first: firstQ, orderBy, processed: false }
+            variables: { skip, first: firstQ, orderBy, processed: "FALSE" }
           },
           {
             query: PAGINATION_QUERY
@@ -465,7 +465,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip, first: firstQ, orderBy, processed: false }
+            variables: { skip, first: firstQ, orderBy, processed: "FALSE" }
           },
           {
             query: PAGINATION_QUERY
@@ -488,7 +488,7 @@ function PendingOrders() {
         refetchQueries={() => [
           {
             query: ORDER_QUERY,
-            variables: { skip: 0, processed: false }
+            variables: { skip: 0, processed: "FALSE" }
           }
         ]}
       >
@@ -551,7 +551,7 @@ function PendingOrders() {
                 skip,
                 first: firstQ,
                 orderBy,
-                processed: false
+                processed: "FALSE"
               }}
             >
               {({ loading, error, data }) => {

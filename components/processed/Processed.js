@@ -13,7 +13,7 @@ export const OrdersQuery = gql`
       first: $first
       skip: $skip
       orderBy: createdAt_DESC
-      where: { processed: true }
+      where: { processed: "TRUE" }
     ) {
       id
       orderId
@@ -46,7 +46,7 @@ export const OrdersQuery = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { processed: true }) {
+    ordersConnection(where: { processed: "TRUE" }) {
       aggregate {
         count
       }
