@@ -99,7 +99,7 @@ export const ORDER_QUERY = gql`
   }
 `;
 
-const PAGINATION_QUERY = gql`
+export const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
     ordersConnection(where: { processed: FALSE }) {
       aggregate {

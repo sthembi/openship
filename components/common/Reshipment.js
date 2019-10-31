@@ -4,11 +4,12 @@ import { Mutation } from 'react-apollo';
 import { Text, Pane, Dialog, Heading, toaster } from 'evergreen-ui';
 import PropTypes from 'prop-types';
 import ReshipmentLineItem from './ReshipmentLineItem';
+import { ORDER_QUERY, PAGINATION_QUERY } from '../pending/Pending';
 
 const Layout = {
   flex: '1 1 10rem',
   marginLeft: '2rem',
-  marginTop: '2rem',
+  marginTop: '2rem'
 };
 
 const CREATE_ORDER = gql`
@@ -32,6 +33,7 @@ const CREATE_ORDER = gql`
     $totalTax: String!
     $mpCart: String!
     $zincCart: String!
+    $processed: Processed
     $createAt: String!
   ) {
     createOrder(
@@ -54,6 +56,7 @@ const CREATE_ORDER = gql`
       totalTax: $totalTax
       mpCart: $mpCart
       zincCart: $zincCart
+      processed: $processed
       createAt: $createAt
     ) {
       id
@@ -135,7 +138,18 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
   };
 
   return order ? (
-    <Mutation mutation={CREATE_ORDER}>
+    <Mutation
+      mutation={CREATE_ORDER}
+      refetchQueries={() => [
+        {
+          query: ORDER_QUERY,
+          variables: { skip, first: firstQ, orderBy, processed: 'FALSE' }
+        },
+        {
+          query: PAGINATION_QUERY,
+        },
+      ]}
+    >
       {(createOrder, { error, loading }) => (
         <Dialog
           isShown={isShown}
@@ -178,7 +192,7 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
                 createAt: order.processedAt,
                 mpCart: '{}',
                 zincCart: '{}',
-                processed: 'FALSE',
+                processed: 'FALSE'
               },
             });
             onCloseComplete();
