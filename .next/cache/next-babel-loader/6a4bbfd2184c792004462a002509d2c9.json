@@ -1,0 +1,1 @@
+{"ast":null,"code":"export const CardStyle = {\n  overflow: 'hidden',\n  boxShadow: '0 0 0 1px rgba(63, 63, 68, 0.05), 0 1px 3px 0 rgba(63, 63, 68, 0.15)',\n  backgroundColor: 'white',\n  borderRadius: 3\n};","map":null,"metadata":{},"sourceType":"module"}

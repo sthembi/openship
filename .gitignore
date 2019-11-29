@@ -58,7 +58,7 @@ typings/
 .env
 
 # next.js build output
-.next
+# .next
 
 # graphcool deployment config
 data/.graphcoolrc
