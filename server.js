@@ -2,7 +2,7 @@ if (!process.browser)
   // polyfill
   global.fetch = require('isomorphic-unfetch');
 
-const shopifyAuth = require('@shopify/koa-shopify-auth').default;
+const shopifyAuth = require('@cala/koa-shopify-auth').default;
 
 const Koa = require('koa');
 const next = require('next');

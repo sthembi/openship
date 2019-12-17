@@ -711,6 +711,16 @@
     classnames "^2.2"
     tslib "^1.9.0"
 
+"@cala/koa-shopify-auth@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@cala/koa-shopify-auth/-/koa-shopify-auth-4.0.1.tgz#8fdea9172f3bf1be878f20a24c85ec373fbc6d30"
+  dependencies:
+    "@shopify/network" "^1.4.3"
+    koa-compose ">=3.0.0 <4.0.0"
+    nonce "^1.0.4"
+    safe-compare "^1.1.2"
+    tslib "^1.9.3"
+
 "@emotion/hash@^0.6.5":
   version "0.6.6"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.6.6.tgz#62266c5f0eac6941fece302abad69f2ee7e25e44"
@@ -752,7 +762,7 @@
     koa-better-http-proxy "^0.2.4"
     tslib "^1.9.3"
 
-"@shopify/network@^1.4.4":
+"@shopify/network@^1.4.3", "@shopify/network@^1.4.4":
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/@shopify/network/-/network-1.4.4.tgz#82d57986c97bed4e1701109c62dc98ef21f96f8c"
   dependencies:
