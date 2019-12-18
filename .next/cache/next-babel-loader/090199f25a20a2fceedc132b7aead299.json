@@ -1,0 +1,1 @@
+{"ast":null,"code":"import React from \"react\";\nvar __jsx = React.createElement;\nimport Order from '../components/order/Order';\n\nconst OrderPage = ({\n  query\n}) => __jsx(Order, query);\n\nexport default OrderPage;","map":null,"metadata":{},"sourceType":"module"}
