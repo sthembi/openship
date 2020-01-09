@@ -88,7 +88,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "Uvmc");
+/******/ 	return __webpack_require__(__webpack_require__.s = "tVNq");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -3231,95 +3231,6 @@ function status (code) {
 
 /***/ }),
 
-/***/ "Uvmc":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("bzos");
-/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(url__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("PCLx");
-/* harmony import */ var next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("GX0O");
-/* harmony import */ var next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("KqAr");
-/* harmony import */ var private_dot_next_routes_manifest_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("Skye");
-var private_dot_next_routes_manifest_json__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/__webpack_require__.t("Skye", 1);
-/* harmony import */ var next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("uDRR");
-/* harmony import */ var next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5__);
-
-      
-      
-      
-      
-      
-      
-    
-    
-  
-
-      
-      
-    const getCustomRouteMatcher = next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5___default()(true)
-
-    function handleRewrites(parsedUrl) {
-      for (const rewrite of private_dot_next_routes_manifest_json__WEBPACK_IMPORTED_MODULE_4__[/* rewrites */ "a"]) {
-        const matcher = getCustomRouteMatcher(rewrite.source)
-        const params = matcher(parsedUrl.pathname)
-
-        if (params) {
-          parsedUrl.query = {
-            ...parsedUrl.query,
-            ...params
-          }
-          const parsedDest = Object(url__WEBPACK_IMPORTED_MODULE_0__["parse"])(rewrite.destination)
-          const destCompiler = next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5__["pathToRegexp"].compile(
-            `${parsedDest.pathname}${parsedDest.hash || ''}`
-          )
-          const newUrl = destCompiler(params)
-          const parsedNewUrl = Object(url__WEBPACK_IMPORTED_MODULE_0__["parse"])(newUrl)
-
-          parsedUrl.pathname = parsedNewUrl.pathname
-          parsedUrl.hash = parsedNewUrl.hash
-
-          if (parsedUrl.pathname === '/api/shopify/mount'){
-            break
-          }
-          
-        }
-      }
-
-      return parsedUrl
-    }
-  
-
-      /* harmony default export */ __webpack_exports__["default"] = (async (req, res) => {
-        try {
-          await Object(next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_2__["default"])()
-
-          
-          const parsedUrl = Object(url__WEBPACK_IMPORTED_MODULE_0__["parse"])(req.url, true)
-
-          const params = {}
-
-          const resolver = __webpack_require__("g9dg")
-          Object(next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1__["apiResolver"])(
-            req,
-            res,
-            Object.assign({}, parsedUrl.query, params ),
-            resolver,
-            next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_3__["default"]
-          )
-        } catch (err) {
-          console.error(err)
-          await Object(next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_3__["default"])(err)
-          res.statusCode = 500
-          res.end('Internal Server Error')
-        }
-      });
-    
-
-/***/ }),
-
 /***/ "WEpk":
 /***/ (function(module, exports) {
 
@@ -6048,6 +5959,95 @@ function ContentType (type) {
   this.type = type
 }
 
+
+/***/ }),
+
+/***/ "tVNq":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("bzos");
+/* harmony import */ var url__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(url__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("PCLx");
+/* harmony import */ var next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("GX0O");
+/* harmony import */ var next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("KqAr");
+/* harmony import */ var private_dot_next_routes_manifest_json__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("Skye");
+var private_dot_next_routes_manifest_json__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/__webpack_require__.t("Skye", 1);
+/* harmony import */ var next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("uDRR");
+/* harmony import */ var next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5__);
+
+      
+      
+      
+      
+      
+      
+    
+    
+  
+
+      
+      
+    const getCustomRouteMatcher = next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5___default()(true)
+
+    function handleRewrites(parsedUrl) {
+      for (const rewrite of private_dot_next_routes_manifest_json__WEBPACK_IMPORTED_MODULE_4__[/* rewrites */ "a"]) {
+        const matcher = getCustomRouteMatcher(rewrite.source)
+        const params = matcher(parsedUrl.pathname)
+
+        if (params) {
+          parsedUrl.query = {
+            ...parsedUrl.query,
+            ...params
+          }
+          const parsedDest = Object(url__WEBPACK_IMPORTED_MODULE_0__["parse"])(rewrite.destination)
+          const destCompiler = next_dist_next_server_server_lib_path_match__WEBPACK_IMPORTED_MODULE_5__["pathToRegexp"].compile(
+            `${parsedDest.pathname}${parsedDest.hash || ''}`
+          )
+          const newUrl = destCompiler(params)
+          const parsedNewUrl = Object(url__WEBPACK_IMPORTED_MODULE_0__["parse"])(newUrl)
+
+          parsedUrl.pathname = parsedNewUrl.pathname
+          parsedUrl.hash = parsedNewUrl.hash
+
+          if (parsedUrl.pathname === '/api/shopify/mount'){
+            break
+          }
+          
+        }
+      }
+
+      return parsedUrl
+    }
+  
+
+      /* harmony default export */ __webpack_exports__["default"] = (async (req, res) => {
+        try {
+          await Object(next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_2__["default"])()
+
+          
+          const parsedUrl = Object(url__WEBPACK_IMPORTED_MODULE_0__["parse"])(req.url, true)
+
+          const params = {}
+
+          const resolver = __webpack_require__("g9dg")
+          Object(next_dist_next_server_server_api_utils__WEBPACK_IMPORTED_MODULE_1__["apiResolver"])(
+            req,
+            res,
+            Object.assign({}, parsedUrl.query, params ),
+            resolver,
+            next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_3__["default"]
+          )
+        } catch (err) {
+          console.error(err)
+          await Object(next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_3__["default"])(err)
+          res.statusCode = 500
+          res.end('Internal Server Error')
+        }
+      });
+    
 
 /***/ }),
 

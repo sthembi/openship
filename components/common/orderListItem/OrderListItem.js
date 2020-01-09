@@ -58,7 +58,7 @@ export default function OrderListItem(props) {
 
   function parseMP(string, checkout) {
     const parse = JSON.parse(string);
-    return parse.lineItems && <MPCart cart={parse} checkout={checkout} />;
+    return parse.lineItems && <MPCart cart={parse} checkout={checkout} cartName="Marketplace" />;
   }
   function parseZinc(string, checkout) {
     const parse = JSON.parse(string);

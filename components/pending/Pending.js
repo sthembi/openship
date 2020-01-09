@@ -122,7 +122,7 @@ const UPDATE_ORDER_MUTATION = gql`
     $city: String
     $state: String
     $zip: String
-    $processed: Boolean
+    $processed: Processed
   ) {
     updateOrder(
       id: $id
@@ -1070,7 +1070,8 @@ function PendingOrders() {
                               </Pane>
                             </Pane>
                             <MPCart
-                              checkout={JSON.parse(theOrder.mpCart)}
+                              cartName="Marketplace"
+                              cart={JSON.parse(theOrder.mpCart)}
                               removeItem={a =>
                                 removeMPItem(
                                   a,

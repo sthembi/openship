@@ -18,20 +18,30 @@ class Cart extends Component {
       removeItem,
       checkoutLineItemsUpdate,
       loading,
+      cartName,
+      background,
+      color,
     } = this.props;
-
     return (
       <Pane
         marginLeft="-3px"
-        background="#F1FAF5"
+        background={background || '#F1FAF5'}
         border="muted"
         paddingY=".7em"
         paddingX="1em"
       >
         <Pane marginBottom={10}>
-          <Text size={400} fontWeight={500} color="#00783E">
-            Marketplace Cart
-          </Text>
+          {cart ? (
+            <a href={cart.webUrl} target="_blank" rel="noopener noreferrer">
+              <Text size={400} fontWeight={500} color={color || '#00783E'}>
+                {cartName} Cart
+              </Text>
+            </a>
+          ) : (
+            <Text size={400} fontWeight={500} color={color || '#00783E'}>
+              {cartName} Cart
+            </Text>
+          )}
         </Pane>
         {cart && cart.lineItems && cart.lineItems.edges.length ? (
           cart.lineItems.edges.map(a => (
