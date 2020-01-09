@@ -1,19 +1,19 @@
-import React, { useState } from 'react';
-import { gql } from 'apollo-boost';
-import { Query } from 'react-apollo';
-import { Pane, Heading, Spinner, Icon } from 'evergreen-ui';
-import OrderListItem from '../common/orderListItem/OrderListItem';
-import Button from '../common/Button';
+import React, { useState } from "react";
+import { gql } from "apollo-boost";
+import { Query } from "react-apollo";
+import { Pane, Heading, Spinner, Icon } from "evergreen-ui";
+import OrderListItem from "../common/orderListItem/OrderListItem";
+import Button from "../common/Button";
 
-import { CardStyle } from '../common/DefaultStyles';
+import { CardStyle } from "../common/DefaultStyles";
 
 export const OrdersQuery = gql`
-  query OrdersQuery($skip: Int, $first: Int) {
+  query OrdersQuery($skip: Int, $first: Int, $processed: Processed) {
     orders(
       first: $first
       skip: $skip
       orderBy: createdAt_DESC
-      where: { processed: "TRUE" }
+      where: { processed: $processed }
     ) {
       id
       orderId
@@ -46,7 +46,7 @@ export const OrdersQuery = gql`
 
 const PAGINATION_QUERY = gql`
   query PAGINATION_QUERY {
-    ordersConnection(where: { processed: "TRUE" }) {
+    ordersConnection(where: { processed: TRUE }) {
       aggregate {
         count
       }
@@ -72,6 +72,7 @@ function PendingOrders() {
           variables={{
             skip,
             first: firstQ,
+            processed: "TRUE"
           }}
         >
           {({ loading, error, data }) => {
@@ -115,7 +116,7 @@ function PendingOrders() {
                             <Heading size={100}>{count} Orders</Heading>
                             <Pane marginLeft="auto">
                               <Button
-                                background={open ? '#D4EEE2' : '#F7F7F7'}
+                                background={open ? "#D4EEE2" : "#F7F7F7"}
                                 borderRadius={3}
                                 onClick={() => setOpen(!open)}
                               >
@@ -144,7 +145,7 @@ function PendingOrders() {
                     orders.map(order => (
                       <Pane key={order.id}>
                         <Pane
-                          opacity={loading && '0.2'}
+                          opacity={loading && "0.2"}
                           width="100%"
                           height="100%"
                           position="relative"

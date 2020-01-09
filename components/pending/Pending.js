@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { gql } from 'apollo-boost';
-import { Query, Mutation } from 'react-apollo';
-import { Adopt } from 'react-adopt';
+import React, { useState } from "react";
+import { gql } from "apollo-boost";
+import { Query, Mutation } from "react-apollo";
+import { Adopt } from "react-adopt";
 import {
   Pane,
   Heading,
@@ -11,36 +11,36 @@ import {
   Text,
   IconButton,
   Icon,
-  toaster,
-} from 'evergreen-ui';
-import OrderListItem from '../common/orderListItem/OrderListItem';
-import Find from '../find/Find';
-import User from '../user/User';
-import OrderLine from '../common/orderListItem/OrderLine';
-import Button from '../common/Button';
-import { CardStyle } from '../common/DefaultStyles';
-import MPCart from './Cart/MPCart';
-import ZincCart from './Cart/ZincCart';
-import { front, prodFront } from '../../config';
+  toaster
+} from "evergreen-ui";
+import OrderListItem from "../common/orderListItem/OrderListItem";
+import Find from "../find/Find";
+import User from "../user/User";
+import OrderLine from "../common/orderListItem/OrderLine";
+import Button from "../common/Button";
+import { CardStyle } from "../common/DefaultStyles";
+import MPCart from "./Cart/MPCart";
+import ZincCart from "./Cart/ZincCart";
+import { front, prodFront } from "../../config";
 
 async function placeZincOrder(data, token, updateOrderFunc) {
   try {
     const response = await fetch(
       `${
-        process.env.NODE_ENV === 'development' ? front : prodFront
+        process.env.NODE_ENV === "development" ? front : prodFront
       }/api/zinc/purchase?token=${token}`,
       {
-        credentials: 'same-origin',
-        mode: 'cors',
-        method: 'POST',
+        credentials: "same-origin",
+        mode: "cors",
+        method: "POST",
         headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-          'X-Requested-With': 'Fetch',
+          Accept: "application/json",
+          "Content-type": "application/json",
+          "X-Requested-With": "Fetch"
         },
         body: JSON.stringify({
-          data,
-        }),
+          data
+        })
       }
     );
     const res = await response.json();
@@ -48,12 +48,12 @@ async function placeZincOrder(data, token, updateOrderFunc) {
       variables: {
         id: data.client_notes.os_order_id,
         zincCheckout: res,
-        processed: 'TRUE',
-      },
+        processed: "TRUE"
+      }
     });
-    console.log('first2', res);
+    console.log("first2", res);
   } catch (e) {
-    console.log('error', e);
+    console.log("error", e);
   }
 }
 
@@ -205,16 +205,16 @@ const DELETE_ORDER = gql`
 `;
 
 const Layout = {
-  flex: '1 1 10rem',
-  marginLeft: '2rem',
-  marginTop: '2rem',
+  flex: "1 1 10rem",
+  marginLeft: "2rem",
+  marginTop: "2rem"
 };
 
 function PendingOrders() {
   const [selectedOrderIndex, setSelectedOrderIndex] = useState(null);
   // const [selectedLineIndex, setSelectedLineIndex] = useState([]);
   const [skip, setSkip] = useState(0);
-  const [orderBy, setOrderBy] = useState('createdAt_ASC');
+  const [orderBy, setOrderBy] = useState("createdAt_ASC");
   const [firstQ, setFirstQ] = useState(100);
   // const [check, setCheck] = useState(true);
   const [open, setOpen] = useState(false);
@@ -234,16 +234,16 @@ function PendingOrders() {
         shopify: lineItems.map(a => ({
           product_id: a.product_id,
           variant_id: a.variant_id,
-          quantity: a.quantity,
+          quantity: a.quantity
         })),
         marketplace: mpCart.lineItems.edges.map(a => ({
           product_id: a.node.id,
           variant_id: a.node.variant.id,
-          quantity: a.node.quantity,
-        })),
-      },
+          quantity: a.node.quantity
+        }))
+      }
     });
-    toaster.notify('Line items have been matched to cart items');
+    toaster.notify("Line items have been matched to cart items");
     // setSelectedOrderIndex(null);
     setCartLoading(false);
   }
@@ -251,8 +251,8 @@ function PendingOrders() {
   async function doPurchase(ids, purchaseOrderMutation) {
     const res = await purchaseOrderMutation({
       variables: {
-        ids,
-      },
+        ids
+      }
     });
   }
 
@@ -264,8 +264,8 @@ function PendingOrders() {
   ) {
     const varCheck = await createCheckoutFunc({
       variables: {
-        input,
-      },
+        input
+      }
     });
 
     const newCheck = varCheck.data.createCheckout.checkout;
@@ -273,8 +273,8 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: orderID,
-        mpCart: JSON.stringify(newCheck),
-      },
+        mpCart: JSON.stringify(newCheck)
+      }
     });
   }
 
@@ -285,7 +285,7 @@ function PendingOrders() {
     checkoutLineItemsAddFunc,
     updateOrderFunc
   ) {
-    toaster.success('checkout does exist');
+    toaster.success("checkout does exist");
 
     const varCheck = await checkoutLineItemsAddFunc({
       variables: {
@@ -293,10 +293,10 @@ function PendingOrders() {
         lineItems: [
           {
             variantId: id,
-            quantity,
-          },
-        ],
-      },
+            quantity
+          }
+        ]
+      }
     });
 
     const newCheck = varCheck.data.checkoutLineItemsAdd.checkout;
@@ -304,8 +304,8 @@ function PendingOrders() {
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(newCheck),
-      },
+        mpCart: JSON.stringify(newCheck)
+      }
     });
   }
 
@@ -340,9 +340,9 @@ function PendingOrders() {
         variables: {
           id: selectedOrderIndex,
           zincCart: JSON.stringify({
-            products: [find, ...cart.products.filter(a => a.product_id !== id)],
-          }),
-        },
+            products: [find, ...cart.products.filter(a => a.product_id !== id)]
+          })
+        }
       });
     } else {
       console.log(false);
@@ -357,14 +357,14 @@ function PendingOrders() {
                 quantity,
                 title,
                 price,
-                src,
+                src
               },
               ...(cart && cart.products && cart.products.length
                 ? cart.products
-                : []),
-            ],
-          }),
-        },
+                : [])
+            ]
+          })
+        }
       });
     }
   }
@@ -378,15 +378,15 @@ function PendingOrders() {
     const varCheck = await checkoutLineItemsRemoveFunc.mutation({
       variables: {
         checkoutId: checkoutID,
-        lineItemIds,
-      },
+        lineItemIds
+      }
     });
 
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsRemove.checkout),
-      },
+        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsRemove.checkout)
+      }
     });
   }
 
@@ -399,15 +399,15 @@ function PendingOrders() {
     const varCheck = await checkoutLineItemsUpdateFunc.mutation({
       variables: {
         checkoutId: checkoutID,
-        lineItems,
-      },
+        lineItems
+      }
     });
 
     const res = await updateOrderFunc({
       variables: {
         id: selectedOrderIndex,
-        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsUpdate.checkout),
-      },
+        mpCart: JSON.stringify(varCheck.data.checkoutLineItemsUpdate.checkout)
+      }
     });
   }
 
@@ -867,9 +867,7 @@ function PendingOrders() {
                                                           },
                                                           addax: true,
                                                           is_gift: true,
-                                                          gift_message: `Here is your package, ${
-                                                            order.first_name
-                                                          }! Enjoy!`,
+                                                          gift_message: `Here is your package, ${order.first_name}! Enjoy!`,
                                                           shipping: {
                                                             order_by: "price",
                                                             max_days: 5,
