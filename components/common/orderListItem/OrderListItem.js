@@ -30,25 +30,25 @@ export default function OrderListItem(props) {
   async function onCheckAllChange(
     e,
     updateIndexFunc,
-    createCheckoutFunc,
+    // createCheckoutFunc,
     errorTextObj
   ) {
     updateIndexFunc(e ? props.index : null);
 
-    if (e && errorTextObj === '{}') {
-      await createCheckoutFunc({
-        shippingAddress: {
-          address1: props.streetAddress1,
-          address2: props.streetAddress2 && props.streetAddress2,
-          city: props.city,
-          province: props.state,
-          country: 'US',
-          zip: props.zip,
-          firstName: props.first_name,
-          lastName: props.last_name,
-        },
-      });
-    }
+    // if (e && errorTextObj === '{}') {
+    //   await createCheckoutFunc({
+    //     shippingAddress: {
+    //       address1: props.streetAddress1,
+    //       address2: props.streetAddress2 && props.streetAddress2,
+    //       city: props.city,
+    //       province: props.state,
+    //       country: 'US',
+    //       zip: props.zip,
+    //       firstName: props.first_name,
+    //       lastName: props.last_name,
+    //     },
+    //   });
+    // }
   }
 
   function handleToggleClick(e) {
@@ -56,9 +56,19 @@ export default function OrderListItem(props) {
     setOpen(prevOpen => !prevOpen);
   }
 
-  function parseMP(string, checkout) {
+  function parseMP(name, string, checkout) {
     const parse = JSON.parse(string);
-    return parse.lineItems && <MPCart cart={parse} checkout={checkout} cartName="Marketplace" />;
+    return (
+      parse.lineItems && (
+        <MPCart
+          cart={parse}
+          checkout={checkout}
+          cartName={name}
+          // background={background}
+          // color={color}
+        />
+      )
+    );
   }
   function parseZinc(string, checkout) {
     const parse = JSON.parse(string);
@@ -109,7 +119,7 @@ export default function OrderListItem(props) {
                 onCheckAllChange(
                   !selectedOrderIndex,
                   updateIndex,
-                  createCheckout,
+                  // createCheckout,
                   mpCart
                 )
             : undefined
@@ -196,7 +206,10 @@ export default function OrderListItem(props) {
               <OrderLine key={a.id} item={a.node ? a.node : a} />
             ))}
           </Pane>
-          {mpCart && parseMP(mpCart)}
+          {mpCart && JSON.parse(mpCart).lineItems && (
+            <MPCart cart={JSON.parse(mpCart)} cartName="Marketplace" />
+          )}
+
           {zincCart && parseZinc(zincCart, zincCheckout)}
           {mpCheckout && (
             <Pane

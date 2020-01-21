@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { gql } from 'apollo-boost';
-import { Mutation } from 'react-apollo';
-import { Text, Pane, Dialog, Heading, toaster } from 'evergreen-ui';
-import PropTypes from 'prop-types';
-import ReshipmentLineItem from './ReshipmentLineItem';
-import { ORDER_QUERY, PAGINATION_QUERY } from '../pending/Pending';
+import { useState, useEffect } from "react";
+import { gql } from "apollo-boost";
+import { Mutation } from "react-apollo";
+import { Text, Pane, Dialog, Heading, toaster } from "evergreen-ui";
+import PropTypes from "prop-types";
+import ReshipmentLineItem from "./ReshipmentLineItem";
+import { ORDER_QUERY, PAGINATION_QUERY } from "../pending/Pending";
 
 const Layout = {
-  flex: '1 1 10rem',
-  marginLeft: '2rem',
-  marginTop: '2rem'
+  flex: "1 1 10rem",
+  marginLeft: "2rem",
+  marginTop: "2rem"
 };
 
 const CREATE_ORDER = gql`
@@ -96,8 +96,8 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
 
   useEffect(() => {
     if (order) {
-      setFirst(order.shippingAddress.name.split(' ')[0]);
-      setLast(order.shippingAddress.name.split(' ').pop());
+      setFirst(order.shippingAddress.name.split(" ")[0]);
+      setLast(order.shippingAddress.name.split(" ").pop());
       setAddress(order.shippingAddress.address1);
       setAddress2(order.shippingAddress.address2);
       setCity(order.shippingAddress.city);
@@ -143,11 +143,16 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
       refetchQueries={() => [
         {
           query: ORDER_QUERY,
-          variables: { skip, first: firstQ, orderBy, processed: 'FALSE' }
+          variables: {
+            skip: 0,
+            first: 100,
+            orderBy: "createdAt_ASC",
+            processed: "FALSE"
+          }
         },
         {
-          query: PAGINATION_QUERY,
-        },
+          query: PAGINATION_QUERY
+        }
       ]}
     >
       {(createOrder, { error, loading }) => (
@@ -167,9 +172,9 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
             const res = await createOrder({
               variables: {
                 shopName: `${shop}.myshopify.com`,
-                orderId: order.id.split('/').pop(),
+                orderId: order.id.split("/").pop(),
                 orderName: order.name,
-                email: order.email || 'noemail@noemail.com',
+                email: order.email || "noemail@noemail.com",
                 first_name: first,
                 last_name: last,
                 streetAddress1: address,
@@ -181,19 +186,19 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
                 lineItems: lineItems
                   .filter(a => a.node.quantity > 0)
                   .map(b => {
-                    b.node.id = parseFloat(b.node.id.split('/').pop());
+                    b.node.id = parseFloat(b.node.id.split("/").pop());
                     return b.node;
                   }),
-                currency: 'USD',
+                currency: "USD",
                 totalPrice: order.totalReceivedSet.shopMoney.amount,
                 subTotalPrice: 0,
                 totalDiscount: 0,
                 totalTax: 0,
                 createAt: order.processedAt,
-                mpCart: '{}',
-                zincCart: '{}',
-                processed: 'FALSE'
-              },
+                mpCart: "{}",
+                zincCart: "{}",
+                processed: "FALSE"
+              }
             });
             onCloseComplete();
             toaster.success(`${order.name} has been requested for reshipment.`);
@@ -213,33 +218,33 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
                 <Heading size={100}>Order Number</Heading>
               </Pane>
               {readFormField(
-                order.shippingAddress.name.split(' ')[0],
-                'First Name',
+                order.shippingAddress.name.split(" ")[0],
+                "First Name",
                 e => setFirst(e.target.textContent)
               )}
               {readFormField(
-                order.shippingAddress.name.split(' ').pop(),
-                'Last Name',
+                order.shippingAddress.name.split(" ").pop(),
+                "Last Name",
                 e => setLast(e.target.textContent)
               )}
               {readFormField(
                 order.shippingAddress.address1,
-                'Street Address',
+                "Street Address",
                 e => setAddress(e.target.textContent)
               )}
               {order.shippingAddress.address2 &&
                 readFormField(
                   order.shippingAddress.address2,
-                  'Apt, Suite, etc.',
+                  "Apt, Suite, etc.",
                   e => setAddress2(e.target.textContent)
                 )}
-              {readFormField(order.shippingAddress.city, 'City', e =>
+              {readFormField(order.shippingAddress.city, "City", e =>
                 setCity(e.target.textContent)
               )}
-              {readFormField(order.shippingAddress.province, 'State', e =>
+              {readFormField(order.shippingAddress.province, "State", e =>
                 setState(e.target.textContent)
               )}
-              {readFormField(order.shippingAddress.zip, 'Zip Code', e =>
+              {readFormField(order.shippingAddress.zip, "Zip Code", e =>
                 setZip(e.target.textContent)
               )}
             </Pane>
@@ -263,5 +268,5 @@ Reshipment.propTypes = {
   order: PropTypes.object,
   isShown: PropTypes.bool,
   onCloseComplete: PropTypes.func,
-  shop: PropTypes.string,
+  shop: PropTypes.string
 };

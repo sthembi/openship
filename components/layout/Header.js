@@ -1,5 +1,6 @@
-import Link from 'next/link';
-import { withRouter } from 'next/router';
+import { useState } from "react";
+import Link from "next/link";
+import { withRouter } from "next/router";
 import {
   Menu,
   Icon,
@@ -8,13 +9,34 @@ import {
   TextInputField,
   Popover,
   IconButton,
-} from 'evergreen-ui';
-import PropTypes from 'prop-types';
-import { Query } from 'react-apollo';
-import Button from '../common/Button';
-import { shopsQuery, shopsQueryVars } from '../shops/ShopList';
-import Signout from '../user/Signout';
-import { front, prodFront } from '../../config';
+  Tablist,
+  Tab
+} from "evergreen-ui";
+import PropTypes from "prop-types";
+import { Query } from "react-apollo";
+import gql from "graphql-tag";
+import Button from "../common/Button";
+import { shopsQuery, shopsQueryVars } from "../shops/ShopList";
+import Signout from "../user/Signout";
+import { front, prodFront } from "../../config";
+// import AddChannel from "../common/AddChannel";
+
+export const channelsQuery = gql`
+  query($first: Int!, $skip: Int!) {
+    channels(orderBy: createdAt_DESC, first: $first, skip: $skip) {
+      id
+      type
+      name
+      createdAt
+      settings
+    }
+  }
+`;
+
+export const channelsQueryVars = {
+  skip: 0,
+  first: 10
+};
 
 const Divider = (
   <Pane
@@ -25,6 +47,34 @@ const Divider = (
     marginY={5}
     marginX={12}
   />
+);
+
+const option = (name, options, update, selected) => (
+  <Pane marginBottom={10} marginRight={10}>
+    <Heading size={500} fontSize="14px" fontWeight={500} marginBottom={8}>
+      {name}
+    </Heading>
+    <Tablist>
+      {options.map((a, index) => (
+        <Tab
+          key={a}
+          id={a}
+          marginLeft={0}
+          height="20px"
+          fontSize="10px"
+          marginBottom={3}
+          letterSpacing="0.3px"
+          fontWeight={400}
+          textTransform="uppercase"
+          onSelect={() => update(a)}
+          isSelected={a === selected}
+          aria-controls={`panel-${a}`}
+        >
+          {a}
+        </Tab>
+      ))}
+    </Tablist>
+  </Pane>
 );
 
 export const NavGroupTitle = ({ title, icon }) => (
@@ -48,22 +98,24 @@ export const NavGroupTitle = ({ title, icon }) => (
 
 function postRequest(url, data) {
   return fetch(url, {
-    credentials: 'same-origin', // 'include', default: 'omit'
-    method: 'POST', // 'GET', 'PUT', 'DELETE', etc.
+    credentials: "same-origin", // 'include', default: 'omit'
+    method: "POST", // 'GET', 'PUT', 'DELETE', etc.
     body: JSON.stringify({ shops: data }), // Use correct payload (matching 'Content-Type')
-    headers: { 'Content-Type': 'application/json' },
+    headers: { "Content-Type": "application/json" }
   });
 }
 
 const Header = ({ router, logo, onClick }) => {
+  const [type, setType] = useState("zinc");
+
   const { asPath } = router;
 
   const NavItem = ({ icon, iconColor, title, href }) => (
     <Pane
       borderLeft={`3px solid ${
-        asPath && asPath.startsWith(href) ? 'rgb(66, 95, 146)' : 'transparent'
+        asPath && asPath.startsWith(href) ? "rgb(66, 95, 146)" : "transparent"
       }`}
-      background={asPath && asPath.startsWith(href) ? 'rgb(35, 61, 106)' : null}
+      background={asPath && asPath.startsWith(href) ? "rgb(35, 61, 106)" : null}
       onSelect={onClick}
     >
       <Link href={href}>
@@ -71,7 +123,7 @@ const Header = ({ router, logo, onClick }) => {
           icon={
             <Icon
               icon={icon}
-              color={iconColor || '#ffffff'}
+              color={iconColor || "#ffffff"}
               marginRight="-8px"
               marginLeft="13px"
               size={15}
@@ -140,7 +192,7 @@ const Header = ({ router, logo, onClick }) => {
                       <form
                         method="GET"
                         action="/shopify/auth"
-                        style={{ width: '100%' }}
+                        style={{ width: "100%" }}
                       >
                         <TextInputField label="Shop Name" marginBottom="10px" />
                         <TextInputField
@@ -183,7 +235,7 @@ const Header = ({ router, logo, onClick }) => {
                 const { shops } = data;
                 postRequest(
                   `${
-                    process.env.NODE_ENV === 'development' ? front : prodFront
+                    process.env.NODE_ENV === "development" ? front : prodFront
                   }/_shopify`,
                   shops
                 );
@@ -217,7 +269,7 @@ const Header = ({ router, logo, onClick }) => {
                       }
                       iconColor="success"
                       title={shop.name}
-                      href={`/shop?shop=${shop.domain.split('.')[0]}`}
+                      href={`/shop?shop=${shop.domain.split(".")[0]}`}
                     />
                   </Pane>
                 ));
@@ -225,6 +277,110 @@ const Header = ({ router, logo, onClick }) => {
             </Query>
           </Menu.Group>
           {Divider}
+          {/* <Menu.Group>
+            <NavGroupTitle
+              title={
+                <Pane color="#d7dae0" cursor="pointer">
+                  Channels
+                </Pane>
+              }
+              icon={
+                <Popover
+                  content={
+                    <Pane
+                      width={300}
+                      display="flex"
+                      alignItems="left"
+                      justifyContent="center"
+                      flexDirection="column"
+                      padding={15}
+                    >
+                      <form
+                        method="GET"
+                        action="/shopify/auth"
+                        style={{ width: "100%" }}
+                      >
+                        {option(
+                          "Type",
+                          ["zinc", "marketplace", "shipbob"],
+                          a => setType(a),
+                          type
+                        )}
+                        {type === "zinc" && (
+                          <TextInputField
+                            label="API Key"
+                            marginBottom="10px"
+                            hint="You must get the key at Zinc.io"
+                          />
+                        )}
+
+                        <Button
+                          width="100%"
+                          justifyContent="center"
+                          appearance="primary"
+                          intent="success"
+                          fontSize="12px"
+                          paddingY={3}
+                        >
+                          Add Channel
+                        </Button>
+                      </form>
+                    </Pane>
+                  }
+                >
+                  <IconButton
+                    height={20}
+                    icon="plus"
+                    marginRight={16}
+                    appearance="primary"
+                    intent="success"
+                    borderRadius={20}
+                    outline="none"
+                  />
+                </Popover>
+              }
+            />
+            <Query query={channelsQuery} variables={channelsQueryVars}>
+              {({ data, error, loading }) => {
+                if (error || !data.channels) return null;
+                const { channels } = data;
+                return channels.map((channel, index) => (
+                  <Pane key={index}>
+                    <NavItem
+                      icon={
+                        <Pane
+                          marginRight="-8px"
+                          marginLeft="13px"
+                          alignItems="center"
+                          justifyContent="center"
+                          display="flex"
+                        >
+                          <svg
+                            version="1.1"
+                            xmlnsXlink="http://www.w3.org/1999/xlink"
+                            x="0px"
+                            y="0px"
+                            width="16px"
+                            height="16px"
+                            viewBox="0 0 48 48"
+                            enableBackground="new 0 0 16 16"
+                            xmlSpace="preserve"
+                            fill="#47B881"
+                          >
+                            <path d="M24 0C10.746 0 0 10.746 0 24s10.746 24 24 24 24-10.746 24-24S37.254 0 24 0zm0 36c-6.627 0-12-5.373-12-12s5.373-12 12-12 12 5.373 12 12-5.373 12-12 12z" />
+                          </svg>
+                        </Pane>
+                      }
+                      iconColor="success"
+                      title={channel.name}
+                      href={`/channel?channel=${channel.name}`}
+                    />
+                  </Pane>
+                ));
+              }}
+            </Query>
+          </Menu.Group>
+          {Divider} */}
           <Menu.Group>
             {/* <NavGroupTitle title="Settings" /> */}
             <NavItem icon="cog" title="Settings" href="/settings" />

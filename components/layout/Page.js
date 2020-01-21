@@ -49,7 +49,7 @@ class Page extends Component {
                       width="270px"
                     >
                       <Header
-                        shops={shops}
+                        // shops={shops}
                         logo={
                           <Pane margin={18} marginBottom={0}>
                             <Logo />
@@ -66,7 +66,7 @@ class Page extends Component {
                       onCloseComplete={() => this.setState({ isShown: false })}
                     >
                       <Header
-                        shops={shops}
+                        // shops={shops}
                         isShown={isShown}
                         onClick={() => this.setState({ isShown: false })}
                       />

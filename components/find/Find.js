@@ -85,7 +85,7 @@ const option = (name, options, update, selected) => (
     <Tablist>
       {options.map((a, index) => (
         <Tab
-          key={a}
+          key={index}
           id={a}
           marginLeft={0}
           height="20px"
@@ -133,7 +133,6 @@ export default class Find extends Component {
   };
 
   zincSearch = (searchEntry, token) => {
-    console.log('called');
     fetch(
       `${
         process.env.NODE_ENV === 'development' ? front : prodFront
