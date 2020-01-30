@@ -10,10 +10,12 @@ import {
   Popover,
   IconButton,
   Tablist,
-  Tab
+  Tab,
+  toaster
 } from "evergreen-ui";
 import PropTypes from "prop-types";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
+
 import gql from "graphql-tag";
 import Button from "../common/Button";
 import { shopsQuery, shopsQueryVars } from "../shops/ShopList";
@@ -37,6 +39,22 @@ export const channelsQueryVars = {
   skip: 0,
   first: 10
 };
+
+const CREATE_CHANNEL_MUTATION = gql`
+  mutation CREATE_CHANNEL_MUTATION(
+    $name: String!
+    $type: ChannelType!
+    $settings: Json!
+  ) {
+    createChannel(name: $name, type: $type, settings: $settings) {
+      id
+      type
+      name
+      createdAt
+      settings
+    }
+  }
+`;
 
 const Divider = (
   <Pane
@@ -107,6 +125,9 @@ function postRequest(url, data) {
 
 const Header = ({ router, logo, onClick }) => {
   const [type, setType] = useState("zinc");
+  const [name, setName] = useState("");
+  const [key, setKey] = useState("");
+  const [secret, setSecret] = useState("");
 
   const { asPath } = router;
 
@@ -295,36 +316,80 @@ const Header = ({ router, logo, onClick }) => {
                       flexDirection="column"
                       padding={15}
                     >
-                      <form
-                        method="GET"
-                        action="/shopify/auth"
-                        style={{ width: "100%" }}
-                      >
-                        {option(
-                          "Type",
-                          ["zinc", "marketplace", "shipbob"],
-                          a => setType(a),
-                          type
-                        )}
-                        {type === "zinc" && (
+                      {option(
+                        "Channel Type",
+                        ["zinc", "custom"],
+                        a => setType(a),
+                        type
+                      )}
+                      <TextInputField
+                        label="Name"
+                        marginBottom="10px"
+                        value={name}
+                        onChange={e => setName(e.target.value)}
+                      />
+                      {type === "zinc" && (
+                        <TextInputField
+                          label="API Key"
+                          marginBottom="10px"
+                          hint="You must get the key at Zinc.io"
+                          value={key}
+                          onChange={e => setKey(e.target.value)}
+                        />
+                      )}
+                      {type === "custom" && (
+                        <>
                           <TextInputField
                             label="API Key"
                             marginBottom="10px"
-                            hint="You must get the key at Zinc.io"
+                            value={key}
+                            onChange={e => setKey(e.target.value)}
+                            // value={customKey}
+                            // onChange={e => setCustomKey(e.value)}
                           />
-                        )}
+                          <TextInputField
+                            label="Secret"
+                            value={secret}
+                            onChange={e => setSecret(e.target.value)}
+                          />
+                        </>
+                      )}
 
-                        <Button
-                          width="100%"
-                          justifyContent="center"
-                          appearance="primary"
-                          intent="success"
-                          fontSize="12px"
-                          paddingY={3}
-                        >
-                          Add Channel
-                        </Button>
-                      </form>
+                      <Mutation
+                        mutation={CREATE_CHANNEL_MUTATION}
+                        refetchQueries={[
+                          { query: channelsQuery, variables: channelsQueryVars }
+                        ]}
+                      >
+                        {(createChannel, { error, loading }) => (
+                          <Button
+                            width="100%"
+                            justifyContent="center"
+                            appearance="primary"
+                            intent="success"
+                            fontSize="12px"
+                            paddingY={3}
+                            onClick={async () => {
+                              await createChannel({
+                                variables: {
+                                  type: type.toUpperCase(),
+                                  name: name,
+                                  settings: {
+                                    key,
+                                    secret
+                                  }
+                                }
+                              });
+                              setName("");
+                              setKey("");
+                              setSecret("");
+                              toaster.success(`Channel has been added `);
+                            }}
+                          >
+                            Add Channel
+                          </Button>
+                        )}
+                      </Mutation>
                     </Pane>
                   }
                 >

@@ -145,8 +145,8 @@ const UPDATE_ORDER_MUTATION = gql`
 `;
 
 const UPSERT_MUTATION = gql`
-  mutation upsertMatch($shopify: Json!, $marketplace: Json!) {
-    upsertMatch(shopify: $shopify, marketplace: $marketplace) {
+  mutation upsertMatch($id: ID!) {
+    upsertMatch(id: $id) {
       item
     }
   }
@@ -226,21 +226,12 @@ function PendingOrders() {
     setSelectedOrderIndex(arg);
   }
 
-  async function overwrite(errorText, lineItems, upsertMatchMutation) {
+  async function overwrite(id, upsertMatchMutation) {
     setCartLoading(true);
 
     const upsertMatchRes = await upsertMatchMutation({
       variables: {
-        shopify: lineItems.map(a => ({
-          product_id: a.product_id,
-          variant_id: a.variant_id,
-          quantity: a.quantity
-        })),
-        marketplace: mpCart.lineItems.edges.map(a => ({
-          product_id: a.node.id,
-          variant_id: a.node.variant.id,
-          quantity: a.node.quantity
-        }))
+        id
       }
     });
     toaster.notify("Line items have been matched to cart items");
@@ -985,8 +976,7 @@ function PendingOrders() {
                                     height={20}
                                     onClick={() =>
                                       overwrite(
-                                        JSON.parse(theOrder.mpCart),
-                                        theOrder.lineItems,
+                                        theOrder.id,
                                         upsertMatch.mutation
                                       )
                                     }
