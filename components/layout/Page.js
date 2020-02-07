@@ -49,7 +49,6 @@ class Page extends Component {
                       width="270px"
                     >
                       <Header
-                        // shops={shops}
                         logo={
                           <Pane margin={18} marginBottom={0}>
                             <Logo />

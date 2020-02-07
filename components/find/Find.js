@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import Link from 'next/link';
-import { gql } from 'apollo-boost';
+import React, { Component } from "react";
+import Link from "next/link";
+import { gql } from "apollo-boost";
 import {
   Pane,
   Heading,
@@ -14,45 +14,20 @@ import {
   toaster,
   Tablist,
   Tab,
-  Avatar,
-} from 'evergreen-ui';
-import PropTypes from 'prop-types';
-import { Query } from 'react-apollo';
-import Product from './findListItem/Product';
-import AmzProduct from './findListItem/AmzProduct';
-import User from '../user/User';
-import Pagination from '../common/Pagination';
-import TextButton from '../common/Button';
-import { CardStyle } from '../common/DefaultStyles';
-import { front, prodFront } from '../../config';
-
-const getItems = gql`
-  query getItems(
-    $search: String
-    $limit: Int
-    $sort: String
-    $pageNum: Int
-    $exclude: Json
-    $include: Json
-    $priceCurrency: String
-    $price: String
-    $itemLocationCountry: String
-  ) {
-    getItems(
-      search: $search
-      limit: $limit
-      sort: $sort
-      pageNum: $pageNum
-      exclude: $exclude
-      include: $include
-      priceCurrency: $priceCurrency
-      price: $price
-      itemLocationCountry: $itemLocationCountry
-    ) {
-      item
-    }
-  }
-`;
+  Avatar
+} from "evergreen-ui";
+import PropTypes from "prop-types";
+import { Query } from "react-apollo";
+import MktProduct from "./MarketplaceSearch/MktProduct";
+import AmzProduct from "./ZincSearch/AmzProduct";
+import User from "../user/User";
+import Pagination from "../common/Pagination";
+import TextButton from "../common/Button";
+import { CardStyle } from "../common/DefaultStyles";
+import { channelsQuery, channelsQueryVars } from "../layout/Header";
+import MarketplaceSearch from "./MarketplaceSearch";
+import ZincSearch from "./ZincSearch";
+import ShopifySearch from "./ShopifySearch";
 
 export const getItemGroup = gql`
   query getItemGroup($itemID: String) {
@@ -64,20 +39,20 @@ export const getItemGroup = gql`
 
 const sortOptions = [
   {
-    label: 'Lowest Price',
-    value: 'price',
+    label: "Lowest Price",
+    value: "price"
   },
   {
-    label: 'Highest Price',
-    value: '-price',
+    label: "Highest Price",
+    value: "-price"
   },
   {
-    label: 'Best Match',
-    value: 'match',
-  },
+    label: "Best Match",
+    value: "match"
+  }
 ];
 
-const option = (name, options, update, selected) => (
+export const option = (name, options, update, selected) => (
   <Pane marginBottom={10} marginRight={10}>
     <Heading size={500} fontSize="12px" fontWeight={500} marginBottom={2}>
       {name}
@@ -109,42 +84,37 @@ export default class Find extends Component {
   static propTypes = {
     headerSize: PropTypes.number,
     atcDisabled: PropTypes.bool,
-    addVariant: PropTypes.func,
+    addVariant: PropTypes.func
   };
 
   state = {
     sort: {
-      label: 'Lowest Price',
-      value: 'price',
+      label: "Lowest Price",
+      value: "price"
     },
-    searchBar: '',
+    searchBar: "",
     searchEntry: null,
     limit: 10,
     pageNum: 0,
-    min: '',
-    max: '',
+    min: "",
+    max: "",
     price: null,
-    priceCurrency: 'USD',
-    itemLocationCountry: 'US',
+    priceCurrency: "USD",
+    itemLocationCountry: "US",
     include: [],
     exclude: [],
-    selectedChannel: 'zinc',
-    zincResults: [],
-  };
-
-  zincSearch = (searchEntry, token) => {
-    fetch(
-      `${
-        process.env.NODE_ENV === 'development' ? front : prodFront
-      }/api/zinc/search?query=${searchEntry}&token=${token}`
-    )
-      .then(res => res.json())
-      .then(json => this.setState({ zincResults: json }))
-      .catch(error => console.log('Error: ', error));
+    selectedChannel: "Marketplace",
+    zincResults: []
   };
 
   render() {
-    const { headerSize, atcDisabled, addMPItem, addZincItem } = this.props;
+    const {
+      headerSize,
+      atcDisabled,
+      addMPItem,
+      addCustomItem,
+      addZincItem
+    } = this.props;
     const {
       pageNum,
       searchBar,
@@ -158,8 +128,7 @@ export default class Find extends Component {
       exclude,
       searchEntry,
       priceCurrency,
-      price,
-      zincResults,
+      price
     } = this.state;
     return (
       <>
@@ -185,12 +154,12 @@ export default class Find extends Component {
                         leftDisabled={pageNum === 0}
                         onLeft={() =>
                           this.setState(state => ({
-                            pageNum: state.pageNum - 1,
+                            pageNum: state.pageNum - 1
                           }))
                         }
                         onRight={() =>
                           this.setState(state => ({
-                            pageNum: state.pageNum + 1,
+                            pageNum: state.pageNum + 1
                           }))
                         }
                       />
@@ -204,128 +173,98 @@ export default class Find extends Component {
                           onChange={e =>
                             this.setState({
                               searchBar: e.target.value,
-                              pageNum: 0,
+                              pageNum: 0
                             })
                           }
                           onKeyPress={e => {
-                            if (e.key === 'Enter') {
+                            if (e.key === "Enter") {
                               this.setState(state => ({
-                                searchEntry: state.searchBar,
+                                searchEntry: state.searchBar
                               }));
-                              if (selectedChannel === 'zinc') {
-                                this.zincSearch(searchBar, me.zincToken);
-                              }
                             }
                           }}
                         />
                       </Pane>
                     </Pane>
-
-                    <Pane
-                      display="flex"
-                      flexWrap="wrap"
-                      background="#f5f5f5"
-                      paddingY=".7em"
-                      paddingX="1em"
-                    >
-                      {option(
-                        'Channel',
-                        ['zinc', 'marketplace'],
-                        a => this.setState({ selectedChannel: a }),
-                        selectedChannel
-                      )}
-                      {option(
-                        'Location',
-                        ['US', 'CN', 'All'],
-                        a => this.setState({ itemLocationCountry: a }),
-                        itemLocationCountry
-                      )}
-                      {option(
-                        'Items per page',
-                        [10, 50, 100],
-                        a => this.setState({ limit: a }),
-                        limit
-                      )}
-                    </Pane>
-                    {searchEntry && selectedChannel === 'marketplace' && (
-                      <Query
-                        query={getItems}
-                        variables={{
-                          search: searchEntry,
-                          limit,
-                          sort: sort.value,
-                          pageNum,
-                          exclude,
-                          include,
-                          priceCurrency,
-                          price,
-                          itemLocationCountry,
-                        }}
-                      >
-                        {({ data, error, loading }) => {
-                          if (loading)
-                            return (
-                              <Pane
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center"
-                                height="100vh"
-                              >
-                                <Spinner size={80} />
-                              </Pane>
-                            );
-                          if (
-                            error ||
-                            !data.getItems.item ||
-                            data.getItems.item.length < 1
-                          )
-                            return (
-                              <Pane paddingX="1em" paddingY="1em">
-                                <Pane
-                                  background="tint2"
-                                  display="flex"
-                                  justifyContent="center"
-                                  alignItems="center"
-                                  flexDirection="column"
-                                  borderRadius={3}
-                                >
-                                  <Heading margin="1em" size={600}>
-                                    No items found.
-                                  </Heading>
-                                </Pane>
-                              </Pane>
-                            );
-                          return (
-                            <>
-                              {data.getItems.item.data.products.edges.map(
-                                product => (
-                                  <Product
-                                    addVariantToCart={(a, b) => addMPItem(a, b)}
-                                    checkout={() => toaster.success(`checkout`)}
-                                    key={product.node.id.toString()}
-                                    product={product.node}
-                                    client="Marketplace"
-                                    atcDisabled={atcDisabled}
-                                  />
-                                )
+                    <Query query={channelsQuery} variables={channelsQueryVars}>
+                      {({ data, error, loading }) => {
+                        if (error || !data.channels) return null;
+                        const { channels } = data;
+                        return (
+                          <>
+                            <Pane
+                              display="flex"
+                              flexWrap="wrap"
+                              background="#f5f5f5"
+                              paddingY=".7em"
+                              paddingX="1em"
+                            >
+                              {option(
+                                "Channel",
+                                channels.map(a => a.name),
+                                a => this.setState({ selectedChannel: a }),
+                                selectedChannel
                               )}
-                            </>
-                          );
-                        }}
-                      </Query>
-                    )}
-                    {selectedChannel === 'zinc' &&
-                      zincResults.length > 0 &&
-                      zincResults.map(product => (
-                        <AmzProduct
-                          product={product}
-                          addVariantToCart={a => toaster.success(a)}
-                          atcDisabled={atcDisabled}
-                          addZincItem={(a, b, c, d, e) =>
-                            addZincItem(a, b, c, d, e)
-                          }
-                        />
-                      ))}
+                              {option(
+                                "Location",
+                                ["US", "CN", "All"],
+                                a => this.setState({ itemLocationCountry: a }),
+                                itemLocationCountry
+                              )}
+                              {option(
+                                "Items per page",
+                                [10, 50, 100],
+                                a => this.setState({ limit: a }),
+                                limit
+                              )}
+                            </Pane>
+                            {searchEntry &&
+                              channels.filter(
+                                order => order.name === selectedChannel
+                              )[0].type === "MARKETPLACE" && (
+                                <MarketplaceSearch
+                                  {...{
+                                    search: searchEntry,
+                                    limit,
+                                    sort: sort.value,
+                                    pageNum,
+                                    exclude,
+                                    include,
+                                    priceCurrency,
+                                    price,
+                                    itemLocationCountry,
+                                    atcDisabled
+                                  }}
+                                />
+                              )}
+                            {channels.filter(
+                              order => order.name === selectedChannel
+                            )[0].type === "ZINC" && (
+                              <ZincSearch
+                                addZincItem={addZincItem}
+                                atcDisabled={atcDisabled}
+                                searchEntry={searchEntry}
+                                token={
+                                  channels.filter(c => c.type === "ZINC")[0]
+                                    .settings.key
+                                }
+                              />
+                            )}
+                            {channels.filter(
+                              order => order.name === selectedChannel
+                            )[0].type === "SHOPIFY" && (
+                              <ShopifySearch
+                                addVariantToCart={(a, b) => addCustomItem(a, b)}
+                                checkout={() => toaster.success(`checkout`)}
+                                client="Marketplace"
+                                atcDisabled={atcDisabled}
+                                searchEntry={searchEntry}
+                              />
+                            )}
+                          </>
+                        );
+                      }}
+                    </Query>
                   </>
                 );
               }

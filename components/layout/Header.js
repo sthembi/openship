@@ -21,11 +21,10 @@ import Button from "../common/Button";
 import { shopsQuery, shopsQueryVars } from "../shops/ShopList";
 import Signout from "../user/Signout";
 import { front, prodFront } from "../../config";
-// import AddChannel from "../common/AddChannel";
 
 export const channelsQuery = gql`
   query($first: Int!, $skip: Int!) {
-    channels(orderBy: createdAt_DESC, first: $first, skip: $skip) {
+    channels(orderBy: createdAt_ASC, first: $first, skip: $skip) {
       id
       type
       name
@@ -298,7 +297,7 @@ const Header = ({ router, logo, onClick }) => {
             </Query>
           </Menu.Group>
           {Divider}
-          {/* <Menu.Group>
+          <Menu.Group>
             <NavGroupTitle
               title={
                 <Pane color="#d7dae0" cursor="pointer">
@@ -375,8 +374,8 @@ const Header = ({ router, logo, onClick }) => {
                                   type: type.toUpperCase(),
                                   name: name,
                                   settings: {
-                                    key,
-                                    secret
+                                    ...(key && { key }),
+                                    ...(secret && { secret })
                                   }
                                 }
                               });
@@ -445,7 +444,7 @@ const Header = ({ router, logo, onClick }) => {
               }}
             </Query>
           </Menu.Group>
-          {Divider} */}
+          {Divider}
           <Menu.Group>
             {/* <NavGroupTitle title="Settings" /> */}
             <NavItem icon="cog" title="Settings" href="/settings" />
