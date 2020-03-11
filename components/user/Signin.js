@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import Router from 'next/router';
 import gql from 'graphql-tag';
-import { Pane, Text } from 'evergreen-ui';
+import { Box, Text } from '@chakra-ui/core';
 import { CURRENT_USER_QUERY } from './User';
 import Signup from './Signup';
 import RequestReset from './RequestReset';
@@ -24,8 +24,16 @@ function Signin() {
   const [email, setEmail] = useState('');
   const [form, setForm] = useState('signin');
 
+  const [signin, { error, loading, called }] = useMutation(SIGNIN_MUTATION, {
+    variables: { email, password },
+    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+    onCompleted: () => {
+      Router.push('/');
+    },
+  });
+
   return (
-    <Pane
+    <Box
       display="flex"
       alignItems="center"
       justifyContent="center"
@@ -38,82 +46,70 @@ function Signin() {
       )`,
       }}
     >
-      <Pane
-        margin={16}
+      <Box
+        margin={2}
         background="white"
-        padding={25}
+        padding={6}
         borderRadius={5}
         boxShadow="0 0 1px rgba(67,90,111,.47), 0 2px 4px -2px rgba(67,90,111,.3)"
       >
-        <Pane width={180} marginBottom="15px">
+        <Box width={180} marginBottom="15px">
           <Logo color="#162b4c" />
-        </Pane>
+        </Box>
         {form === 'signup' && <Signup formChange={() => setForm('signin')} />}
         {form === 'forgot' && (
           <RequestReset formChange={() => setForm('signin')} />
         )}
 
         {form === 'signin' && (
-          <Mutation
-            mutation={SIGNIN_MUTATION}
-            variables={{ email, password }}
-            refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-            onCompleted={() => {
-              Router.push('/');
-            }}
-          >
-            {(signin, { error, loading }) => (
-              <>
-                <Userform
-                  title="Sign in"
-                  handleToggleClick={() => setForm('signup')}
-                  buttonTitle="Sign In"
-                  buttonColor="#1070CA"
-                  buttonDisabled={email === '' || password === ''}
-                  error={error}
-                  loading={loading}
-                  fields={[
-                    {
-                      label: 'Email',
-                      value: email,
-                      onChange: setEmail,
-                      icon: 'envelope',
-                    },
-                    {
-                      label: 'Password',
-                      value: password,
-                      onChange: setPassword,
-                      icon: 'lock',
-                    },
-                  ]}
-                  bottomText="Don't have an account yet?"
-                  bottomLinkText="Sign up for free"
-                  onSubmit={async e => {
-                    e.preventDefault();
-                    await signin();
-                    setEmail('');
-                    setPassword('');
-                  }}
-                  links={
-                    <Text
-                      color="muted"
-                      marginLeft="auto"
-                      size={300}
-                      borderBottom="2px solid #EDF0F2"
-                      className="hover"
-                      cursor="pointer"
-                      onClick={() => setForm('forgot')}
-                    >
-                      Forgot Password
-                    </Text>
-                  }
-                />
-              </>
-            )}
-          </Mutation>
+          <>
+            <Userform
+              title="Sign in"
+              handleToggleClick={() => setForm('signup')}
+              buttonTitle="Sign In"
+              buttonColor="blue"
+              buttonDisabled={email === '' || password === ''}
+              error={error}
+              loading={loading}
+              fields={[
+                {
+                  label: 'Email',
+                  value: email,
+                  onChange: setEmail,
+                  icon: 'envelope',
+                },
+                {
+                  label: 'Password',
+                  value: password,
+                  onChange: setPassword,
+                  icon: 'lock',
+                },
+              ]}
+              bottomText="Don't have an account yet?"
+              bottomLinkText="Sign up for free"
+              onSubmit={async e => {
+                e.preventDefault();
+                await signin();
+                setEmail('');
+                setPassword('');
+              }}
+              links={
+                <Text
+                  marginLeft="auto"
+                  fontSize="md"
+                  borderBottom="2px solid #EDF0F2"
+                  cursor="pointer"
+                  color="gray.500"
+                  onClick={() => setForm('forgot')}
+                >
+                  Forgot Password
+                </Text>
+              }
+            />
+          </>
         )}
-      </Pane>
-    </Pane>
+      </Box>
+    </Box>
   );
 }
 

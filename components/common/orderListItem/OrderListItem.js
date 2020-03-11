@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  IconButton,
-  Pane,
-  Heading,
-  Paragraph,
-  Text,
-  Avatar,
-} from 'evergreen-ui';
+import { Box, Heading, Text, Button, Icon } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import MPCart from '../../pending/Cart/MPCart';
 import ZincCart from '../../pending/Cart/ZincCart';
@@ -21,34 +14,14 @@ const priceString = (price, quantity) => {
 };
 
 export default function OrderListItem(props) {
-  const [open, setOpen] = useState(props.open);
+  const [open, setOpen] = useState();
 
   useEffect(() => {
     setOpen(props.open);
   }, [props.open]);
 
-  async function onCheckAllChange(
-    e,
-    updateIndexFunc,
-    // createCheckoutFunc,
-    errorTextObj
-  ) {
+  async function onCheckAllChange(e, updateIndexFunc) {
     updateIndexFunc(e ? props.index : null);
-
-    // if (e && errorTextObj === '{}') {
-    //   await createCheckoutFunc({
-    //     shippingAddress: {
-    //       address1: props.streetAddress1,
-    //       address2: props.streetAddress2 && props.streetAddress2,
-    //       city: props.city,
-    //       province: props.state,
-    //       country: 'US',
-    //       zip: props.zip,
-    //       firstName: props.first_name,
-    //       lastName: props.last_name,
-    //     },
-    //   });
-    // }
   }
 
   function handleToggleClick(e) {
@@ -60,13 +33,7 @@ export default function OrderListItem(props) {
     const parse = JSON.parse(string);
     return (
       parse.lineItems && (
-        <MPCart
-          cart={parse}
-          checkout={checkout}
-          cartName={name}
-          // background={background}
-          // color={color}
-        />
+        <MPCart cart={parse} checkout={checkout} cartName={name} />
       )
     );
   }
@@ -108,8 +75,8 @@ export default function OrderListItem(props) {
     createCheckout,
   } = props;
   return (
-    <Pane>
-      <Pane
+    <Box>
+      <Box
         display="flex"
         paddingX="1em"
         paddingY=".7em"
@@ -134,9 +101,9 @@ export default function OrderListItem(props) {
           !selectedOrderIndex || selectedOrderIndex === id ? 'pointer' : null
         }
       >
-        <Pane>
-          <Pane display="flex" flexWrap="wrap" alignItems="center">
-            <Heading size={400} marginRight={12}>
+        <Box>
+          <Box display="flex" flexWrap="wrap" alignItems="center" mb={1}>
+            <Heading fontSize="sm" marginRight={3}>
               <a
                 href={`https://${
                   shopName.split('.')[0]
@@ -148,18 +115,20 @@ export default function OrderListItem(props) {
               </a>
             </Heading>
             <Heading
-              size={100}
-              lineHeight="20px"
+              fontSize="xs"
               fontWeight={500}
-              marginRight={12}
+              letterSpacing="wide"
+              textTransform="uppercase"
+              color="gray.500"
+              mr={3}
             >
               {shopName.split('.')[0]}
             </Heading>
-            <Heading size={200}>
+            <Heading fontSize="xs" color="gray.500">
               {Intl.DateTimeFormat('en-US').format(Date.parse(createAt))}
             </Heading>
-          </Pane>
-          <Paragraph size={300} fontSize={13} color="#425A70">
+          </Box>
+          <Box as="p" fontSize="sm" color="#425A70" lineHeight="short">
             {first_name} {last_name}
             <br />
             {streetAddress1} {streetAddress2}
@@ -167,104 +136,100 @@ export default function OrderListItem(props) {
             {city}
             {', '}
             {state} {zip}
-          </Paragraph>
-        </Pane>
-        <Pane
+          </Box>
+        </Box>
+        <Box
           display="flex"
           marginLeft="auto"
           justifyContent="center"
           // alignItems="center"
         >
           {buttons}
-          <IconButton
-            marginLeft={3}
-            height={20}
-            aria-expanded={open}
+
+          <Button
+            bg={open && '#EDF2F7'}
             onClick={handleToggleClick}
-            appearance="minimal"
-            icon="chevron-down"
-            iconSize={18}
-            pointerEvents="visible"
-          />
-        </Pane>
-      </Pane>
+            color="#66788a"
+            aria-label="show line-items"
+            height="1.3rem"
+            minWidth="1.3rem"
+            px={0}
+            ml={1}
+          >
+            <Icon name="chevron-down" size="22px" />
+          </Button>
+        </Box>
+      </Box>
       {open && (
         <>
-          <Pane
+          <Box
             marginLeft="-3px"
             background="#F7F9FD"
             border="muted"
             paddingY=".7em"
             paddingX="1em"
           >
-            <Pane marginBottom={10}>
-              <Text size={400} fontWeight={500} color="#084B8A">
+            <Box marginBottom={2}>
+              <Text fontSize="sm" fontWeight={500} color="#084B8A">
                 Line Items
               </Text>
-            </Pane>
+            </Box>
             {lineItems.map(a => (
               <OrderLine key={a.id} item={a.node ? a.node : a} />
             ))}
-          </Pane>
+          </Box>
           {mpCart && JSON.parse(mpCart).lineItems && (
             <MPCart cart={JSON.parse(mpCart)} cartName="Marketplace" />
           )}
-
           {zincCart && parseZinc(zincCart, zincCheckout)}
           {mpCheckout && (
-            <Pane
+            <Box
               marginLeft="-3px"
               background="#F1FAF5"
               border="muted"
               paddingY=".7em"
               paddingX="1em"
             >
-              <Pane marginBottom={10}>
+              <Box marginBottom={10}>
                 <Text size={400} fontWeight={500} color="#00783E">
                   Marketplace Order
                 </Text>
-              </Pane>
+              </Box>
               {mpCheckout[0].marketLineItems.map(a => (
-                <Pane background="#fff" border="muted" marginBottom={5}>
-                  <Pane display="flex" alignItems="center">
-                    <Pane
+                <Box background="#fff" border="muted" marginBottom={5}>
+                  <Box display="flex" alignItems="center">
+                    <Box
                       height="100%"
                       background="white"
-                      borderRight="1px solid #EDF0F2"
+                      borderRight="1px solid #e8e9ea"
                     >
-                      <Avatar
-                        src={a.variantImg}
-                        borderRadius={0}
-                        size={70}
-                        backgroundColor="white"
-                        border="muted"
-                      />
-                    </Pane>
-                    <Pane padding={5} paddingLeft={10}>
+                      <Box as="img" src={a.variantImg} width="100px" />
+                    </Box>
+                    <Box padding={5} paddingLeft={10}>
                       <Heading size={300}>{a.title}</Heading>
-                      <Pane display="flex">
+                      <Box display="flex">
                         {a.quantity > 1 && (
-                          <Pane>
+                          <Box>
                             <Text size={300} color="muted">
                               ${a.variantPrice} x {a.quantity}
                             </Text>
-                          </Pane>
+                          </Box>
                         )}
                         <Heading size={300} marginRight={10} color="green">
                           $
                           {a.variantPrice &&
                             priceString(a.variantPrice, a.quantity)}
                         </Heading>
-                      </Pane>
-                    </Pane>
-                  </Pane>
-                </Pane>
+                      </Box>
+                    </Box>
+                  </Box>
+                </Box>
               ))}
-            </Pane>
+            </Box>
           )}
         </>
       )}
-    </Pane>
+    </Box>
   );
 }
 

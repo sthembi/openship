@@ -1,15 +1,14 @@
 import React from 'react';
 import {
-  Pane,
+  Box,
   Heading,
-  TextInputField,
   Text,
-  Tablist,
-  Paragraph,
   Icon,
-} from 'evergreen-ui';
+  Input,
+  Divider,
+  Button,
+} from '@chakra-ui/core';
 import PropTypes from 'prop-types';
-import Button from '../common/Button';
 
 const sucessCard = {
   paddingX: 10,
@@ -34,7 +33,6 @@ const sellerOnboarding = ({
   id,
 }) => {
   const tabs = ['Shop Info', 'Connect Stripe', 'Add Products'];
-
   async function onConfirm() {
     const res = await updateSeller({
       variables: {
@@ -45,17 +43,16 @@ const sellerOnboarding = ({
     });
   }
   return (
-    <Pane elevation={1} borderRadius="5px">
-      <Tablist
+    <Box boxShadow="sm" borderRadius="5px">
+      <Box
         display="flex"
         justifyContent="center"
-        // background="#10384f"
         borderTopRightRadius="5px"
         borderTopLeftRadius="5px"
         borderBottom="1px solid #E4E7EB"
       >
         {tabs.map((tab, index) => (
-          <Pane
+          <Box
             flex={1}
             display="flex"
             // flexDirection="column"
@@ -78,52 +75,41 @@ const sellerOnboarding = ({
               borderTopRightRadius: '5px',
             }}
           >
-            {index <= sellerStep ? (
-              <Icon
-                icon="tick"
-                color="#fff"
-                background="#46b880"
-                borderRadius="999px"
-                padding={3}
-                size={16}
-              />
-            ) : (
-              <Icon
-                icon="tick"
-                color="#46b880"
-                background="#fff"
-                borderRadius="999px"
-                boxShadow="0px 0px 0 1px #46b880"
-                padding={3}
-                size={16}
-              />
-            )}
+            <Icon
+              name="check-circle"
+              size={4}
+              color={index <= sellerStep ? 'green.400' : 'white'}
+              bg={index <= sellerStep ? 'white' : 'green.400'}
+              borderRadius="999px"
+              p={index <= sellerStep ? '0px' : '1px'}
+            />
 
             <Text
               key={tab}
               id={tab}
-              aria-controls={`panel-${tab}`}
+              aria-controls={`Boxl-${tab}`}
               textAlign="center"
-              marginX={8}
-              marginY={4}
+              fontSize="sm"
+              marginX={2}
+              marginY={1}
+              color="text"
               {...index <= sellerStep && { fontWeight: '600', color: '#fff' }}
             >
               {tab}
             </Text>
-          </Pane>
+          </Box>
         ))}
-      </Tablist>
-      <Pane
-        background="tint1"
+      </Box>
+      <Box
+        background="white"
         flex="1"
         borderBottomLeftRadius={5}
         borderBottomRightRadius={5}
       >
         {tabs.map((tab, index) => (
-          <Pane
+          <Box
             key={tab}
-            id={`panel-${tab}`}
-            role="tabpanel"
+            id={`Boxl-${tab}`}
             aria-labelledby={tab}
             aria-hidden={index !== sellerStep}
             display={index === sellerStep ? 'block' : 'none'}
@@ -133,54 +119,97 @@ const sellerOnboarding = ({
                 case 0:
                   return (
                     <>
-                      <Pane padding={16}>
-                        <Pane
+                      <Box padding={4}>
+                        <Box
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
                           marginBottom={15}
                         >
-                          <Heading size={500} color="#425A70">
+                          <Heading
+                            fontSize="md"
+                            color="#425A70"
+                            fontWeight={500}
+                          >
                             Getting started as a marketplace seller
                           </Heading>
-                        </Pane>
-                        <Pane
-                          flexShrink={0}
-                          height={3}
-                          backgroundColor="#E4E7EB"
-                          borderRadius={1}
-                          marginBottom={15}
-                        />
-                        <TextInputField
-                          label="Shop Name"
-                          hint="Name of shop that will appear on marketplace"
-                          placeholder={requested || "Frank's Bike Shop"}
-                          value={shopName}
-                          onChange={e => setShopName(e.target.value)}
-                          disabled={requested}
-                        />
-                        <TextInputField
-                          label="Shop Reviews"
-                          hint="Please link us to any shop reviews you have"
-                          placeholder={
-                            requested || 'www.google.com/reviews/franksbikeshop'
-                          }
-                          value={reviews}
-                          onChange={e => setReviews(e.target.value)}
-                          disabled={requested}
-                        />
-                        <TextInputField
-                          label="Order Threshold"
-                          hint="Limit on how many orders can be handled daily by shop"
-                          placeholder={requested || '100'}
-                          value={threshold}
-                          onChange={e => setThreshold(e.target.value)}
-                          disabled={requested}
-                        />
-                      </Pane>
+                        </Box>
+
+                        <Divider />
+
+                        <Box mb={4}>
+                          <Text
+                            color="#425A70"
+                            fontSize="sm"
+                            fontWeight={500}
+                            mb={1}
+                          >
+                            Shop Name
+                          </Text>
+                          <Input
+                            size="sm"
+                            placeholder={requested || "Frank's Bike Shop"}
+                            value={shopName}
+                            onChange={e => setShopName(e.target.value)}
+                            disabled={requested}
+                            mb={1}
+                          />
+                          <Text fontSize="xs" color="gray.500">
+                            Name of shop that will appear on marketplace
+                          </Text>
+                        </Box>
+
+                        <Box mb={4}>
+                          <Text
+                            color="#425A70"
+                            fontSize="sm"
+                            fontWeight={500}
+                            mb={1}
+                          >
+                            Shop Reviews
+                          </Text>
+                          <Input
+                            size="sm"
+                            placeholder={
+                              requested ||
+                              'www.google.com/reviews/franksbikeshop'
+                            }
+                            value={reviews}
+                            onChange={e => setReviews(e.target.value)}
+                            disabled={requested}
+                            mb={1}
+                          />
+                          <Text fontSize="xs" color="gray.500">
+                            Please link us to any shop reviews you have
+                          </Text>
+                        </Box>
+
+                        <Box mb={4}>
+                          <Text
+                            color="#425A70"
+                            fontSize="sm"
+                            fontWeight={500}
+                            mb={1}
+                          >
+                            Order Threshold
+                          </Text>
+                          <Input
+                            size="sm"
+                            placeholder={requested || '100'}
+                            value={threshold}
+                            onChange={e => setThreshold(e.target.value)}
+                            disabled={requested}
+                            mb={1}
+                          />
+                          <Text fontSize="xs" color="gray.500">
+                            Limit on how many orders can be handled daily by
+                            shop
+                          </Text>
+                        </Box>
+                      </Box>
 
                       {requested ? (
-                        <Pane
+                        <Box
                           {...sucessCard}
                           padding={15}
                           borderTop="2px solid #f0f0f0"
@@ -194,29 +223,26 @@ const sellerOnboarding = ({
                             color="#47B881"
                             marginRight={10}
                           />
-                          <Text
-                            size={500}
-                            color="#47B881"
-                            fontWeight={500}
-                            fontSize="14px"
-                          >
+                          <Text fontSize="sm" color="#47B881" fontWeight={500}>
                             Marketplace seller access has been requested. We'll
                             be in touch soon.
                           </Text>
-                        </Pane>
+                        </Box>
                       ) : (
                         <Button
                           height={35}
                           fontSize={15}
                           width="100%"
-                          // intent="primary"
-                          textColor="#fff"
+                          color="#fff"
+                          letterSpacing="wider"
+                          fontWeight={700}
+                          textTransform="uppercase"
                           background="#47B881"
                           borderBottomLeftRadius="5"
                           borderBottomRightRadius="5"
                           borderTopLeftRadius="0"
                           borderTopRightRadius="0"
-                          onClick={onConfirm}
+                          _hover={{ opacity: 0.8 }}
                         >
                           Confirm
                         </Button>
@@ -226,33 +252,42 @@ const sellerOnboarding = ({
                 case 1:
                   return (
                     <>
-                      <Pane padding={16}>
-                        <Pane
+                      <Box padding={4}>
+                        <Box
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
                           marginBottom={15}
                         >
-                          <Heading size={500} color="#425A70">
+                          <Heading
+                            fontSize="md"
+                            fontWeight={500}
+                            color="#425A70"
+                          >
                             Your marketplace account has been approved.
                           </Heading>
-                        </Pane>
-                        <Pane
-                          flexShrink={0}
-                          height={3}
-                          backgroundColor="#E4E7EB"
-                          borderRadius={1}
-                          marginBottom={15}
-                        />
-                        <Heading size={400} marginBottom={4} color="#425A70">
+                        </Box>
+                        <Divider />
+
+                        <Heading
+                          fontSize="md"
+                          fontWeight={500}
+                          marginBottom={2}
+                          color="#425A70"
+                        >
                           Stripe Integration
                         </Heading>
-                        <Paragraph marginBottom={5}>
+                        <Box
+                          as="p"
+                          marginBottom={5}
+                          color="#425A70"
+                          fontSize="sm"
+                        >
                           By connecting Stripe, the marketplace will be able to
                           accept payments from buyers on your behalf. Funds and
                           payouts can be managed from your Stripe dashboard.
-                        </Paragraph>
-                      </Pane>
+                        </Box>
+                      </Box>
                       <a
                         href={`https://connect.stripe.com/oauth/authorize?response_type=code&client_id=ca_FP0VAQDBcM7LCrGiCMuARMl7DJoTyZM6&scope=read_write&state=${id}`}
                         target="_blank"
@@ -262,13 +297,16 @@ const sellerOnboarding = ({
                           height={35}
                           fontSize={15}
                           width="100%"
-                          // intent="primary"
-                          textColor="#fff"
+                          color="#fff"
+                          letterSpacing="wider"
+                          fontWeight={700}
+                          textTransform="uppercase"
                           background="#1070ca"
                           borderBottomLeftRadius="5"
                           borderBottomRightRadius="5"
                           borderTopLeftRadius="0"
                           borderTopRightRadius="0"
+                          _hover={{ opacity: 0.8 }}
                         >
                           Connect Stripe
                         </Button>
@@ -277,8 +315,8 @@ const sellerOnboarding = ({
                   );
                 case 2:
                   return (
-                    <Pane padding={16}>
-                      <Pane
+                    <Box padding={4}>
+                      <Box
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
@@ -287,66 +325,96 @@ const sellerOnboarding = ({
                         <span role="img" aria-label="confetti">
                           🎉
                         </span>
-                        <Heading size={500} color="#425A70">
+                        <Heading fontSize="md" fontWeight={600} color="#425A70">
                           You're all set!
                         </Heading>
-                      </Pane>
-                      <Pane
-                        flexShrink={0}
-                        height={3}
-                        backgroundColor="#E4E7EB"
-                        borderRadius={1}
-                        marginBottom={15}
-                      />
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      </Box>
+
+                      <Divider />
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         Adding Products
                       </Heading>
-                      <Paragraph marginBottom={25}>
+                      <Box
+                        as="p"
+                        marginBottom={25}
+                        color="#425A70"
+                        fontSize="sm"
+                      >
                         To add products to the marketplace, simply navigate to
                         the all products link. You will see a sync button next
                         to each product. Once clicked, you can edit the item,
                         add quantity, and have the item listed. We currently
                         only support free shipping so please price this into the
                         cost of the item.
-                      </Paragraph>
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      </Box>
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         Orders
                       </Heading>
-                      <Paragraph marginBottom={25}>
+                      <Box
+                        as="p"
+                        marginBottom={25}
+                        color="#425A70"
+                        fontSize="sm"
+                      >
                         Once your item in the marketplace is sold, an order will
                         be created on the Shopify shop that the product was
                         added from. Payments will be handled by Stripe and a
                         link to the Stripe payment page will be added to the
                         created order.
-                      </Paragraph>
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      </Box>
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         Payments
                       </Heading>
-                      <Paragraph marginBottom={25}>
+                      <Box
+                        as="p"
+                        marginBottom={25}
+                        color="#425A70"
+                        fontSize="sm"
+                      >
                         The openship marketplace has a 4% seller fee on each
                         order (this does not include credit card processing fees
                         from Stripe). Payouts and chargebacks are to be handled
                         directly on your Stripe dashboard.
-                      </Paragraph>
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      </Box>
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         Fulfillment
                       </Heading>
-                      <Paragraph>
+                      <Box as="p" color="#425A70" fontSize="sm">
                         The created order on your Shopify shop can be fulfilled
                         like any other order. Once the order is fulfilled, the
                         tracking information will be synced directly to the
                         buyer's shop.
-                      </Paragraph>
-                    </Pane>
+                      </Box>
+                    </Box>
                   );
                 default:
                   return <div>Error</div>;
               }
             })()}
-          </Pane>
+          </Box>
         ))}
-      </Pane>
-    </Pane>
+      </Box>
+    </Box>
   );
 };
 

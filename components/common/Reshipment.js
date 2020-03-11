@@ -1,15 +1,36 @@
-import { useState, useEffect } from "react";
-import { gql } from "apollo-boost";
-import { Mutation } from "react-apollo";
-import { Text, Pane, Dialog, Heading, toaster } from "evergreen-ui";
-import PropTypes from "prop-types";
-import ReshipmentLineItem from "./ReshipmentLineItem";
-import { ORDER_QUERY, PAGINATION_QUERY } from "../pending/Pending";
+import { useState, useEffect } from 'react';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
+import {
+  Text,
+  Box,
+  Heading,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  useToast,
+  Button,
+} from '@chakra-ui/core';
+import PropTypes from 'prop-types';
+import ReshipmentLineItem from './ReshipmentLineItem';
+import { ORDER_QUERY, PAGINATION_QUERY } from '../pending/Pending';
 
 const Layout = {
-  flex: "1 1 10rem",
-  marginLeft: "2rem",
-  marginTop: "2rem"
+  flex: '1 1 10rem',
+  marginLeft: '2rem',
+  marginTop: '2rem',
+};
+
+const wideText = {
+  fontSize: 'xs',
+  fontWeight: 500,
+  color: 'gray.500',
+  letterSpacing: 'wide',
+  textTransform: 'uppercase',
 };
 
 const CREATE_ORDER = gql`
@@ -67,23 +88,22 @@ const CREATE_ORDER = gql`
 
 function readFormField(data, field, onInput) {
   return (
-    <Pane marginBottom={6}>
+    <Box marginBottom={2}>
       <Text
-        contenteditable="true"
-        fontWeight={500}
-        size={400}
+        contentEditable="true"
         onInput={onInput}
+        fontWeight={500}
+        fontSize="md"
+        color="text"
       >
         {data}
       </Text>
-      <Heading lineHeight="10px" fontSize="10px" size={100}>
-        {field}
-      </Heading>
-    </Pane>
+      <Heading {...wideText}>{field}</Heading>
+    </Box>
   );
 }
 
-const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
+const Reshipment = ({ order, shop, isOpen, onClose }) => {
   const [first, setFirst] = useState(null);
   const [last, setLast] = useState(null);
   const [address, setAddress] = useState(null);
@@ -94,10 +114,29 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
   const [lineItems, setLineItems] = useState(null);
   const initialItems = [];
 
+  const toast = useToast();
+
+  const [createOrder, { loading }] = useMutation(CREATE_ORDER, {
+    refetchQueries: [
+      {
+        query: ORDER_QUERY,
+        variables: {
+          skip: 0,
+          first: 100,
+          orderBy: 'createdAt_ASC',
+          processed: 'FALSE',
+        },
+      },
+      {
+        query: PAGINATION_QUERY,
+      },
+    ],
+  });
+
   useEffect(() => {
     if (order) {
-      setFirst(order.shippingAddress.name.split(" ")[0]);
-      setLast(order.shippingAddress.name.split(" ").pop());
+      setFirst(order.shippingAddress.name.split(' ')[0]);
+      setLast(order.shippingAddress.name.split(' ').pop());
       setAddress(order.shippingAddress.address1);
       setAddress2(order.shippingAddress.address2);
       setCity(order.shippingAddress.city);
@@ -138,125 +177,121 @@ const Reshipment = ({ order, isShown, onCloseComplete, shop }) => {
   };
 
   return order ? (
-    <Mutation
-      mutation={CREATE_ORDER}
-      refetchQueries={() => [
-        {
-          query: ORDER_QUERY,
-          variables: {
-            skip: 0,
-            first: 100,
-            orderBy: "createdAt_ASC",
-            processed: "FALSE"
-          }
-        },
-        {
-          query: PAGINATION_QUERY
-        }
-      ]}
-    >
-      {(createOrder, { error, loading }) => (
-        <Dialog
-          isShown={isShown}
-          title="Confirm Reshipment"
-          onCloseComplete={onCloseComplete}
-          onCancel={close => {
-            resetLineItems();
-            close();
-          }}
-          isConfirmLoading={loading}
-          isConfirmDisabled={loading}
-          hasHeader={false}
-          confirmLabel="Confirm Reshipment"
-          onConfirm={async () => {
-            const res = await createOrder({
-              variables: {
-                shopName: `${shop}.myshopify.com`,
-                orderId: order.id.split("/").pop(),
-                orderName: order.name,
-                email: order.email || "noemail@noemail.com",
-                first_name: first,
-                last_name: last,
-                streetAddress1: address,
-                streetAddress2: address2,
-                city,
-                state,
-                zip,
-                phone: order.shippingAddress.phone,
-                lineItems: lineItems
-                  .filter(a => a.node.quantity > 0)
-                  .map(b => {
-                    b.node.id = parseFloat(b.node.id.split("/").pop());
-                    return b.node;
-                  }),
-                currency: "USD",
-                totalPrice: order.totalReceivedSet.shopMoney.amount,
-                subTotalPrice: 0,
-                totalDiscount: 0,
-                totalTax: 0,
-                createAt: order.processedAt,
-                mpCart: "{}",
-                zincCart: "{}",
-                processed: "FALSE"
-              }
-            });
-            onCloseComplete();
-            toaster.success(`${order.name} has been requested for reshipment.`);
-          }}
-        >
-          <Pane
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Request Reshipment</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Box
             display="flex"
             flexWrap="wrap"
             marginLeft="-2rem"
             marginTop="-2rem"
           >
-            <Pane {...Layout}>
-              <Pane marginBottom={10}>
-                <Text fontWeight={500} size={500}>
+            <Box {...Layout}>
+              <Box marginBottom={4}>
+                <Text fontWeight={600} fontSize="md" color="text">
                   {order.name}
                 </Text>
-                <Heading size={100}>Order Number</Heading>
-              </Pane>
+                <Heading {...wideText}>Order Number</Heading>
+              </Box>
               {readFormField(
-                order.shippingAddress.name.split(" ")[0],
-                "First Name",
+                order.shippingAddress.name.split(' ')[0],
+                'First Name',
                 e => setFirst(e.target.textContent)
               )}
               {readFormField(
-                order.shippingAddress.name.split(" ").pop(),
-                "Last Name",
+                order.shippingAddress.name.split(' ').pop(),
+                'Last Name',
                 e => setLast(e.target.textContent)
               )}
               {readFormField(
                 order.shippingAddress.address1,
-                "Street Address",
+                'Street Address',
                 e => setAddress(e.target.textContent)
               )}
               {order.shippingAddress.address2 &&
                 readFormField(
                   order.shippingAddress.address2,
-                  "Apt, Suite, etc.",
+                  'Apt, Suite, etc.',
                   e => setAddress2(e.target.textContent)
                 )}
-              {readFormField(order.shippingAddress.city, "City", e =>
+              {readFormField(order.shippingAddress.city, 'City', e =>
                 setCity(e.target.textContent)
               )}
-              {readFormField(order.shippingAddress.province, "State", e =>
+              {readFormField(order.shippingAddress.province, 'State', e =>
                 setState(e.target.textContent)
               )}
-              {readFormField(order.shippingAddress.zip, "Zip Code", e =>
+              {readFormField(order.shippingAddress.zip, 'Zip Code', e =>
                 setZip(e.target.textContent)
               )}
-            </Pane>
-            <Pane {...Layout}>
+            </Box>
+            <Box {...Layout}>
               {order.lineItems.edges.map(a => (
                 <ReshipmentLineItem arg={a.node} handleLine={handleLine} />
               ))}
-            </Pane>
-          </Pane>
-        </Dialog>
-      )}
-    </Mutation>
+            </Box>
+          </Box>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button variant="ghost" mr={3} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            variant="ghost"
+            variantColor="blue"
+            bg="blue.50"
+            _hover={{ bg: 'blue.100' }}
+            isLoading={loading}
+            onClick={async () => {
+              const res = await createOrder({
+                variables: {
+                  shopName: `${shop}.myshopify.com`,
+                  orderId: order.id.split('/').pop(),
+                  orderName: order.name,
+                  email: order.email || 'noemail@noemail.com',
+                  first_name: first,
+                  last_name: last,
+                  streetAddress1: address,
+                  streetAddress2: address2,
+                  city,
+                  state,
+                  zip,
+                  phone: order.shippingAddress.phone,
+                  lineItems: lineItems
+                    .filter(a => a.node.quantity > 0)
+                    .map(b => {
+                      b.node.id = parseFloat(b.node.id.split('/').pop());
+                      return b.node;
+                    }),
+                  currency: 'USD',
+                  totalPrice: order.totalReceivedSet.shopMoney.amount,
+                  subTotalPrice: 0,
+                  totalDiscount: 0,
+                  totalTax: 0,
+                  createAt: order.processedAt,
+                  mpCart: '{}',
+                  zincCart: '{}',
+                  processed: 'FALSE',
+                },
+              });
+              onClose();
+              toast({
+                position: 'top-right',
+                title: `${order.name} has been requested for reshipment.`,
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+              });
+            }}
+          >
+            Confirm Reshipment
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   ) : (
     <></>
   );
@@ -268,5 +303,5 @@ Reshipment.propTypes = {
   order: PropTypes.object,
   isShown: PropTypes.bool,
   onCloseComplete: PropTypes.func,
-  shop: PropTypes.string
+  shop: PropTypes.string,
 };

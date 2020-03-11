@@ -1,53 +1,92 @@
 import { useState } from 'react';
-import { Text, Pane, Heading, Avatar, IconButton } from 'evergreen-ui';
+import {
+  Box,
+  Text,
+  Heading,
+  PseudoBox,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  Icon,
+} from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 
 function LineItem({ arg, handleLine }) {
   const initialQty = arg.quantity;
   const [quantity, setQuantity] = useState(arg.quantity);
 
+  function onInputChange(e) {
+    handleLine(arg.id, e, initialQty);
+    setQuantity(e);
+  }
+
   return (
-    <Pane display="flex" alignItems="center" marginBottom={15}>
-      <Pane display="block">
-        <Pane>
-          <Avatar
+    <Box display="flex" alignItems="center" marginBottom={15}>
+      <Box display="block">
+        <Box>
+          <Box
+            as="img"
             src={arg.img ? arg.img : arg.image && arg.image.originalSrc}
             borderStyle="solid"
             borderWidth="1px"
             borderRadius={3}
             borderColor="#e8e9ea"
-            size={50}
+            width="70px"
           />
-        </Pane>
-      </Pane>
-      <Pane flex={2} display="block" marginLeft={10}>
-        <Heading size={300}>{arg.name}</Heading>
-        <Pane display="flex" alignItems="center">
-          <IconButton
-            icon="minus"
-            appearance="minimal"
-            height={15}
-            marginRight={5}
-            onClick={() => {
-              handleLine(arg.id, quantity - 1, initialQty);
-              setQuantity(Math.min(arg.quantity, Math.max(quantity - 1, 0)));
-            }}
-          />
-          <Text size={300} marginRight={5}>
-            {quantity}
+        </Box>
+      </Box>
+      <Box flex={2} display="block" marginLeft={2}>
+        <Heading fontSize="sm" color="text" mb={2} fontWeight={600}>
+          {arg.name}
+        </Heading>
+
+        <PseudoBox>
+          <Text fontSize=".65rem" fontWeight="600" color="gray.500">
+            QUANTITY
           </Text>
-          <IconButton
-            icon="plus"
-            appearance="minimal"
-            height={15}
-            onClick={() => {
-              handleLine(arg.id, quantity + 1, initialQty);
-              setQuantity(Math.min(arg.quantity, Math.max(quantity + 1, 0)));
-            }}
-          />
-        </Pane>
-      </Pane>
-    </Pane>
+          <NumberInput
+            size="sm"
+            value={quantity}
+            onChange={onInputChange}
+            min={0}
+            width="80px"
+          >
+            <NumberInputField
+              focusBorderColor="blue.500"
+              textAlign="center"
+              _hover={{ borderColor: 'blue.500' }}
+              height="25px"
+            />
+            <NumberInputStepper width="25px">
+              <NumberIncrementStepper
+                bg="#f6f7f9"
+                color="blue.500"
+                _active={{ bg: 'blue.500' }}
+                _hover={{ bg: 'blue.500', color: 'white' }}
+                children={<Icon name="add" color="currentColor" />}
+                marginTop="0px !important"
+                borderTopWidth="0px !important"
+              />
+            </NumberInputStepper>
+            <NumberInputStepper left="0" width="25px">
+              <NumberDecrementStepper
+                bg="#f6f7f9"
+                color="blue.500"
+                _active={{ bg: 'blue.500' }}
+                _hover={{ bg: 'blue.500', color: 'white' }}
+                children={<Icon name="minus" color="currentColor" />}
+                borderLeft="0px"
+                borderRight="1px solid #E2E8F0"
+                marginTop="0px !important"
+                borderTopWidth="0px !important"
+              />
+            </NumberInputStepper>
+          </NumberInput>
+        </PseudoBox>
+      </Box>
+    </Box>
   );
 }
 

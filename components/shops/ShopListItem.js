@@ -1,38 +1,51 @@
-import { Pane, TextInput, Heading, Text, Spinner, Switch } from 'evergreen-ui';
+import { Box, Heading, Text } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import DeleteShop from '../common/DeleteShop';
-
 import { CardStyle } from '../common/DefaultStyles';
 import WebhookSwitch from './WebhookSwitch';
 
 const ShopListItem = ({ shop }) => (
-  <Pane {...CardStyle}>
-    <Pane padding={15}>
-      <Pane display="flex">
-        <Pane marginBottom={6}>
-          <Text fontWeight={500} size={500} textTransform="capitalize">
+  <Box {...CardStyle}>
+    <Box padding={15}>
+      <Box display="flex">
+        <Box marginBottom={3}>
+          <Text
+            fontWeight={500}
+            fontSize="lg"
+            textTransform="capitalize"
+            color="text"
+          >
             {shop.name}
           </Text>
-          <Heading lineHeight="10px" fontSize="12px" size={100}>
+          <Heading
+            fontSize="sm"
+            textTransform="uppercase"
+            color="gray.500"
+            fontWeight={400}
+          >
             Name
           </Heading>
-        </Pane>
+        </Box>
 
         <DeleteShop id={shop.id} button="Delete" />
-      </Pane>
-      <Pane>
-        <Text fontWeight={500} size={400}>
+      </Box>
+      <Box>
+        <Text fontWeight={500} fontSize="md" color="text">
           {shop.domain}
         </Text>
-        <Heading lineHeight="10px" fontSize="10px" size={100}>
+        <Heading
+          fontSize="xs"
+          textTransform="uppercase"
+          color="gray.500"
+          fontWeight={400}
+        >
           URL
         </Heading>
-      </Pane>
-    </Pane>
+      </Box>
+    </Box>
 
-    {/* <Switch marginLeft="auto" /> */}
     <WebhookSwitch domain={shop.domain} accessToken={shop.accessToken} />
-  </Pane>
+  </Box>
 );
 
 export default ShopListItem;

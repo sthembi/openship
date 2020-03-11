@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Pane, Text, Badge } from 'evergreen-ui';
+import { Box, Text, Badge } from '@chakra-ui/core';
 import CartItem from './ZincCartItem';
 
 class Cart extends Component {
@@ -20,42 +20,42 @@ class Cart extends Component {
     } = this.props;
 
     return (
-      <Pane
+      <Box
         marginLeft="-3px"
         background="#EDF2F7"
-        border="muted"
         paddingY=".7em"
         paddingX="1em"
+        border="1px solid #edf0f2"
       >
-        <Pane marginBottom={10} display="flex" alignItems="center">
-          <Text size={400} fontWeight={500} color="#1A202C">
+        <Box marginBottom={2} display="flex" alignItems="center">
+          <Text fontSize="sm" fontWeight={500} color="#1A202C">
             Zinc Cart
           </Text>
           {checkout && checkout._type === 'error' && (
-            <Pane marginLeft="auto">
+            <Box marginLeft="auto">
               <a
                 href={`https://dash.zinc.io/orders/${checkout.request_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Badge color="red">Status: Error</Badge>
+                <Badge variantColor="red">Status: Error</Badge>
               </a>
-            </Pane>
+            </Box>
           )}
           {checkout && checkout.tracking && (
-            <Pane marginLeft="auto">
+            <Box marginLeft="auto">
               <a
                 href={`https://dash.zinc.io/orders/${checkout.request_id}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Badge color="neutral">
+                <Badge>
                   Status: {checkout.tracking.length > 0 ? 'Shipped' : 'Pending'}
                 </Badge>
               </a>
-            </Pane>
+            </Box>
           )}
-        </Pane>
+        </Box>
         {cart && cart.products && cart.products.length ? (
           cart.products.map(a => (
             <CartItem
@@ -71,17 +71,17 @@ class Cart extends Component {
             />
           ))
         ) : (
-          <Pane
+          <Box
             background="#fff"
             border="muted"
-            padding={10}
+            padding={2}
             display="flex"
             justifyContent="center"
           >
-            <Text size={400}>Cart is empty</Text>
-          </Pane>
+            <Text fontSize="sm">Cart is empty</Text>
+          </Box>
         )}
-      </Pane>
+      </Box>
     );
   }
 }

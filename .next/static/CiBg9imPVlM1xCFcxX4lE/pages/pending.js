@@ -1,0 +1,1 @@
+(window.webpackJsonp=window.webpackJsonp||[]).push([[20],{Gg4f:function(n,t,u){(window.__NEXT_P=window.__NEXT_P||[]).push(["/pending",function(){return u("NBva")}])},NBva:function(n,t,u){"use strict";u.r(t);var e=u("q1tI"),i=u.n(e),o=u("Ad9v"),w=i.a.createElement;t.default=function(){return w("div",null,w(o.c,null))}}},[["Gg4f",0,1,2,3,4,7,5,6,8,9,11,10,12]]]);

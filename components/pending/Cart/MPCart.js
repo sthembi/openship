@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Pane, Text, Heading } from 'evergreen-ui';
+import { Box, Text } from '@chakra-ui/core';
 import CartItem from './MPCartItem';
 
 class Cart extends Component {
@@ -23,17 +23,17 @@ class Cart extends Component {
       color,
     } = this.props;
     return (
-      <Pane
+      <Box
         marginLeft="-3px"
         background={background || '#F1FAF5'}
-        border="muted"
         paddingY=".7em"
         paddingX="1em"
+        border="1px solid #edf0f2"
       >
-        <Pane marginBottom={10}>
+        <Box marginBottom={2}>
           {cart ? (
             <a href={cart.webUrl} target="_blank" rel="noopener noreferrer">
-              <Text size={400} fontWeight={500} color={color || '#00783E'}>
+              <Text fontSize="sm" fontWeight={500} color={color || '#00783E'}>
                 {cartName} Cart
               </Text>
             </a>
@@ -42,7 +42,7 @@ class Cart extends Component {
               {cartName} Cart
             </Text>
           )}
-        </Pane>
+        </Box>
         {cart && cart.lineItems && cart.lineItems.edges.length ? (
           cart.lineItems.edges.map(a => (
             <CartItem
@@ -59,17 +59,19 @@ class Cart extends Component {
             />
           ))
         ) : (
-          <Pane
+          <Box
             background="#fff"
             border="muted"
-            padding={10}
+            padding={2}
             display="flex"
             justifyContent="center"
           >
-            <Text size={400}>Cart is empty</Text>
-          </Pane>
+            <Text fontSize="sm" color="text">
+              Cart is empty
+            </Text>
+          </Box>
         )}
-      </Pane>
+      </Box>
     );
   }
 }

@@ -1,11 +1,8 @@
-import { useState } from 'react';
 import { gql } from 'apollo-boost';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
-import { toaster, Pane, Text } from 'evergreen-ui';
-import ShopList, { shopsQuery, shopsQueryVars } from '../shops/ShopList';
-import Button from './Button';
-import User from '../user/User';
+import { Text } from '@chakra-ui/core';
+import { ALL_SHOPS_QUERY, shopsQueryVars } from '../shops/ShopList';
 
 const CREATE_SHOP_MUTATION = gql`
   mutation deleteShop($id: ID!) {
@@ -15,43 +12,29 @@ const CREATE_SHOP_MUTATION = gql`
   }
 `;
 
-const DeleteShop = ({ id, button }) => (
-  <Mutation
-    mutation={CREATE_SHOP_MUTATION}
-    refetchQueries={[{ query: shopsQuery, variables: shopsQueryVars }]}
-  >
-    {(deleteShop, { error, loading }) => (
-      // <Button
-      //   intent="primary"
-      //   height={20}
-      // onClick={async () => {
-      //   await deleteShop({
-      //     variables: { id },
-      //   });
-      // }}
-      //   marginRight={5}
-      // >
-      //   Delete
-      // </Button>
+const DeleteShop = ({ id, button }) => {
+  const [deleteShop] = useMutation(CREATE_SHOP_MUTATION, {
+    refetchQueries: [{ query: ALL_SHOPS_QUERY, variables: shopsQueryVars }],
+  });
 
-      <Text
-        size={400}
-        fontWeight={500}
-        marginLeft="auto"
-        color="#ea645f"
-        className="hover"
-        cursor="pointer"
-        onClick={async () => {
-          await deleteShop({
-            variables: { id },
-          });
-        }}
-      >
-        {button}
-      </Text>
-    )}
-  </Mutation>
-);
+  return (
+    <Text
+      fontSize="sm"
+      fontWeight={500}
+      marginLeft="auto"
+      color="#ea645f"
+      className="hover"
+      cursor="pointer"
+      onClick={async () => {
+        await deleteShop({
+          variables: { id },
+        });
+      }}
+    >
+      {button}
+    </Text>
+  );
+};
 
 export default DeleteShop;
 

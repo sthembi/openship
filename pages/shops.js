@@ -1,19 +1,28 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import gql from 'graphql-tag';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
 import {
-  Pane,
-  Dialog,
-  Heading,
-  TextInput,
+  Box,
   Text,
   Icon,
   Switch,
-} from 'evergreen-ui';
-import Composer from 'react-composer';
+  Button,
+  Heading,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from '@chakra-ui/core';
+
 import ShopList, {
-  shopsQuery,
+  ALL_SHOPS_QUERY,
   shopsQueryVars,
 } from '../components/shops/ShopList';
 
@@ -38,238 +47,140 @@ const WEBHOOK_MUTATION = gql`
   }
 `;
 
-export default class Shops extends Component {
-  static async getInitialProps({ query: { shop, accessToken } }) {
-    return { shop, accessToken };
-  }
+const Shops = ({ shop, accessToken }) => {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [checked, setChecked] = useState(false);
 
-  static propTypes = {
-    shop: PropTypes.string,
-    accessToken: PropTypes.string,
-  };
+  const [upsertShop] = useMutation(CREATE_SHOP_MUTATION, {
+    variables: { domain: shop, accessToken, name },
+    refetchQueries: [{ query: ALL_SHOPS_QUERY, variables: shopsQueryVars }],
+  });
 
-  /*eslint-disable */
-  state = {
-    open: this.props.shop && true,
-    name: this.props.shop && this.props.shop.split(".")[0],
-    checked: false
-  };
-  /*eslint-disable */
+  const [createWebhook] = useMutation(WEBHOOK_MUTATION, {
+    variables: { domain: shop, accessToken },
+  });
 
-  handleClick = async (upsertShop, createWebhook) => {
+  useEffect(() => {
+    if (shop) {
+      setOpen(true);
+      setName(shop.split('.')[0]);
+    }
+  }, [shop]);
+
+  const handleClick = async () => {
     const data1 = await upsertShop();
-    if (this.state.checked) {
+    if (checked) {
       const data2 = await createWebhook();
     }
-    this.setState({ open: false });
+    setOpen(false);
   };
 
-  render() {
-    const { shop, accessToken } = this.props;
-    const { open, name, checked } = this.state;
-
-    return (
-      <>
-        <Composer
-          components={[
-            <Mutation
-              mutation={CREATE_SHOP_MUTATION}
-              variables={{ domain: shop, accessToken, name }}
-              refetchQueries={[
-                { query: shopsQuery, variables: shopsQueryVars }
-              ]}
-            />,
-            <Mutation
-              mutation={WEBHOOK_MUTATION}
-              variables={{ domain: shop, accessToken }}
-            />
-          ]}
-        >
-          {([upsertShop, createWebhook]) => (
-            <>
-              <Pane>
-                <Dialog
-                  width="440px"
-                  isShown={open}
-                  title="Add shop to Openship"
-                  // hasHeader={false}
-                  // hasFooter={false}
-                  confirmLabel="Confirm"
-                  intent="success"
-                  onConfirm={() => this.handleClick(upsertShop, createWebhook)}
-                >
-                  {/* <Heading size={400}>Shop Name</Heading>
-                  <TextInput
-                    onChange={e => this.setState({ name: e.target.value })}
-                    value={name}
+  return (
+    <>
+      <Box>
+        <Modal isOpen={open} onClose={() => setOpen(false)}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Add Shop to Openship</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <Box>
+                <InputGroup>
+                  <InputLeftElement
+                    children={<Icon name="shop" color="gray.500" />}
                   />
-                  <Heading size={400} marginTop={15}>
-                    Shop URL
+                  <Input
+                    color="gray.700"
+                    variant="filled"
+                    type="phone"
+                    placeholder="Phone number"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                  />
+                </InputGroup>
+                <Heading
+                  lineHeight="10px"
+                  fontSize="xs"
+                  pr={3}
+                  pt={2}
+                  marginBottom={4}
+                  textTransform="uppercase"
+                  fontWeight={500}
+                  color="gray.500"
+                >
+                  Shop Name
+                </Heading>
+                <Box display="flex" alignItems="center">
+                  <Text pr={3} paddingTop={2} fontSize={15}>
+                    {shop}
+                  </Text>
+                </Box>
+                <Heading
+                  lineHeight="10px"
+                  fontSize="xs"
+                  pr={3}
+                  pt={2}
+                  marginBottom={4}
+                  textTransform="uppercase"
+                  fontWeight={500}
+                  color="gray.500"
+                >
+                  Shopify URL
+                </Heading>
+              </Box>
+              <Box pt={4} display="flex" alignItems="center">
+                <Box paddingRight={20}>
+                  <Heading
+                    fontSize="md"
+                    fontWeight={500}
+                    mb={1}
+                    color="gray.800"
+                  >
+                    Push orders to Openship
                   </Heading>
-                  {shop} */}
-                  <Pane>
-                    {/* <Pane marginBottom={6}>
-                      <Text
-                        fontWeight={500}
-                        size={500}
-                        textTransform="capitalize"
-                      >
-                        {name}
-                      </Text>
-                      <TextInput
-                        fontSize="16px"
-                        onChange={e => this.setState({ name: e.target.value })}
-                        value={name}
-                        marginBottom={5}
-                      />
-                      <Heading lineHeight="10px" fontSize="12px" size={100}>
-                        Name
-                      </Heading>
-                    </Pane> */}
+                  <Text fontSize="sm" color="gray.700">
+                    Orders will be pushed to the pending tab to be fulfilled
+                  </Text>
+                </Box>
+                <Switch
+                  marginLeft="auto"
+                  checked={checked}
+                  onChange={e => setChecked(e.target.checked)}
+                />
+              </Box>
+            </ModalBody>
 
-                    {/* <Pane>
-                      <Text fontWeight={500} size={400}>
-                        {shop}
-                      </Text>
-                      <Heading lineHeight="10px" fontSize="10px" size={100}>
-                        URL
-                      </Heading>
-                    </Pane> */}
-                    <Pane
-                      position="relative"
-                      display="inline-flex"
-                      height={32}
-                      width="100%"
-                      marginBottom={3}
-                    >
-                      <Pane
-                        width={32}
-                        height={32}
-                        pointerEvents="none"
-                        position="absolute"
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        <Icon
-                          icon="shop"
-                          color="#8b949c"
-                          size={12}
-                          zIndex={3}
-                        />
-                      </Pane>
-                      <TextInput
-                        className="clean-input"
-                        paddingLeft={32}
-                        // name="Shop Name"
-                        width="100%"
-                        value={name}
-                        fontSize={15}
-                        onChange={e => this.setState({ name: e.target.value })}
-                        marginBottom={15}
-                        // placeholder="Shop Name"
-                        backgroundColor="#F5F6F7 !important"
-                      />
-                    </Pane>
-                    <Heading
-                      lineHeight="10px"
-                      fontSize="11px"
-                      size={100}
-                      padding={3}
-                      marginBottom={10}
-                    >
-                      Shop Name
-                    </Heading>
-                    {/* <Pane>
-                      <Text fontWeight={500} size={400}>
-                        {shop}
-                      </Text>
-                      <Heading lineHeight="10px" fontSize="10px" size={100}>
-                        URL
-                      </Heading>
-                    </Pane> */}
-                    {/* <Pane
-                      display="flex"
-                      width="100%"
-                      marginBottom={3}
-                    >
-                      <Pane
-                        width={32}
-                        height={32}
-                        pointerEvents="none"
-                        position="absolute"
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                      >
-                        <Icon
-                          icon="link"
-                          color="#8b949c"
-                          size={12}
-                          zIndex={3}
-                        />
-                      </Pane>
-                      <Pane height="32px">
-                        <Text
-                          // className="clean-input"
-                          paddingLeft={32}
-                          width="100%"
-                          fontSize={15}
-                          marginBottom={15}
-                          height="100%"
-                          // backgroundColor="#F5F6F7 !important"
-                        >
-                          {shop}
-                        </Text>
-                        </Pane>
-                    </Pane> */}
-                    <Pane display="flex" alignItems="center">
-                      {/* <Pane paddingY={7} paddingX={10}>
-                      <Icon
-                        icon="link"
-                        color="#8b949c"
-                        size={12}
-                        zIndex={3}
-                      />
-                      </Pane> */}
-                      <Text paddingX={3} paddingY={2} fontSize={15}>
-                        {shop}
-                      </Text>
-                    </Pane>
-                    <Heading
-                      lineHeight="10px"
-                      fontSize="11px"
-                      size={100}
-                      padding={3}
-                      marginBottom={15}
-                    >
-                      Shopify URL
-                    </Heading>
-                  </Pane>
-                  <Pane display="flex" alignItems="center">
-                    <Pane paddingRight={15}>
-                      <Heading size={500} fontSize="15px" fontWeight={500}>
-                        Push orders to Openship
-                      </Heading>
-                      <Text size={300}>
-                        Orders will be pushed to the pending tab to be fulfilled
-                      </Text>
-                    </Pane>
-                    <Switch
-                      marginLeft="auto"
-                      checked={checked}
-                      onChange={e =>
-                        this.setState({ checked: e.target.checked })
-                      }
-                    />
-                  </Pane>
-                </Dialog>
-              </Pane>
-              <ShopList />
-            </>
-          )}
-        </Composer>
-      </>
-    );
-  }
-}
+            <ModalFooter>
+              <Button variant="ghost" color="gray.600" mr={3}>
+                Cancel
+              </Button>
+              <Button
+                variant="ghost"
+                variantColor="green"
+                bg="green.50"
+                _hover={{ bg: 'green.100' }}
+                onConfirm={() => handleClick()}
+              >
+                Confirm
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Box>
+      <ShopList />
+    </>
+  );
+};
+
+Shops.getInitialProps = ({ query: { shop, accessToken } }) => ({
+  shop,
+  accessToken,
+});
+
+Shops.propTypes = {
+  shop: PropTypes.string,
+  accessToken: PropTypes.string,
+};
+
+export default Shops;

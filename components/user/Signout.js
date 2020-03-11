@@ -1,6 +1,6 @@
 import React from 'react';
-import { Pane, Heading, Icon } from 'evergreen-ui';
-import { Mutation } from 'react-apollo';
+import { Box, Heading, Icon } from '@chakra-ui/core';
+import { useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
 import { CURRENT_USER_QUERY } from './User';
 
@@ -12,44 +12,37 @@ const SIGN_OUT_MUTATION = gql`
   }
 `;
 
-const Signout = () => (
-  <Mutation
-    mutation={SIGN_OUT_MUTATION}
-    refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-  >
-    {signout => (
-      <Pane
-        height={30}
-        cursor="pointer"
-        onClick={() => signout().then(() => (window.location.href = '/'))}
-      >
-        <Pane display="flex">
-          <Pane
-            marginRight="-8px"
-            marginLeft="13px"
-            alignItems="center"
-            justifyContent="center"
-            display="flex"
-          >
-            <Icon
-              size={15}
-              icon="arrow-left"
-              color="#EC4C47"
-              marginRight={16}
-            />
-          </Pane>
-          <Heading
-            color="#fff"
-            size={500}
-            fontSize={15}
-            overflow="visible"
-            textTransform="capitalize"
-          >
-            Sign Out
-          </Heading>
-        </Pane>
-      </Pane>
-    )}
-  </Mutation>
-);
+const Signout = () => {
+  const [signout, { error, loading }] = useMutation(SIGN_OUT_MUTATION, {
+    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+  });
+
+  return (
+    <Box
+      height={30}
+      cursor="pointer"
+      onClick={() => signout().then(() => (window.location.href = '/'))}
+    >
+      <Box display="flex">
+        <Box
+          marginLeft="13px"
+          alignItems="center"
+          justifyContent="center"
+          display="flex"
+        >
+          <Icon size={5} name="arrow-forward" color="#EC4C47" />
+        </Box>
+        <Heading
+          ml={2}
+          color="#fff"
+          fontSize={15}
+          overflow="visible"
+          textTransform="capitalize"
+        >
+          Sign Out
+        </Heading>
+      </Box>
+    </Box>
+  );
+};
 export default Signout;

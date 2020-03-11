@@ -1,16 +1,6 @@
 import React from 'react';
-import {
-  Pane,
-  Heading,
-  Text,
-  Tablist,
-  Paragraph,
-  Icon,
-  ListItem,
-} from 'evergreen-ui';
+import { Box, Heading, Text, Icon, Divider, Button } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
-import Button from '../common/Button';
-import AddCard from './AddCard';
 
 const sucessCard = {
   paddingX: 10,
@@ -23,18 +13,11 @@ const sucessCard = {
 const buyerOnboarding = ({
   buyerStep,
   requested,
-  shopName,
-  setShopName,
-  reviews,
-  setReviews,
-  threshold,
-  setThreshold,
-  error,
   loading,
   createCustomer,
+  addCardComp,
 }) => {
   const tabs = ['Buyer Access', 'Payment Method', 'Ready to go'];
-
   async function onConfirm() {
     const res = await createCustomer({
       variables: {
@@ -45,25 +28,22 @@ const buyerOnboarding = ({
     });
   }
   return (
-    <Pane elevation={1} borderRadius="5px">
-      <Tablist
+    <Box boxShadow="sm" borderRadius="5px">
+      <Box
         display="flex"
         justifyContent="center"
-        // background="#10384f"
         borderTopRightRadius="5px"
         borderTopLeftRadius="5px"
         borderBottom="1px solid #E4E7EB"
       >
         {tabs.map((tab, index) => (
-          <Pane
+          <Box
             flex={1}
             display="flex"
-            // flexDirection="column"
             justifyContent="center"
             alignItems="center"
             padding={13}
             flexWrap="wrap"
-            // {...index !== 0 && { borderLeft: '1px solid #DDEBF7' }}
             {...index <= buyerStep && {
               background: '#123950',
             }}
@@ -78,102 +58,41 @@ const buyerOnboarding = ({
               borderTopRightRadius: '5px',
             }}
           >
-            {index <= buyerStep ? (
-              <Icon
-                icon="tick"
-                color="#fff"
-                background="#46b880"
-                borderRadius="999px"
-                padding={3}
-                size={16}
-              />
-            ) : (
-              <Icon
-                icon="tick"
-                color="#46b880"
-                borderRadius="999px"
-                boxShadow="0px 0px 0 1px #46b880"
-                padding={3}
-                size={16}
-              />
-            )}
+            <Icon
+              name="check-circle"
+              size={4}
+              color={index <= buyerStep ? 'green.400' : 'white'}
+              bg={index <= buyerStep ? 'white' : 'green.400'}
+              borderRadius="999px"
+              p={index <= buyerStep ? '0px' : '1px'}
+            />
+
             <Text
               key={tab}
               id={tab}
-              aria-controls={`panel-${tab}`}
+              aria-controls={`Boxl-${tab}`}
               textAlign="center"
-              marginX={8}
-              marginY={4}
+              fontSize="sm"
+              marginX={2}
+              marginY={1}
+              color="text"
               {...index <= buyerStep && { fontWeight: '600', color: '#fff' }}
             >
               {tab}
             </Text>
-            {/* <Pill
-              color="green"
-              isSolid
-              fontSize="10px"
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Icon icon="tick" color="#fff" size={11} marginRight={4} />
-              Pending Approval
-            </Pill> */}
-          </Pane>
-          // <Pane
-          //   display="flex"
-          //   justifyContent="center"
-          //   alignItems="center"
-          //   // {...index !== 0 && { paddingLeft: 40 }}
-          // >
-          //   {index !== 0 && (
-          //     <Pane
-          //       height={3}
-          //       width={40}
-          //       marginLeft={7.5}
-          //       backgroundColor={
-          //         index <= currentStep ? 'rgb(70, 184, 128)' : '#a5adba'
-          //       }
-          //     />
-          //   )}
-          //   <Pane
-          //     display="flex"
-          //     justifyContent="center"
-          //     alignItems="center"
-          //     flexWrap="wrap"
-          //   >
-
-          //     <Icon
-          //       icon="dot"
-          //       size={22}
-          //       color={index <= currentStep ? '#22d78a' : '#a5adba'}
-          //     />
-
-          //     <Text
-          //       key={tab}
-          //       id={tab}
-          //       onClick={() => setCurrentStep(index)}
-          //       aria-controls={`panel-${tab}`}
-          //       color="#fff"
-          //       {...index === currentStep && { fontWeight: '600' }}
-          //     >
-          //       {tab}
-          //     </Text>
-          //   </Pane>
-          // </Pane>
+          </Box>
         ))}
-      </Tablist>
-      <Pane
+      </Box>
+      <Box
         background="white"
         flex="1"
         borderBottomLeftRadius={5}
         borderBottomRightRadius={5}
       >
         {tabs.map((tab, index) => (
-          <Pane
+          <Box
             key={tab}
-            id={`panel-${tab}`}
-            role="tabpanel"
+            id={`Boxl-${tab}`}
             aria-labelledby={tab}
             aria-hidden={index !== buyerStep}
             display={index === buyerStep ? 'block' : 'none'}
@@ -183,41 +102,50 @@ const buyerOnboarding = ({
                 case 0:
                   return (
                     <>
-                      <Pane padding={16}>
-                        <Pane
+                      <Box padding={4}>
+                        <Box
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
                           marginBottom={15}
                         >
-                          <Heading size={500} color="#425A70">
+                          <Heading
+                            fontSize="md"
+                            color="#425A70"
+                            fontWeight={500}
+                          >
                             Getting started as a marketplace buyer
                           </Heading>
-                        </Pane>
-                        <Pane
-                          flexShrink={0}
-                          height={3}
-                          backgroundColor="#E4E7EB"
-                          borderRadius={1}
-                          marginBottom={15}
-                        />
-                        <Heading size={400} marginBottom={4} color="#425A70">
+                        </Box>
+                        <Divider />
+
+                        <Heading
+                          fontSize="md"
+                          marginBottom={2}
+                          color="#425A70"
+                          fontWeight={500}
+                        >
                           Requesting Buyer Access
                         </Heading>
-                        <Paragraph marginBottom={5}>
+                        <Box
+                          as="p"
+                          color="#425A70"
+                          fontSize="sm"
+                          marginBottom={2}
+                        >
                           Since we are in Beta, we will be allowing users to use
                           the marketplace in batches. Simply click the request
                           access button and we'll notify you when access has
                           been approved.
-                        </Paragraph>
-                      </Pane>
-                      {requested ? (
-                        <Pane
+                        </Box>
+                      </Box>
+                      {!requested ? (
+                        <Box
                           {...sucessCard}
                           padding={15}
                           borderTop="2px solid #f0f0f0"
-                          borderBottomLeftRadius="5"
-                          borderBottomRightRadius="5"
+                          borderBottomLeftRadius="5px"
+                          borderBottomRightRadius="5px"
                           borderTopLeftRadius="0"
                           borderTopRightRadius="0"
                         >
@@ -226,29 +154,26 @@ const buyerOnboarding = ({
                             color="#47B881"
                             marginRight={10}
                           />
-                          <Text
-                            size={500}
-                            color="#47B881"
-                            fontWeight={500}
-                            fontSize="14px"
-                          >
+                          <Text fontSize="sm" color="#47B881" fontWeight={500}>
                             Marketplace buyer access has been requested. We'll
                             be in touch soon.
                           </Text>
-                        </Pane>
+                        </Box>
                       ) : (
                         <Button
                           height={35}
                           fontSize={15}
                           width="100%"
-                          textColor="#fff"
+                          color="#fff"
+                          letterSpacing="wider"
+                          fontWeight={700}
+                          textTransform="uppercase"
                           background="#14B5D0"
                           borderBottomLeftRadius="5"
                           borderBottomRightRadius="5"
                           borderTopLeftRadius="0"
                           borderTopRightRadius="0"
-                          onClick={onConfirm}
-                          isLoading={loading}
+                          _hover={{ opacity: 0.8 }}
                         >
                           Request Access
                         </Button>
@@ -258,31 +183,37 @@ const buyerOnboarding = ({
                 case 1:
                   return (
                     <>
-                      <Pane padding={16} paddingBottom={0}>
-                        <Pane
+                      <Box padding={4} paddingBottom={0}>
+                        <Box
                           display="flex"
                           alignItems="center"
                           justifyContent="center"
                           marginBottom={15}
                         >
-                          <Heading size={500} color="#425A70">
+                          <Heading
+                            fontSize="md"
+                            fontWeight={500}
+                            color="#425A70"
+                          >
                             Please add a payment method
                           </Heading>
-                        </Pane>
-                        <Pane
+                        </Box>
+                      </Box>
+                      <Box bg="gray.100">
+                        <Box
                           flexShrink={0}
-                          height={3}
+                          height={0.5}
                           backgroundColor="#E4E7EB"
                           borderRadius={1}
                         />
-                      </Pane>
-                      <AddCard />
+                        {addCardComp}
+                      </Box>
                     </>
                   );
                 case 2:
                   return (
-                    <Pane padding={16}>
-                      <Pane
+                    <Box padding={4}>
+                      <Box
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
@@ -291,65 +222,87 @@ const buyerOnboarding = ({
                         <span role="img" aria-label="confetti">
                           🎉
                         </span>
-                        <Heading size={500} color="#425A70">
+                        <Heading fontSize="md" fontWeight={600} color="#425A70">
                           You're all set!
                         </Heading>
-                      </Pane>
-                      <Pane
-                        flexShrink={0}
-                        height={3}
-                        backgroundColor="#E4E7EB"
-                        borderRadius={1}
-                        marginBottom={15}
-                      />
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      </Box>
+                      <Divider />
+
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         Using the Marketplace
                       </Heading>
-                      <Paragraph marginBottom={25}>
+                      <Box
+                        as="p"
+                        marginBottom={25}
+                        color="#425A70"
+                        fontSize="sm"
+                      >
                         You can access the marketplace under the pending tab.
                         When you fulfill your shop order using the marketplace,
                         it will be placed under the processed tab. Once the
                         marketplace seller ships the item, we will fulfill the
                         order on your shop.
-                      </Paragraph>
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      </Box>
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         We're still in Beta!
                       </Heading>
-                      <Paragraph marginBottom={25}>
+                      <Box
+                        as="p"
+                        marginBottom={25}
+                        color="#425A70"
+                        fontSize="sm"
+                      >
                         Please note we are still squashing bugs and making
                         improvements. If you have any issues, please open a
                         ticket here or an issue on Github.
-                      </Paragraph>
+                      </Box>
 
-                      <Heading size={400} marginBottom={4} color="#425A70">
+                      <Heading
+                        fontSize="md"
+                        fontWeight={500}
+                        marginBottom={2}
+                        color="#425A70"
+                      >
                         Upcoming Features
                       </Heading>
-                      <Paragraph>
+                      <Box as="p" color="#425A70" fontSize="sm">
                         We are working on new features and as a beta tester, you
                         will get first access when these are ready.
-                      </Paragraph>
-                      <ListItem>
+                      </Box>
+                      <Box as="li" color="#425A70" fontSize="sm" my={2}>
                         Automatic returns for marketplace orders
-                      </ListItem>
-                      <ListItem>
+                      </Box>
+                      <Box as="li" color="#425A70" fontSize="sm" my={2}>
                         3rd party returns integration (Returnly, Return Magic,
                         etc.)
-                      </ListItem>
-                      <ListItem>Bulk buying from marketplace sellers</ListItem>
-                      <ListItem>
+                      </Box>
+                      <Box as="li" color="#425A70" fontSize="sm" my={2}>
+                        Bulk buying from marketplace sellers
+                      </Box>
+                      <Box as="li" color="#425A70" fontSize="sm" my={2}>
                         Fulfillment center integration (ShipBob, ShipMonk,
                         Rakuten 3PL, etc.)
-                      </ListItem>
-                    </Pane>
+                      </Box>
+                    </Box>
                   );
                 default:
                   return <div>hi</div>;
               }
             })()}
-          </Pane>
+          </Box>
         ))}
-      </Pane>
-    </Pane>
+      </Box>
+    </Box>
   );
 };
 

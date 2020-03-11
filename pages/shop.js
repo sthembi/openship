@@ -1,12 +1,8 @@
-import { Pane } from 'evergreen-ui';
+import { Box } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import Shop from '../components/shop/Shop';
 
-const shopPage = ({ query }) => (
-  <Pane marginX="-2em" height="100%">
-    <Shop shop={query.shop} />
-  </Pane>
-);
+const shopPage = ({ query }) => <Shop shop={query.shop} />;
 
 export default shopPage;
 

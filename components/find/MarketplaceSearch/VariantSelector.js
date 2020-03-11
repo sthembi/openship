@@ -1,47 +1,39 @@
 import React, { Component } from 'react';
-import { Pane, Heading, Select } from 'evergreen-ui';
+import { Box, Heading, Select } from '@chakra-ui/core';
 
 class VariantSelector extends Component {
   render() {
+    const {
+      option: { name, values },
+      handleOptionChange,
+    } = this.props;
+
     return (
-      <Pane marginRight={10}>
-        <Heading size={100}>{this.props.option.name}</Heading>
-        <Select
-          height={20}
-          name={this.props.option.name}
-          key={this.props.option.name}
-          background="#fff"
-          onChange={this.props.handleOptionChange}
+      <Box marginRight={10}>
+        <Heading
+          fontSize="sm"
+          color="gray.500"
+          letterSpacing="wide"
+          fontWeight={600}
         >
-          {this.props.option.values.map(value => (
-            // <Heading
-            //   size={100}
-            //   fontWeight={700}
-            //   color="#425A70"
-            //   // border="1px solid #E4E7EB"
-            //   background="#F9F9FB"
-            //   borderColor="transparent"
-            //   is="button"
-            //   marginRight={3}
-            //   transition="all 0.1s ease-in"
-            //   borderRadius={2}
-            //   outline="none"
-            //   cursor="pointer"
-            //   display="inline-flex"
-            //   alignItems="center"
-            //   elevation={1}
-            //   justifyContent="center"
-            //   onClick={e => this.props.handleOptionChange(e)}
-            // >
-            //   {value}
-            // </Heading>
-            <option
-              value={value}
-              key={`${this.props.option.name}-${value}`}
-            >{`${value}`}</option>
+          {name}
+        </Heading>
+        <Select
+          mt={1}
+          height={6}
+          fontSize="12px"
+          name={name}
+          key={name}
+          onChange={handleOptionChange}
+          iconSize={4}
+          borderRadius={3}
+          background="#f7f7f7"
+        >
+          {values.map(value => (
+            <option value={value} key={`${name}-${value}`}>{`${value}`}</option>
           ))}
         </Select>
-      </Pane>
+      </Box>
     );
   }
 }

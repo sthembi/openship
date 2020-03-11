@@ -1,136 +1,138 @@
 import React, { Component } from 'react';
-import { Pane, Heading, Avatar, Text, IconButton, Icon } from 'evergreen-ui';
+import {
+  Box,
+  Button,
+  Icon,
+  Heading,
+  Text,
+  Spinner,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 
-class CartItem extends Component {
-  static propTypes = {
-    lineItem: PropTypes.object,
-    updateLineItemInCart: PropTypes.func,
-  };
-
-  decrementQuantity = lineItemId => {
-    const { checkoutLineItemsUpdate, lineItem, checkoutID } = this.props;
+function CartItem({
+  lineItem,
+  removeItem,
+  checkoutLineItemsUpdate,
+  checkoutID,
+  loading,
+}) {
+  function updateQuantity(lineItemId, quantity) {
     checkoutLineItemsUpdate([
-      { id: lineItemId, quantity: parseInt(lineItem.quantity - 1, 10) },
+      { id: lineItemId, quantity: parseInt(quantity, 10) },
     ]);
-  };
+  }
 
-  incrementQuantity = lineItemId => {
-    const { checkoutLineItemsUpdate, lineItem, checkoutID } = this.props;
-    checkoutLineItemsUpdate([
-      { id: lineItemId, quantity: parseInt(lineItem.quantity + 1, 10) },
-    ]);
-  };
-
-  render() {
-    const {
-      lineItem,
-      removeItem,
-      checkoutLineItemsUpdate,
-      checkoutID,
-      loading,
-    } = this.props;
-    return (
-      <Pane background="#fff" border="muted" marginBottom={5}>
-        <Pane display="flex" alignItems="center">
-          <Pane borderRight="muted" height="100%" background="white">
-            {lineItem.variant.image && (
-              <Avatar
+  return (
+    <Box background="#fff" border="muted" marginBottom={5}>
+      <Box display="flex" alignItems="center">
+        <Box height="100%" background="white">
+          {lineItem.variant.image && (
+            <Box
+              background="white"
+              borderRight="1px solid #e8e9ea"
+              height="70px"
+              width="70px"
+            >
+              <Box
+                as="img"
                 src={lineItem.variant.image.src}
                 alt={`${lineItem.title} product shot`}
-                backgroundColor="white"
-                // borderStyle="solid"
-                // borderWidth="1px"
-                borderRadius={0}
-                // borderColor="#e8e9ea"
-                size={70}
               />
-            )}
-          </Pane>
-          <Pane padding={5} paddingLeft={10}>
-            <Heading size={300}>{lineItem.title}</Heading>
-            <Pane display="flex" marginTop="2px">
-              <Text size={300} lineHeight="12px">
-                {lineItem.variant.title}
-              </Text>
-              <Pane marginX={5} lineHeight="12px">
-                ·
-              </Pane>
-              <Heading
-                size={300}
-                marginRight={10}
-                color="green"
-                lineHeight="12px"
-              >
-                ${(lineItem.quantity * lineItem.variant.price).toFixed(2)}
-              </Heading>
-            </Pane>
-            {lineItem.quantity > 1 && (
-              <Text size={300} color="muted" lineHeight="12px">
-                ${lineItem.variant.price} x {lineItem.quantity}
-              </Text>
-            )}
-          </Pane>
-          <Pane marginLeft="auto" display="flex" alignItems="center">
-            {checkoutLineItemsUpdate && (
-              <Pane display="flex" height={20}>
-                <Pane
-                  display="flex"
-                  alignItems="center"
-                  background="#F9F9FB"
-                  border="muted"
-                  paddingX={5}
-                  borderRadius={2}
-                >
-                  {loading ? (
-                    <Text size={300} marginX={19}>
-                      <div className="dot-flashing" />
-                    </Text>
-                  ) : (
-                    <>
-                      <Icon
-                        color="#425A70"
-                        icon="minus"
-                        appearance="minimal"
-                        size={12}
-                        cursor="pointer"
-                        onClick={() => this.decrementQuantity(lineItem.id)}
+            </Box>
+          )}
+        </Box>
+        <Box paddingRight={2} paddingLeft={3}>
+          <Heading fontSize="sm" color="text">
+            {lineItem.title}
+          </Heading>
+          <Box display="flex" alignItems="center">
+            <Text fontSize="xs" color="gray.600">
+              {lineItem.variant.title}
+            </Text>
+            <Box marginX={2}>·</Box>
+            <Heading fontSize="xs" marginRight={10} color="green.600">
+              ${(lineItem.quantity * lineItem.variant.price).toFixed(2)}
+            </Heading>
+          </Box>
+          {lineItem.quantity > 1 && (
+            <Text fontSize="xs" color="gray.500">
+              ${lineItem.variant.price} x {lineItem.quantity}
+            </Text>
+          )}
+        </Box>
+        <Box marginLeft="auto" display="flex" alignItems="center">
+          {checkoutLineItemsUpdate && (
+            <>
+              {loading ? (
+                <Spinner size="sm" color="blue.500" mx={3} />
+              ) : (
+                <>
+                  <NumberInput
+                    size="sm"
+                    value={lineItem.quantity}
+                    onChange={e => updateQuantity(lineItem.id, e)}
+                    min={0}
+                    width="80px"
+                    mr={1}
+                  >
+                    <NumberInputField
+                      focusBorderColor="blue.500"
+                      textAlign="center"
+                      _hover={{ borderColor: 'blue.500' }}
+                      height="25px"
+                    />
+                    <NumberInputStepper width="25px">
+                      <NumberIncrementStepper
+                        bg="#f6f7f9"
+                        color="blue.500"
+                        _active={{ bg: 'blue.500' }}
+                        _hover={{ bg: 'blue.500', color: 'white' }}
+                        children={<Icon name="add" color="currentColor" />}
+                        marginTop="0px !important"
+                        borderTopWidth="0px !important"
                       />
-
-                      <Text size={300} marginX={9}>
-                        {lineItem.quantity}
-                      </Text>
-
-                      <Icon
-                        color="#425A70"
-                        icon="plus"
-                        appearance="minimal"
-                        size={12}
-                        cursor="pointer"
-                        onClick={() => this.incrementQuantity(lineItem.id)}
+                    </NumberInputStepper>
+                    <NumberInputStepper left="0" width="25px">
+                      <NumberDecrementStepper
+                        bg="#f6f7f9"
+                        color="blue.500"
+                        _active={{ bg: 'blue.500' }}
+                        _hover={{ bg: 'blue.500', color: 'white' }}
+                        children={<Icon name="minus" color="currentColor" />}
+                        borderLeft="0px"
+                        borderRight="1px solid #E2E8F0"
+                        marginTop="0px !important"
+                        borderTopWidth="0px !important"
                       />
-                    </>
-                  )}
-                </Pane>
-              </Pane>
-            )}
-            {removeItem && (
-              <IconButton
-                height={20}
-                appearance="minimal"
-                inent="danger"
-                icon="cross"
-                iconSize={15}
-                marginX={10}
-                pointerEvents="visible"
-                onClick={() => removeItem([lineItem.id])}
-              />
-            )}
-          </Pane>
-        </Pane>
-      </Pane>
-    );
-  }
+                    </NumberInputStepper>
+                  </NumberInput>
+                </>
+              )}
+            </>
+          )}
+          {removeItem && (
+            <Button
+              aria-label="show line-items"
+              height="1.3rem"
+              minWidth="1.3rem"
+              bg="transparent"
+              color="#66788a"
+              px={0}
+              mx={2}
+              onClick={() => removeItem([lineItem.id])}
+            >
+              <Icon name="small-close" size={4} />
+            </Button>
+          )}
+        </Box>
+      </Box>
+    </Box>
+  );
 }
 
 export default CartItem;

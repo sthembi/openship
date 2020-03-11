@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import fetch from 'isomorphic-unfetch';
-import { Pane, TextInput, Heading, Text, Code, Switch } from 'evergreen-ui';
+import { Box, Heading, Text, Code, Switch } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import { front, prodFront, prodEndpoint } from '../../config';
 
@@ -131,61 +131,63 @@ const WebhookSwitch = ({ domain, accessToken }) => {
 
   return (
     <>
-      <Pane
-        paddingY={10}
-        paddingX={15}
+      <Box
+        paddingY={2}
+        paddingX={4}
         background="#f5f5f5"
         display="flex"
         alignItems="center"
         width="100%"
       >
-        <Pane paddingRight={15}>
-          <Heading size={500} fontSize="15px" fontWeight={500}>
+        <Box paddingRight={15}>
+          <Heading fontSize="sm" fontWeight={500} mb={1} color="gray.800">
             Push orders to Openship
           </Heading>
-          <Text size={300}>
+          <Text fontSize="xs" color="gray.700">
             Orders will be pushed to the pending tab to be fulfilled
           </Text>
-        </Pane>
+        </Box>
         <Switch
           marginLeft="auto"
-          checked={results.length > 0}
+          isChecked={results.length > 0}
           onChange={e => handleSwitch(e)}
         />
-      </Pane>
+      </Box>
       {results.map(a => (
-        <Pane paddingY={10} paddingX={15}>
-          <Pane display="flex" alignItems="center" marginBottom={10}>
+        <Box paddingY={2} paddingX={3}>
+          <Box display="flex" alignItems="center" marginBottom={2}>
             <Text
-              size={400}
-              paddingRight={5}
+              fontSize="sm"
               fontWeight={500}
               align="right"
-              marginRight={5}
+              marginRight={2}
               flexBasis="100px"
+              textAlign="right"
+              color="text"
             >
               Endpoint:
             </Text>
-            <Code fontSize="12px" size={300} wordWrap="break-word">
+            <Code variantColor="blue" fontSize="xs" wordWrap="break-word">
               Openship
             </Code>
-          </Pane>
-          <Pane display="flex" alignItems="center">
+          </Box>
+          <Box display="flex" alignItems="center">
             <Text
-              size={400}
-              paddingRight={5}
+              fontSize="sm"
               fontWeight={500}
               align="right"
-              marginRight={5}
+              marginRight={2}
               flexBasis="100px"
+              textAlign="right"
+              color="text"
             >
               Topic:
             </Text>
-            <Code fontSize="12px" size={300}>
+            <Code variantColor="blue" fontSize="xs">
               {a.node.topic}
             </Code>
-          </Pane>
-        </Pane>
+          </Box>
+        </Box>
       ))}
     </>
   );

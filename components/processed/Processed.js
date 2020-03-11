@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import { gql } from "apollo-boost";
-import { Query } from "react-apollo";
-import { Pane, Heading, Spinner, Icon } from "evergreen-ui";
-import OrderListItem from "../common/orderListItem/OrderListItem";
-import Button from "../common/Button";
+import React, { useState } from 'react';
+import { gql } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks';
+import { Box, Heading, Spinner, Icon, Button } from '@chakra-ui/core';
+import OrderListItem from '../common/orderListItem/OrderListItem';
+import { CardStyle } from '../common/DefaultStyles';
 
-import { CardStyle } from "../common/DefaultStyles";
-
-export const OrdersQuery = gql`
+export const ORDER_QUERY = gql`
   query OrdersQuery($skip: Int, $first: Int, $processed: Processed) {
     orders(
       first: $first
@@ -59,141 +57,164 @@ function PendingOrders() {
   const [firstQ, setFirstQ] = useState(100);
   const [open, setOpen] = useState(false);
 
+  const {
+    data: ordersData,
+    error: ordersError,
+    loading: ordersLoading,
+  } = useQuery(ORDER_QUERY, {
+    variables: {
+      skip,
+      first: firstQ,
+      processed: 'TRUE',
+    },
+  });
+
+  const { data: pageData, error: pageError, loading: pageLoading } = useQuery(
+    PAGINATION_QUERY
+  );
+
   return (
     <>
-      <Pane display="flex" paddingTop={16} paddingBottom={16}>
-        <Pane flex={1} alignItems="center" display="flex">
-          <Heading size={700}>Processed Orders</Heading>
-        </Pane>
-      </Pane>
-      <Pane display="flex" flexWrap="wrap">
-        <Query
-          query={OrdersQuery}
-          variables={{
-            skip,
-            first: firstQ,
-            processed: "TRUE"
-          }}
-        >
-          {({ loading, error, data }) => {
-            if (loading)
-              return (
-                <>
-                  <Pane>
-                    <Pane {...CardStyle}>
-                      <Pane
-                        display="flex"
-                        alignItems="center"
-                        justifyContent="center"
-                        height="50vh"
-                      >
-                        <Spinner size={80} />
-                      </Pane>
-                    </Pane>
-                  </Pane>
-                </>
-              );
-            if (error) return `Error! ${error.message}`;
-            const { orders } = data;
-
+      <Box display="flex" py={4}>
+        <Box flex={1} alignItems="center" display="flex">
+          <Heading fontSize="2xl" color="text" fontWeight={500}>
+            Processed Orders
+          </Heading>
+        </Box>
+      </Box>
+      <Box display="flex" flexWrap="wrap">
+        {(() => {
+          if (ordersLoading)
             return (
               <>
-                <Pane width="100%" {...CardStyle}>
-                  <Pane
-                    display="flex"
-                    paddingX="1em"
-                    paddingY=".8em"
-                    alignItems="center"
-                  >
-                    <Query query={PAGINATION_QUERY}>
-                      {({ data, loading, error }) => {
-                        const count = data.ordersConnection
-                          ? data.ordersConnection.aggregate.count
-                          : 0;
-
-                        return (
-                          <>
-                            <Heading size={100}>{count} Orders</Heading>
-                            <Pane marginLeft="auto">
-                              <Button
-                                background={open ? "#D4EEE2" : "#F7F7F7"}
-                                borderRadius={3}
-                                onClick={() => setOpen(!open)}
-                              >
-                                <Heading
-                                  size={100}
-                                  fontWeight={700}
-                                  color="#00783E"
-                                >
-                                  Expand All
-                                </Heading>
-                                <Icon
-                                  color="#00783E"
-                                  size={13}
-                                  icon="chevron-down"
-                                  marginRight={-4}
-                                  marginLeft={3}
-                                />
-                              </Button>
-                            </Pane>
-                          </>
-                        );
-                      }}
-                    </Query>
-                  </Pane>
-                  {orders.length ? (
-                    orders.map(order => (
-                      <Pane key={order.id}>
-                        <Pane
-                          opacity={loading && "0.2"}
-                          width="100%"
-                          height="100%"
-                          position="relative"
-                        >
-                          {loading && (
-                            <Pane
-                              display="flex"
-                              justifyContent="center"
-                              alignItems="center"
-                              position="absolute"
-                              width="100%"
-                              height="100%"
-                            >
-                              <Spinner size={80} />
-                            </Pane>
-                          )}
-                          <Pane borderTop="0.1rem solid #dfe3e8">
-                            <OrderListItem
-                              {...order}
-                              key={order.id}
-                              index={order.id}
-                              disabled
-                              open={open}
-                            />
-                          </Pane>
-                        </Pane>
-                      </Pane>
-                    ))
-                  ) : (
-                    <Pane
-                      background="tint2"
+                <Box width="100%">
+                  <Box {...CardStyle}>
+                    <Box
                       display="flex"
-                      justifyContent="center"
                       alignItems="center"
-                      flexDirection="column"
-                      borderRadius={3}
+                      justifyContent="center"
+                      height="50vh"
                     >
-                      <Heading margin="1em" size={600}>
-                        Your processed orders will appear here.
-                      </Heading>
-                    </Pane>
-                  )}
-                </Pane>
+                      <Spinner
+                        thickness="4px"
+                        speed="0.65s"
+                        emptyColor="gray.200"
+                        color="blue.500"
+                        size="xl"
+                      />
+                    </Box>
+                  </Box>
+                </Box>
               </>
             );
-          }}
-        </Query>
-      </Pane>
+          if (ordersError) return `Error! ${ordersError.message}`;
+          const { orders } = ordersData;
+
+          return (
+            <>
+              <Box width="100%" {...CardStyle}>
+                <Box
+                  display="flex"
+                  paddingX="1em"
+                  paddingY=".6em"
+                  alignItems="center"
+                >
+                  {(() => {
+                    const count = pageData.ordersConnection
+                      ? pageData.ordersConnection.aggregate.count
+                      : 0;
+                    return (
+                      <>
+                        <Heading
+                          fontSize="xs"
+                          letterSpacing="wider"
+                          textTransform="uppercase"
+                          color="gray.500"
+                          fontWeight={400}
+                        >
+                          {count} Orders
+                        </Heading>
+                        <Box marginLeft="auto">
+                          <Button
+                            background="#DDEBF7"
+                            color="#1070CA"
+                            borderRadius={3}
+                            px={2}
+                            height={6}
+                            onClick={() => setOpen(!open)}
+                          >
+                            <Heading
+                              fontSize="xs"
+                              fontWeight={700}
+                              letterSpacing="wide"
+                              marginRight={1}
+                              textTransform="uppercase"
+                            >
+                              {open ? 'Collapse' : 'Expand'} All
+                            </Heading>
+                            <Icon size={5} name="chevron-down" />
+                          </Button>
+                        </Box>
+                      </>
+                    );
+                  })()}
+                </Box>
+                {orders.length ? (
+                  orders.map(order => (
+                    <Box key={order.id}>
+                      <Box
+                        opacity={ordersLoading && '0.2'}
+                        width="100%"
+                        height="100%"
+                        position="relative"
+                      >
+                        {ordersLoading && (
+                          <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            position="absolute"
+                            width="100%"
+                            height="100%"
+                          >
+                            <Spinner size={80} />
+                          </Box>
+                        )}
+                        <Box borderTop="0.1rem solid #dfe3e8">
+                          <OrderListItem
+                            {...order}
+                            key={order.id}
+                            index={order.id}
+                            disabled
+                            open={open}
+                          />
+                        </Box>
+                      </Box>
+                    </Box>
+                  ))
+                ) : (
+                  <Box
+                    backgroundColor="gray.100"
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    flexDirection="column"
+                  >
+                    <Heading
+                      margin="1em"
+                      fontSize="xl"
+                      fontWeight={600}
+                      color="text"
+                    >
+                      Your processed orders will appear here.
+                    </Heading>
+                  </Box>
+                )}
+              </Box>
+            </>
+          );
+        })()}
+      </Box>
     </>
   );
 }

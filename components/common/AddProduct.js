@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { gql } from 'apollo-boost';
-import { Mutation } from 'react-apollo';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
-import { toaster } from 'evergreen-ui';
-import Button from './Button';
-import User from '../user/User';
+import { useToast, Button } from '@chakra-ui/core';
+import { CURRENT_USER_QUERY } from '../user/User';
 
 const CREATE_PRODUCTS_MUTATION = gql`
   mutation createProducts(
@@ -35,39 +33,44 @@ const CREATE_PRODUCTS_MUTATION = gql`
 `;
 
 const AddProduct = ({ product, client }) => {
-  const [inventory, setInventory] = useState(0);
+  const {
+    data: { me },
+  } = useQuery(CURRENT_USER_QUERY);
+  const [createProducts] = useMutation(CREATE_PRODUCTS_MUTATION);
 
-  return (
-    <User>
-      {({ data: { me } }) => {
-        if (!me) return null;
-        if (me.seller && me.seller.status) {
-          return (
-            <Mutation mutation={CREATE_PRODUCTS_MUTATION}>
-              {(createProducts, { error, loading }) => (
-                <Button
-                  intent="primary"
-                  height={20}
-                  onClick={async () => {
-                    await createProducts({
-                      variables: { ...product, client },
-                    });
-                    toaster.success(
-                      `${product.title} has been added to the marketplace`
-                    );
-                  }}
-                  marginRight={5}
-                >
-                  Sync
-                </Button>
-              )}
-            </Mutation>
-          );
-        }
-        return null;
-      }}
-    </User>
-  );
+  const toast = useToast();
+  if (!me) return null;
+  if (me.seller && me.seller.status) {
+    return (
+      <Button
+        background="#DDEBF7"
+        color="#1070CA"
+        borderRadius={3}
+        marginRight={1}
+        px={2}
+        height={5}
+        textTransform="uppercase"
+        letterSpacing="wide"
+        fontSize="xs"
+        fontWeight={700}
+        onClick={async () => {
+          await createProducts({
+            variables: { ...product, client },
+          });
+          toast({
+            position: 'top-right',
+            title: 'Product has been added.',
+            description: `${product.title}`,
+            status: 'success',
+            isClosable: true,
+          });
+        }}
+      >
+        Sync
+      </Button>
+    );
+  }
+  return null;
 };
 
 export default AddProduct;

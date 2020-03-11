@@ -1,8 +1,10 @@
-import App, { Container } from 'next/app';
-import { ApolloProvider } from 'react-apollo';
+import App from 'next/app';
+import { ApolloProvider } from '@apollo/react-hooks';
+import { ThemeProvider, CSSReset } from '@chakra-ui/core';
 import Page from '../components/layout/Page';
 import withData from '../lib/withData';
 import PleaseSignIn from '../components/user/PleaseSignIn';
+import theme from '../theme';
 
 class MyApp extends App {
   static async getInitialProps({ Component, ctx, apolloClient }) {
@@ -23,20 +25,23 @@ class MyApp extends App {
         return <Component {...pageProps} />;
       }
       return (
-        <PleaseSignIn>
-          <Page
-            shopsURL={
-              p.startsWith('/shops') || (p.startsWith('/settings') && true)
-            }
-          >
-            <Component {...pageProps} />
-          </Page>
-        </PleaseSignIn>
+        <ThemeProvider theme={theme}>
+          <CSSReset />
+          <PleaseSignIn>
+            <Page
+              shopsURL={
+                p.startsWith('/shops') || (p.startsWith('/settings') && true)
+              }
+            >
+              <Component {...pageProps} />
+            </Page>
+          </PleaseSignIn>
+        </ThemeProvider>
       );
     }
 
     return (
-      <Container>
+      <>
         <style>{`
           .layout {
             display: flex;
@@ -186,7 +191,7 @@ class MyApp extends App {
           }
         `}</style>
         <ApolloProvider client={apollo}>{pathCheck(path)}</ApolloProvider>
-      </Container>
+      </>
     );
   }
 }

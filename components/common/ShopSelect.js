@@ -1,26 +1,30 @@
-import { Button, SelectMenu, Heading } from 'evergreen-ui';
+import { Heading, Box } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 
 const ShopSelect = ({ shops, client, updateClient }) => (
-  <SelectMenu
-    title="Shops"
-    options={shops.map(shop => ({
-      label: (
-        <Heading size={100} fontWeight={500}>
+  <Box display="flex" flexWrap="wrap">
+    {shops.map(shop => (
+      <Box
+        p={2}
+        mr={2}
+        mt={2}
+        borderRadius={2}
+        bg={client === shop.domain.split('.')[0] ? 'blue.50' : 'gray.50'}
+        onClick={() => updateClient(shop.domain.split('.')[0])}
+        cursor="pointer"
+      >
+        <Heading
+          fontSize="xs"
+          fontWeight={500}
+          color={client === shop.domain.split('.')[0] ? 'blue.600' : 'gray.500'}
+          letterSpacing="wide"
+          textTransform="uppercase"
+        >
           {shop.domain.split('.')[0]}
         </Heading>
-      ),
-      value: shop.domain.split('.')[0],
-    }))}
-    selected={client}
-    onSelect={item => updateClient(item.value)}
-  >
-    <Button marginTop={5} iconAfter="caret-down">
-      <Heading size={100} fontWeight={500}>
-        {client || 'Select a shop...'}
-      </Heading>
-    </Button>
-  </SelectMenu>
+      </Box>
+    ))}
+  </Box>
 );
 export default ShopSelect;
 

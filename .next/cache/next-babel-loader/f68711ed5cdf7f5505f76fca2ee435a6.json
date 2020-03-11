@@ -1,0 +1,1 @@
+{"ast":null,"code":"import React from \"react\";\nvar __jsx = React.createElement;\nimport { Box } from '@chakra-ui/core';\nimport Shop from '../components/shop/Shop';\n\nvar shopPage = function shopPage(_ref) {\n  var query = _ref.query;\n  return __jsx(Shop, {\n    shop: query.shop\n  });\n};\n\nexport default shopPage;","map":null,"metadata":{},"sourceType":"module"}

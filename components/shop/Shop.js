@@ -1,13 +1,13 @@
 import React from 'react';
-import { Query } from 'react-apollo';
+import { useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import { Pane, Heading } from 'evergreen-ui';
+import { Box, Heading } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import { front, prodFront } from '../../config';
 import Playground from './playground';
 import Tracking from './apps/tracking';
 
-export const shopQuery = gql`
+export const SHOP_QUERY = gql`
   query($domain: String!) {
     shop(domain: $domain) {
       name
@@ -20,76 +20,55 @@ export const shopQuery = gql`
   }
 `;
 
-export const shopQueryVars = {
-  skip: 0,
-  first: 10,
-};
-
-// function postRequest(url, data) {
-//   return fetch(url, {
-//     credentials: 'same-origin', // 'include', default: 'omit'
-//     method: 'POST', // 'GET', 'PUT', 'DELETE', etc.
-//     body: JSON.stringify(data), // Use correct payload (matching 'Content-Type')
-//     headers: { 'Content-Type': 'application/json' },
-//   })
-//     .then(response => response.json())
-//     .catch(error => console.error(error));
-// }
-
 export default function Shop({ shop }) {
+  const { data, loading, error } = useQuery(SHOP_QUERY, {
+    variables: { domain: shop },
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (!data) return <h1>This shop is not added to your account.</h1>;
+
+  if (error || !data.shop) return <h1>Error loading shops: {error}</h1>;
+
+  const {
+    shop: { name, accessToken },
+  } = data;
+
   return (
-    <Query query={shopQuery} variables={{ domain: shop }}>
-      {({ data, error, loading }) => {
-        if (loading) return <p>Loading...</p>;
-        if (!data) return <h1>This shop is not added to your account.</h1>;
+    <Box width="100%" borderWidth="0">
+      <Box paddingY={4}>
+        {/* <Box alignItems="center" display="flex" marginBottom={2}>
+          <Heading size={700}>{name}</Heading>
+        </Box> */}
+        <Heading fontSize="2xl" color="text" fontWeight={500}>
+          {name}
+        </Heading>
+        <Heading fontSize="lg" my={4} fontWeight={500}>
+          Apps
+        </Heading>
+        <Box display="flex">
+          <Tracking
+            url={`${
+              process.env.NODE_ENV === 'development' ? front : prodFront
+            }/${accessToken}/graphql`}
+          />
+        </Box>
+        <Heading fontSize="lg" marginTop={25} fontWeight={500}>
+          Playground
+        </Heading>
+      </Box>
 
-        if (error || !data.shop) return <h1>Error loading shops: {error}</h1>;
-
-        const {
-          shop: { name, accessToken },
-        } = data; /* eslint-disable*/
-        // postRequest(
-        //   `${
-        //     process.env.NODE_ENV === 'development' ? front : prodFront
-        //   }/_shopify`,
-        //   { shop }
-        // );
-
-        return (
-          <Pane width="100%" marginBottom="-2em" borderWidth="0">
-            <Pane paddingY={16} paddingX="2rem">
-              <Pane alignItems="center" display="flex" marginBottom={15}>
-                <Heading size={700}>{name}</Heading>
-              </Pane>
-              <Heading size={500} marginBottom={15}>
-                Apps
-              </Heading>
-              <Pane display="flex">
-                <Tracking
-                  url={`${
-                    process.env.NODE_ENV === "development" ? front : prodFront
-                  }/${accessToken}/graphql`}
-                />
-              </Pane>
-              <Heading size={500} marginTop={25}>
-                Playground
-              </Heading>
-            </Pane>
-
-            <Playground
-              accessToken={accessToken}
-              shop={shop}
-              url={`${
-                process.env.NODE_ENV === "development" ? front : prodFront
-              }/${accessToken}/graphql`}
-            />
-          </Pane>
-        );
-      }}
-    </Query>
+      <Playground
+        accessToken={accessToken}
+        shop={shop}
+        url={`${
+          process.env.NODE_ENV === 'development' ? front : prodFront
+        }/${accessToken}/graphql`}
+      />
+    </Box>
   );
 }
 
 Shop.propTypes = {
-  shop: PropTypes.string.isRequired
+  shop: PropTypes.string.isRequired,
 };

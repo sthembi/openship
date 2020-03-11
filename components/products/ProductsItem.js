@@ -1,43 +1,50 @@
-import { Pane, Heading, Text, Avatar } from 'evergreen-ui';
+import { Box, Heading, Text } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
-
 import AddProduct from '../common/AddProduct';
 
 const ProductsItem = ({ product, client }) => (
-  <Pane display="flex" padding={15} borderTop="0.1rem solid #dfe3e8">
-    <Pane marginTop="auto">
-      <Avatar
-        src={product.images.edges[0].node.originalSrc}
-        borderStyle="solid"
-        borderWidth="1px"
+  <Box display="flex" padding={15} borderTop="0.1rem solid #dfe3e8">
+    <Box marginTop="auto">
+      <Box
+        background="white"
+        border="1px solid #e8e9ea"
         borderRadius={3}
-        borderColor="#e8e9ea"
-        size={50}
-      />
-    </Pane>
-    <Pane marginLeft={10} display="block">
-      <Heading size={500}>{product.title}</Heading>
-      <Text size={400} marginRight={10}>
+        height="70px"
+        width="70px"
+      >
+        <Box as="img" src={product.images.edges[0].node.originalSrc} />
+      </Box>
+    </Box>
+    <Box marginLeft={3} display="block">
+      <Heading fontSize="md" color="text" fontWeight={500}>
+        {product.title}
+      </Heading>
+      <Text fontSize="sm" marginRight={10} color="gray.600">
         {product.id.split('/').pop()}
       </Text>
-      <Heading size={400} marginRight={10} color="green">
-        ${product.priceRange.minVariantPrice.amount}
+      <Heading fontSize="sm" marginRight={10} color="green.600">
+        ${product.priceRange.minVariantPrice.amount / 100}
       </Heading>
-    </Pane>
-    <Pane
+    </Box>
+    <Box
       display="flex"
       marginLeft="auto"
       marginBottom="auto"
       alignItems="center"
     >
-      <Heading size={100} lineHeight="24px" fontWeight={500} marginRight={10}>
+      <Heading
+        fontSize="xs"
+        fontWeight={500}
+        letterSpacing="wide"
+        textTransform="uppercase"
+        color="gray.500"
+        mx={2}
+      >
         {client}
       </Heading>
-      <Pane height={20}>
-        <AddProduct product={product} client={client} />
-      </Pane>
-    </Pane>
-  </Pane>
+      <AddProduct product={product} client={client} />
+    </Box>
+  </Box>
 );
 
 export default ProductsItem;

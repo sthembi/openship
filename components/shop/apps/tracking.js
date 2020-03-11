@@ -1,8 +1,17 @@
 import { useState } from 'react';
 import fetch from 'isomorphic-unfetch';
-import { Pane, TextInput, Heading, Text, Spinner, Badge } from 'evergreen-ui';
+import {
+  Box,
+  Button,
+  Badge,
+  Spinner,
+  Heading,
+  Text,
+  InputRightElement,
+  InputGroup,
+  Input,
+} from '@chakra-ui/core';
 import PropTypes from 'prop-types';
-import Button from '../../common/Button';
 
 function getTracking(url, input, setResult, setLoading) {
   setLoading(true);
@@ -37,7 +46,11 @@ function getTracking(url, input, setResult, setLoading) {
   })
     .then(res => res.json())
     .then(res => {
-      if (res.data.orders.edges.length) {
+      if (
+        res.data.orders.edges.length &&
+        res.data.orders.edges[0].node.fulfillments.length &&
+        res.data.orders.edges[0].node.fulfillments[0].trackingInfo.length
+      ) {
         setResult(
           res.data.orders.edges[0].node.fulfillments[0].trackingInfo[0]
         );
@@ -54,34 +67,42 @@ const Tracking = ({ url }) => {
   const [loading, setLoading] = useState(false);
 
   return (
-    <Pane elevation={1} borderRadius="5px" padding={15} background="#fff">
-      <Heading size={400} marginBottom={10}>
+    <Box
+      minWidth="500px"
+      boxShadow="sm"
+      borderRadius="5px"
+      padding={4}
+      background="#fff"
+    >
+      <Heading fontSize="sm" color="text" marginBottom={3}>
         Fetch Tracking
       </Heading>
-      <Pane display="flex" marginBottom={15}>
-        <TextInput
-          onChange={e => setInput(e.target.value)}
-          value={input}
-          height={24}
-          className="clean-input"
-          backgroundColor="#F5F6F7 !important"
-          placeholder="e.g. order number, customer email, name, address, etc."
-        />
-        <Button
-          intent="success"
-          height={24}
-          fontSize="13px"
-          marginLeft={10}
-          onClick={() => getTracking(url, input, setResult, setLoading)}
-        >
-          Get Tracking
-        </Button>
-      </Pane>
-      {loading && <Spinner size={24} />}
+      <Box display="flex" marginBottom={4}>
+        <InputGroup size="sm" width="100%">
+          <Input
+            variant="filled"
+            onChange={e => setInput(e.target.value)}
+            value={input}
+            placeholder="e.g. order number, customer email, name, address, etc."
+          />
+
+          <InputRightElement width="3rem">
+            <Button
+              onClick={() => getTracking(url, input, setResult, setLoading)}
+              h="1.35rem"
+              size="xs"
+              variantColor="green"
+            >
+              GO
+            </Button>
+          </InputRightElement>
+        </InputGroup>
+      </Box>
+      {loading && <Spinner color="blue.500" />}
       {result && (
-        <Pane display="flex" alignItems="center">
+        <Box display="flex" alignItems="center">
           {result.company && (
-            <Badge color="blue" marginRight={8}>
+            <Badge variantColor="blue" marginRight={2}>
               {result.company}
             </Badge>
           )}
@@ -89,13 +110,13 @@ const Tracking = ({ url }) => {
             <Text>{result.number}</Text>
           </a>
           {result.error && (
-            <Badge color="red" marginRight={8}>
+            <Badge variantColor="red" marginRight={8}>
               {result.error}
             </Badge>
           )}
-        </Pane>
+        </Box>
       )}
-    </Pane>
+    </Box>
   );
 };
 

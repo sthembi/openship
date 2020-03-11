@@ -1,5 +1,4 @@
 import Document, { Head, Main, NextScript } from 'next/document';
-import { extractStyles } from 'evergreen-ui';
 
 export default class MyDocument extends Document {
   static getInitialProps({ renderPage }) {
@@ -10,9 +9,8 @@ export default class MyDocument extends Document {
     const page = renderPage();
 
     // const styleTags = sheet.getStyleElement();
-    const { css, hydrationScript } = extractStyles();
 
-    return { ...page, css, hydrationScript };
+    return { ...page };
   }
 
   render() {
@@ -23,17 +21,9 @@ export default class MyDocument extends Document {
             name="viewport"
             content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
           />
-          {/* {this.props.styleTags}{" "} */}
-          <link
-            href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700|Source+Code+Pro:400,700"
-            rel="stylesheet"
-          />
           <script src="https://js.stripe.com/v3/" />
-          {/* eslint-disable */}
-          <style dangerouslySetInnerHTML={{ __html: this.props.css }} />
-          {this.props.hydrationScript}
         </Head>
-        <body style={{ margin: 0 }}>
+        <body>
           <Main />
           <NextScript />
         </body>

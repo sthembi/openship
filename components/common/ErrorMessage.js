@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pane, Icon, Text } from 'evergreen-ui';
+import { Box, Icon, Text } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 
 const errorCard = {
@@ -19,21 +19,21 @@ const DisplayError = ({ error }) => {
     error.networkError.result.errors.length
   ) {
     return error.networkError.result.errors.map((error, i) => (
-      <Pane key={i} {...errorCard}>
-        <Icon icon="warning-sign" color="danger" marginRight={10} />
-        <Text size={500} color="#EC4C47" fontWeight={500} fontSize="14px">
+      <Box key={i} {...errorCard}>
+        <Icon name="warning-2" color="red.400" />
+        <Text color="#EC4C47" fontWeight={500} fontSize="14px">
           {error.message.replace('GraphQL error: ', '')}
         </Text>
-      </Pane>
+      </Box>
     ));
   }
   return (
-    <Pane {...errorCard}>
+    <Box {...errorCard}>
       <Icon icon="warning-sign" color="danger" marginRight={10} />
-      <Text size={500} color="#EC4C47" fontWeight={500} fontSize="14px">
+      <Text color="#EC4C47" fontWeight={500} fontSize="14px">
         {error.message.replace('GraphQL error: ', '')}
       </Text>
-    </Pane>
+    </Box>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mutation } from 'react-apollo';
+import { useMutation } from '@apollo/react-hooks';
 import PropTypes from 'prop-types';
 import gql from 'graphql-tag';
 import { CURRENT_USER_QUERY } from './User';
@@ -24,49 +24,45 @@ function Signup({ formChange }) {
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
 
-  return (
-    <Mutation
-      mutation={SIGNUP_MUTATION}
-      variables={{ name, password, email }}
-      refetchQueries={[{ query: CURRENT_USER_QUERY }]}
-    >
-      {(signup, { error, loading }) => (
-        <Userform
-          title="Create an account"
-          handleToggleClick={() => formChange()}
-          buttonTitle="Sign Up"
-          buttonColor="#47B881"
-          error={error}
-          loading={loading}
-          buttonDisabled={!email || !password || !name}
-          fields={[
-            { label: 'Name', value: name, onChange: setName, icon: 'person' },
-            {
-              label: 'Email',
-              value: email,
-              onChange: setEmail,
-              icon: 'envelope',
-            },
+  const [signup, { error, loading }] = useMutation(SIGNUP_MUTATION, {
+    variables: { name, password, email },
+    refetchQueries: [{ query: CURRENT_USER_QUERY }],
+  });
 
-            {
-              label: 'Password',
-              value: password,
-              onChange: setPassword,
-              icon: 'lock',
-            },
-          ]}
-          bottomText="Already have an account?"
-          bottomLinkText="Sign In"
-          onSubmit={async e => {
-            e.preventDefault();
-            await signup();
-            setName('');
-            setEmail('');
-            setPassword('');
-          }}
-        />
-      )}
-    </Mutation>
+  return (
+    <Userform
+      title="Create an account"
+      handleToggleClick={() => formChange()}
+      buttonTitle="Sign Up"
+      error={error}
+      loading={loading}
+      buttonDisabled={!email || !password || !name}
+      fields={[
+        { label: 'Name', value: name, onChange: setName, icon: 'user' },
+        {
+          label: 'Email',
+          value: email,
+          onChange: setEmail,
+          icon: 'envelope',
+        },
+
+        {
+          label: 'Password',
+          value: password,
+          onChange: setPassword,
+          icon: 'lock',
+        },
+      ]}
+      bottomText="Already have an account?"
+      bottomLinkText="Sign In"
+      onSubmit={async e => {
+        e.preventDefault();
+        await signup();
+        setName('');
+        setEmail('');
+        setPassword('');
+      }}
+    />
   );
 }
 
