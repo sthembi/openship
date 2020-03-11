@@ -302,6 +302,7 @@ const Header = ({
                           px={3}
                           height={8}
                           width="100%"
+                          type="submit"
                         >
                           <Heading
                             fontSize="sm"
