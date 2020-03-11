@@ -95,12 +95,11 @@ const Find = ({
     variables: channelsQueryVars,
   });
 
-  const {
-    data: { channels },
-    error: channelsError,
-    loading: channelsLoading,
-  } = allChannels;
+  const { data, error: channelsError, loading: channelsLoading } = allChannels;
 
+  const [selectedChannel, setSelectedChannel] = useState(
+    data.channels.length ? data.channels[0].name : ''
+  );
   const [value, setValue] = useState('price');
   const [searchBar, setSearchBar] = useState('');
   const [searchEntry, setSearchEntry] = useState('');
@@ -113,9 +112,6 @@ const Find = ({
   const [itemLocationCountry, setItemLocationCountry] = useState('US');
   const [include, setInclude] = useState([]);
   const [exclude, setExclude] = useState([]);
-  const [selectedChannel, setSelectedChannel] = useState(
-    channels.length ? channels[0].name : ''
-  );
 
   const {
     data: { me },
@@ -171,7 +167,7 @@ const Find = ({
                   </Box>
                 </Box>
                 {(() => {
-                  if (channelsError || !channels) return null;
+                  if (channelsError || !data || !data.channels) return null;
                   return (
                     <>
                       <Box
@@ -183,7 +179,7 @@ const Find = ({
                       >
                         {option(
                           'Channel',
-                          channels.map(a => a.name),
+                          data.channels.map(a => a.name),
                           a => setSelectedChannel(a),
                           selectedChannel
                         )}
@@ -200,76 +196,81 @@ const Find = ({
                           limit
                         )}
                       </Box>
-                      {channels.filter(
-                        channel => channel.type === 'MARKETPLACE'
-                      ).length > 0 && (
-                        <MarketplaceSearch
-                          {...{
-                            search: searchEntry,
-                            limit,
-                            sort: value,
-                            pageNum,
-                            exclude,
-                            include,
-                            priceCurrency,
-                            price,
-                            itemLocationCountry,
-                            atcDisabled,
-                            addMPItem,
-                          }}
-                        />
-                      )}
-                      {channels.filter(channel => channel.type === 'ZINC')
-                        .length > 0 && (
-                        <ZincSearch
-                          addZincItem={addZincItem}
-                          atcDisabled={atcDisabled}
-                          searchEntry={searchEntry}
-                          token={
-                            channels.filter(c => c.type === 'ZINC')[0].settings
-                              .key
-                          }
-                        />
-                      )}
-                      {channels.filter(channel => channel.type === 'SHOPIFY')
-                        .length > 0 && (
-                        <ShopifySearch
-                          addCustomItem={(a, b) =>
-                            addCustomItem(
-                              a,
-                              b,
-                              channels.filter(
-                                channel => channel.type === 'SHOPIFY'
-                              )[0].settings.shopURL,
-                              channels.filter(
-                                channel => channel.type === 'SHOPIFY'
+                      {searchEntry &&
+                        data.channels.filter(
+                          order => order.name === selectedChannel
+                        )[0].type === 'MARKETPLACE' && (
+                          <MarketplaceSearch
+                            {...{
+                              search: searchEntry,
+                              limit,
+                              sort: value,
+                              pageNum,
+                              exclude,
+                              include,
+                              priceCurrency,
+                              price,
+                              itemLocationCountry,
+                              atcDisabled,
+                              addMPItem,
+                            }}
+                          />
+                        )}
+                      {data.channels.length > 0 &&
+                        data.channels.filter(
+                          order => order.name === selectedChannel
+                        )[0].type === 'ZINC' && (
+                          <ZincSearch
+                            addZincItem={addZincItem}
+                            atcDisabled={atcDisabled}
+                            searchEntry={searchEntry}
+                            token={
+                              data.channels.filter(c => c.type === 'ZINC')[0]
+                                .settings.key
+                            }
+                          />
+                        )}
+                      {data.channels.length > 0 &&
+                        data.channels.filter(
+                          order => order.name === selectedChannel
+                        )[0].type === 'SHOPIFY' && (
+                          <ShopifySearch
+                            addCustomItem={(a, b) =>
+                              addCustomItem(
+                                a,
+                                b,
+                                data.channels.filter(
+                                  order => order.name === selectedChannel
+                                )[0].settings.shopURL,
+                                data.channels.filter(
+                                  order => order.name === selectedChannel
+                                )[0].settings.key
+                              )
+                            }
+                            checkout={() =>
+                              toast({
+                                position: 'top-right',
+                                title: `Checkout`,
+                                status: 'success',
+                                duration: 2000,
+                                isClosable: true,
+                              })
+                            }
+                            client="Marketplace"
+                            atcDisabled={atcDisabled}
+                            searchEntry={searchEntry}
+                            apiKey={
+                              data.channels.filter(
+                                order => order.name === selectedChannel
                               )[0].settings.key
-                            )
-                          }
-                          checkout={() =>
-                            toast({
-                              position: 'top-right',
-                              title: `Checkout`,
-                              status: 'success',
-                              duration: 2000,
-                              isClosable: true,
-                            })
-                          }
-                          client="Marketplace"
-                          atcDisabled={atcDisabled}
-                          searchEntry={searchEntry}
-                          apiKey={
-                            channels.filter(
-                              channel => channel.type === 'SHOPIFY'
-                            )[0].settings.key
-                          }
-                          url={
-                            channels.filter(
-                              channel => channel.type === 'SHOPIFY'
-                            )[0].settings.shopURL
-                          }
-                        />
-                      )}
+                            }
+                            url={
+                              data.channels.filter(
+                                order => order.name === selectedChannel
+                              )[0].settings.shopURL
+                            }
+                          />
+                        )}
                     </>
                   );
                 })()}
