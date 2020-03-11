@@ -160,7 +160,7 @@ const Shops = ({ shop, accessToken }) => {
                 variantColor="green"
                 bg="green.50"
                 _hover={{ bg: 'green.100' }}
-                onConfirm={() => handleClick()}
+                onClick={() => handleClick()}
               >
                 Confirm
               </Button>

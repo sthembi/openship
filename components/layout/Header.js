@@ -86,17 +86,17 @@ const option = (name, options, update, selected) => (
   </Box>
 );
 
-export const NavGroupTitle = ({ title, icon }) => (
-  <Box display="flex" alignItems="center">
+export const NavGroupTitle = ({ title, icon, fd }) => (
+  <Box display="flex" flexDirection={fd || 'row'} alignItems="center">
     <Heading
       my={2}
-      mx={4}
+      ml={4}
+      mr="auto"
       textTransform="uppercase"
       letterSpacing="wide"
       fontSize="sm"
       fontWeight={800}
       color="#d7dae0"
-      flex={1}
     >
       {title}
     </Heading>
@@ -217,21 +217,45 @@ const Header = ({
                   </Box>
                 </Link>
               }
+              fd={shops && shops.length === 0 && 'column'}
               icon={
                 <Popover>
-                  <PopoverTrigger>
-                    <Button
-                      variantColor="green"
-                      backgroundImage="linear-gradient(to bottom, #23C277, #399D6C)"
-                      borderRadius="50%"
-                      height="20px"
-                      minWidth="20px"
-                      px={0}
-                      mr={4}
-                    >
-                      <Icon size={5} name="small-add" />
-                    </Button>
-                  </PopoverTrigger>
+                  {shops.length > 0 ? (
+                    <PopoverTrigger>
+                      <Button
+                        variantColor="green"
+                        backgroundImage="linear-gradient(to bottom, #23C277, #399D6C)"
+                        borderRadius="50%"
+                        height="20px"
+                        minWidth="20px"
+                        px={0}
+                        mr={4}
+                      >
+                        <Icon size={5} name="small-add" />
+                      </Button>
+                    </PopoverTrigger>
+                  ) : (
+                    <PopoverTrigger>
+                      <Box px={4} mt={2} width="100%">
+                        <Button
+                          variantColor="green"
+                          variant="ghost"
+                          bg="green.50"
+                          width="100%"
+                          borderRadius={3}
+                          marginRight={1}
+                          px={2}
+                          textTransform="uppercase"
+                          letterSpacing="wide"
+                          fontSize="md"
+                          fontWeight={700}
+                          _hover={{ opacity: 0.8 }}
+                        >
+                          Add first shop
+                        </Button>
+                      </Box>
+                    </PopoverTrigger>
+                  )}
                   <PopoverContent zIndex={4}>
                     <Box
                       width="100%"
@@ -316,21 +340,45 @@ const Header = ({
                   Channels
                 </Box>
               }
+              fd={channels && channels.length === 0 && 'column'}
               icon={
                 <Popover>
-                  <PopoverTrigger>
-                    <Button
-                      variantColor="green"
-                      backgroundImage="linear-gradient(to bottom, #23C277, #399D6C)"
-                      borderRadius="50%"
-                      height="20px"
-                      minWidth="20px"
-                      px={0}
-                      mr={4}
-                    >
-                      <Icon size={5} name="small-add" />
-                    </Button>
-                  </PopoverTrigger>
+                  {channels && channels.length === 0 ? (
+                    <PopoverTrigger>
+                      <Box px={4} mt={2} width="100%">
+                        <Button
+                          variantColor="blue"
+                          variant="ghost"
+                          bg="blue.50"
+                          width="100%"
+                          borderRadius={3}
+                          marginRight={1}
+                          px={2}
+                          textTransform="uppercase"
+                          letterSpacing="wide"
+                          fontSize="md"
+                          fontWeight={700}
+                          _hover={{ opacity: 0.8 }}
+                        >
+                          Add first channel
+                        </Button>
+                      </Box>
+                    </PopoverTrigger>
+                  ) : (
+                    <PopoverTrigger>
+                      <Button
+                        variantColor="green"
+                        backgroundImage="linear-gradient(to bottom, #23C277, #399D6C)"
+                        borderRadius="50%"
+                        height="20px"
+                        minWidth="20px"
+                        px={0}
+                        mr={4}
+                      >
+                        <Icon size={5} name="small-add" />
+                      </Button>
+                    </PopoverTrigger>
+                  )}
                   <PopoverContent zIndex={4}>
                     <Box
                       width="100%"
@@ -346,7 +394,6 @@ const Header = ({
                         a => setType(a),
                         type
                       )}
-
                       <Text
                         fontSize="sm"
                         color="gray.600"
