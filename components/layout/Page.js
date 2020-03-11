@@ -171,10 +171,15 @@ const Page = ({ children, shopsURL }) => {
                       alignItems="center"
                       paddingTop={150}
                     >
-                      <Heading fontSize="xl" color="text" paddingBottom={15}>
+                      <Heading
+                        fontSize="2xl"
+                        fontWeight={500}
+                        color="text"
+                        paddingBottom={15}
+                      >
                         Take full control of your e-commerce operations
                       </Heading>
-                      <Text fontSize="md">
+                      <Text fontSize="lg" color="gray.600">
                         Get started by adding a Shopify shop
                       </Text>
                       <form method="GET" action="/shopify/auth">

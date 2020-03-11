@@ -10,6 +10,7 @@ import {
   Input,
   Icon,
   Heading,
+  Text,
   useToast,
 } from '@chakra-ui/core';
 import { CURRENT_USER_QUERY } from '../user/User';
@@ -49,30 +50,36 @@ export const option = (name, options, update, selected) => (
       {name}
     </Heading>
     <Box display="flex">
-      {options.map((a, index) => (
-        <Box
-          id={a}
-          key={index}
-          p={1}
-          mr={2}
-          mt={2}
-          borderRadius={3}
-          bg={a === selected ? '#e2e9f2' : 'transparent'}
-          onClick={() => update(a)}
-          cursor="pointer"
-        >
-          <Heading
-            fontSize="xs"
-            fontWeight={500}
-            px={1}
-            color={a === selected ? '#1070ca' : '#425a70'}
-            letterSpacing="wide"
-            textTransform="uppercase"
+      {options.length > 0 ? (
+        options.map((a, index) => (
+          <Box
+            id={a}
+            key={index}
+            p={1}
+            mr={2}
+            mt={2}
+            borderRadius={3}
+            bg={a === selected ? '#e2e9f2' : 'transparent'}
+            onClick={() => update(a)}
+            cursor="pointer"
           >
-            {a}
-          </Heading>
-        </Box>
-      ))}
+            <Heading
+              fontSize="xs"
+              fontWeight={500}
+              px={1}
+              color={a === selected ? '#1070ca' : '#425a70'}
+              letterSpacing="wide"
+              textTransform="uppercase"
+            >
+              {a}
+            </Heading>
+          </Box>
+        ))
+      ) : (
+        <Text mt={2} fontSize="sm" color="text">
+          No Channels Added
+        </Text>
+      )}
     </Box>
   </Box>
 );
@@ -207,38 +214,61 @@ const Find = ({
                             }}
                           />
                         )}
-                      {data.channels.filter(
-                        order => order.name === selectedChannel
-                      )[0].type === 'ZINC' && (
-                        <ZincSearch
-                          addZincItem={addZincItem}
-                          atcDisabled={atcDisabled}
-                          searchEntry={searchEntry}
-                          token={
-                            data.channels.filter(c => c.type === 'ZINC')[0]
-                              .settings.key
-                          }
-                        />
-                      )}
-                      {data.channels.filter(
-                        order => order.name === selectedChannel
-                      )[0].type === 'SHOPIFY' && (
-                        <ShopifySearch
-                          addVariantToCart={(a, b) => addCustomItem(a, b)}
-                          checkout={() =>
-                            toast({
-                              position: 'top-right',
-                              title: `Checkout`,
-                              status: 'success',
-                              duration: 2000,
-                              isClosable: true,
-                            })
-                          }
-                          client="Marketplace"
-                          atcDisabled={atcDisabled}
-                          searchEntry={searchEntry}
-                        />
-                      )}
+                      {data.channels.length > 0 &&
+                        data.channels.filter(
+                          order => order.name === selectedChannel
+                        )[0].type === 'ZINC' && (
+                          <ZincSearch
+                            addZincItem={addZincItem}
+                            atcDisabled={atcDisabled}
+                            searchEntry={searchEntry}
+                            token={
+                              data.channels.filter(c => c.type === 'ZINC')[0]
+                                .settings.key
+                            }
+                          />
+                        )}
+                      {data.channels.length > 0 &&
+                        data.channels.filter(
+                          order => order.name === selectedChannel
+                        )[0].type === 'SHOPIFY' && (
+                          <ShopifySearch
+                            addCustomItem={(a, b) =>
+                              addCustomItem(
+                                a,
+                                b,
+                                data.channels.filter(
+                                  order => order.name === selectedChannel
+                                )[0].settings.shopURL,
+                                data.channels.filter(
+                                  order => order.name === selectedChannel
+                                )[0].settings.key
+                              )
+                            }
+                            checkout={() =>
+                              toast({
+                                position: 'top-right',
+                                title: `Checkout`,
+                                status: 'success',
+                                duration: 2000,
+                                isClosable: true,
+                              })
+                            }
+                            client="Marketplace"
+                            atcDisabled={atcDisabled}
+                            searchEntry={searchEntry}
+                            apiKey={
+                              data.channels.filter(
+                                order => order.name === selectedChannel
+                              )[0].settings.key
+                            }
+                            url={
+                              data.channels.filter(
+                                order => order.name === selectedChannel
+                              )[0].settings.shopURL
+                            }
+                          />
+                        )}
                     </>
                   );
                 })()}

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/react-hooks';
 import { Box, Heading, Text, Button, Icon } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import MPCart from '../../pending/Cart/MPCart';
 import ZincCart from '../../pending/Cart/ZincCart';
-
 import OrderLine from './OrderLine';
+import { CHANNELS_QUERY, channelsQueryVars } from '../../layout/Page';
 
 const priceString = (price, quantity) => {
   const total = Math.round(price * quantity * 100).toString();
@@ -15,6 +16,14 @@ const priceString = (price, quantity) => {
 
 export default function OrderListItem(props) {
   const [open, setOpen] = useState();
+
+  const {
+    data: { channels },
+    error,
+    loading,
+  } = useQuery(CHANNELS_QUERY, {
+    variables: channelsQueryVars,
+  });
 
   useEffect(() => {
     setOpen(props.open);
@@ -67,6 +76,8 @@ export default function OrderListItem(props) {
     mpCart,
     zincCheckout,
     zincCart,
+    customCheckout,
+    customCart,
     note,
     disabled,
     buttons,
@@ -178,10 +189,28 @@ export default function OrderListItem(props) {
               <OrderLine key={a.id} item={a.node ? a.node : a} />
             ))}
           </Box>
-          {mpCart && JSON.parse(mpCart).lineItems && (
-            <MPCart cart={JSON.parse(mpCart)} cartName="Marketplace" />
-          )}
-          {zincCart && parseZinc(zincCart, zincCheckout)}
+
+          {channels.filter(channel => channel.type === 'MARKETPLACE').length >
+            0 &&
+            mpCart &&
+            JSON.parse(mpCart).lineItems &&
+            JSON.parse(mpCart).lineItems.edges.length > 0 && (
+              <MPCart cart={JSON.parse(mpCart)} cartName="Marketplace" />
+            )}
+          {channels.filter(channel => channel.type === 'SHOPIFY').length > 0 &&
+            customCart &&
+            JSON.parse(customCart).lineItems &&
+            JSON.parse(customCart).lineItems.edges.length > 0 && (
+              <MPCart
+                cart={JSON.parse(customCart)}
+                cartName="BN"
+                background="#F1FBFC"
+                color="#007489"
+              />
+            )}
+          {channels.filter(channel => channel.type === 'ZINC').length > 0 &&
+            zincCart &&
+            parseZinc(zincCart, zincCheckout)}
           {mpCheckout && (
             <Box
               marginLeft="-3px"

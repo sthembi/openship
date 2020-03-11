@@ -38,7 +38,7 @@ class Cart extends Component {
               </Text>
             </a>
           ) : (
-            <Text size={400} fontWeight={500} color={color || '#00783E'}>
+            <Text fontWeight={500} color={color || '#00783E'}>
               {cartName} Cart
             </Text>
           )}

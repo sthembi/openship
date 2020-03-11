@@ -13,6 +13,7 @@ import {
 import OrderListItem from '../common/orderListItem/OrderListItem';
 import Find from '../find/Find';
 import { CURRENT_USER_QUERY } from '../user/User';
+import { CHANNELS_QUERY, channelsQueryVars } from '../layout/Page';
 import OrderLine from '../common/orderListItem/OrderLine';
 import { CardStyle } from '../common/DefaultStyles';
 import MPCart from './Cart/MPCart';
@@ -48,6 +49,46 @@ async function placeZincOrder(data, token, updateOrderFunc) {
       },
     });
     console.log('first2', res);
+  } catch (e) {
+    console.log('error', e);
+  }
+}
+
+async function placeCustomOrder(cart, id, updateOrderFunc) {
+  // console.log(cart);
+  try {
+    const cartObj = JSON.parse(cart);
+    cartObj.pId = id;
+    const cartJson = JSON.stringify(cartObj);
+    const response = await fetch(
+      `${
+        process.env.NODE_ENV === 'development' ? front : prodFront
+      }/api/shopify/purchase`,
+      {
+        credentials: 'same-origin',
+        mode: 'cors',
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+          'X-Requested-With': 'Fetch',
+        },
+        body: cartJson,
+      }
+    );
+    const res = await response.json();
+    console.log(res);
+    // console.log("response received");
+    const update = await updateOrderFunc({
+      variables: {
+        id,
+        customCheckout: res,
+        processed: 'TRUE',
+      },
+    }).then(function(data) {
+      // console.log(data, "after update");
+      // forceUpdate();
+    });
   } catch (e) {
     console.log('error', e);
   }
@@ -89,6 +130,8 @@ export const ORDER_QUERY = gql`
       mpCheckout
       zincCart
       zincCheckout
+      customCheckout
+      customCart
       processed
       shopName
     }
@@ -109,6 +152,8 @@ const UPDATE_ORDER_MUTATION = gql`
   mutation updateOrder(
     $id: ID!
     $mpCart: String
+    $customCart: String
+    $customCheckout: Json
     $zincCart: String
     $zincCheckout: Json
     $first_name: String
@@ -123,6 +168,8 @@ const UPDATE_ORDER_MUTATION = gql`
     updateOrder(
       id: $id
       mpCart: $mpCart
+      customCart: $customCart
+      customCheckout: $customCheckout
       zincCart: $zincCart
       zincCheckout: $zincCheckout
       first_name: $first_name
@@ -229,6 +276,16 @@ function PendingOrders() {
       processed: 'FALSE',
     },
   });
+
+  const allChannels = useQuery(CHANNELS_QUERY, {
+    variables: channelsQueryVars,
+  });
+
+  const {
+    data: channelsData,
+    error: channelsError,
+    loading: channelsLoading,
+  } = allChannels;
 
   const pagination = useQuery(PAGINATION_QUERY);
 
@@ -371,6 +428,184 @@ function PendingOrders() {
     });
   }
 
+  async function createCustomCheck(
+    input,
+    orderID,
+    createCheckoutFunc,
+    updateOrderFunc,
+    url,
+    key
+  ) {
+    const query = `
+    mutation checkoutCreate($input: CheckoutCreateInput!)
+    {
+      checkoutCreate(input: $input) {
+        userErrors {
+          message
+          field
+        }
+        checkout {
+          id
+          email
+          webUrl
+          subtotalPrice
+          totalTax
+          totalPrice
+          shippingAddress{
+            firstName
+            lastName
+            address1
+            address2
+            city
+            provinceCode
+            zip
+            country
+          }
+          lineItems (first:250) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+            edges {
+              node {
+                id
+                title
+                variant {
+                  id
+                  title
+                  image {
+                    src
+                  }
+                  price
+                }
+                quantity
+              }
+            }
+          }
+        }
+      }
+      }
+    `;
+
+    const variables = {
+      input,
+    };
+
+    const checkout = await fetch(`https://${url}.myshopify.com/api/graphql`, {
+      method: 'POST',
+      body: JSON.stringify({ query, variables }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': key,
+      },
+    }).then(response => response.json());
+    console.log(checkout);
+
+    const newCheck = checkout.data.checkoutCreate.checkout;
+
+    const res = await updateOrderFunc({
+      variables: {
+        id: selectedOrderIndex,
+        customCart: JSON.stringify(newCheck),
+      },
+    });
+  }
+
+  async function addCustomVariant(
+    id,
+    quantity,
+    checkoutID,
+    checkoutLineItemsAddFunc,
+    updateOrderFunc,
+    url,
+    key
+  ) {
+    toast({
+      position: 'top-right',
+      title: 'custom checkout does exist',
+      status: 'success',
+      duration: 2000,
+      isClosable: true,
+    });
+    const query = `
+    mutation checkoutLineItemsAdd($lineItems: [CheckoutLineItemInput!]!, $checkoutId: ID!) {
+      checkoutLineItemsAdd(lineItems: $lineItems, checkoutId: $checkoutId) {
+        userErrors {
+          message
+          field
+        }
+        checkout {
+          id
+          email
+          webUrl
+          subtotalPrice
+          totalTax
+          totalPrice
+          shippingAddress {
+            address1
+            address2
+            city
+            countryCodeV2
+            provinceCode
+            zip
+            firstName
+            lastName
+          }
+          lineItems (first:250) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+            edges {
+              node {
+                id
+                title
+                variant {
+                  id
+                  title
+                  image {
+                    src
+                  }
+                  price
+                }
+                quantity
+              }
+            }
+          }
+        }
+      }
+    }
+    `;
+
+    const variables = {
+      checkoutId: checkoutID,
+      lineItems: [
+        {
+          variantId: id,
+          quantity,
+        },
+      ],
+    };
+
+    const checkout = await fetch(`https://${url}.myshopify.com/api/graphql`, {
+      method: 'POST',
+      body: JSON.stringify({ query, variables }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': key,
+      },
+    }).then(res => res.json());
+    console.log(checkout);
+    const newCheck = checkout.data.checkoutLineItemsAdd.checkout;
+
+    const res = await updateOrderFunc({
+      variables: {
+        id: selectedOrderIndex,
+        customCart: JSON.stringify(newCheck),
+      },
+    });
+  }
+
   async function addVariant(id, quantity, checkoutID) {
     toast({
       position: 'top-right',
@@ -463,6 +698,81 @@ function PendingOrders() {
     });
   }
 
+  async function removeCustomItem(lineItemIds, checkoutID, key, url) {
+    const query = `
+    mutation checkoutLineItemsRemove($checkoutId: ID!, $lineItemIds: [ID!]!) {
+      checkoutLineItemsRemove(checkoutId: $checkoutId, lineItemIds: $lineItemIds) {
+        userErrors {
+          message
+          field
+        }
+        checkout {
+          id
+          email
+          webUrl
+          subtotalPrice
+          totalTax
+          totalPrice
+          shippingAddress {
+            address1
+            address2
+            city
+            countryCodeV2
+            provinceCode
+            zip
+            firstName
+            lastName
+          }
+          lineItems (first:250) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+            edges {
+              node {
+                id
+                title
+                variant {
+                  id
+                  title
+                  image {
+                    src
+                  }
+                  price
+                }
+                quantity
+              }
+            }
+          }
+        }
+      }
+    }
+    `;
+
+    const variables = {
+      checkoutId: checkoutID,
+      lineItemIds,
+    };
+
+    const checkout = await fetch(`https://${url}.myshopify.com/api/graphql`, {
+      method: 'POST',
+      body: JSON.stringify({ query, variables }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': key,
+      },
+    }).then(res => res.json());
+
+    const res = await updateOrder({
+      variables: {
+        id: selectedOrderIndex,
+        customCart: JSON.stringify(
+          checkout.data.checkoutLineItemsRemove.checkout
+        ),
+      },
+    });
+  }
+
   async function updateMPItem(lineItems, checkoutID) {
     const varCheck = await checkoutLineItemsUpdate({
       variables: {
@@ -475,6 +785,81 @@ function PendingOrders() {
       variables: {
         id: selectedOrderIndex,
         mpCart: JSON.stringify(varCheck.data.checkoutLineItemsUpdate.checkout),
+      },
+    });
+  }
+
+  async function updateCustomItem(lineItems, checkoutID, key, url) {
+    const query = `
+    mutation checkoutLineItemsUpdate ($checkoutId: ID!, $lineItems: [CheckoutLineItemUpdateInput!]!) {
+      checkoutLineItemsUpdate(checkoutId: $checkoutId, lineItems: $lineItems) {
+        userErrors {
+          message
+          field
+        }
+        checkout {
+          id
+          email
+          webUrl
+          subtotalPrice
+          totalTax
+          totalPrice
+          shippingAddress {
+            address1
+            address2
+            city
+            countryCodeV2
+            provinceCode
+            zip
+            firstName
+            lastName
+          }
+          lineItems (first:250) {
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+            }
+            edges {
+              node {
+                id
+                title
+                variant {
+                  id
+                  title
+                  image {
+                    src
+                  }
+                  price
+                }
+                quantity
+              }
+            }
+          }
+        }
+      }
+    }
+    `;
+
+    const variables = {
+      checkoutId: checkoutID,
+      lineItems,
+    };
+
+    const checkout = await fetch(`https://${url}.myshopify.com/api/graphql`, {
+      method: 'POST',
+      body: JSON.stringify({ query, variables }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Shopify-Storefront-Access-Token': key,
+      },
+    }).then(res => res.json());
+
+    const res = await updateOrder({
+      variables: {
+        id: selectedOrderIndex,
+        customCart: JSON.stringify(
+          checkout.data.checkoutLineItemsUpdate.checkout
+        ),
       },
     });
   }
@@ -762,6 +1147,23 @@ function PendingOrders() {
                                         setProcessingOrder(order.id);
                                         setSelectedOrderIndex(null);
                                         if (
+                                          JSON.parse(order.customCart).lineItems
+                                            .edges.length > 0
+                                        ) {
+                                          toast({
+                                            position: 'top-right',
+                                            title: 'custom called',
+                                            status: 'success',
+                                            duration: 2000,
+                                            isClosable: true,
+                                          });
+                                          await placeCustomOrder(
+                                            order.customCart,
+                                            order.id,
+                                            updateOrder.mutation
+                                            // forceUpdate
+                                          );
+                                        } else if (
                                           JSON.parse(order.mpCart).lineItems
                                             .edges.length > 0
                                         ) {
@@ -1034,38 +1436,64 @@ function PendingOrders() {
                           ))}
                         </Box>
                       </Box>
-                      <MPCart
-                        cartName="Marketplace"
-                        cart={JSON.parse(theOrder.mpCart)}
-                        removeItem={a =>
-                          removeMPItem(a, JSON.parse(theOrder.mpCart).id)
-                        }
-                        checkoutLineItemsUpdate={a =>
-                          updateMPItem(a, JSON.parse(theOrder.mpCart).id)
-                        }
-                        loading={updateOrderLoading}
-                      />
-                      <ZincCart
-                        cart={JSON.parse(theOrder.zincCart)}
-                        removeItem={async productID => {
-                          const res = await updateOrder({
-                            variables: {
-                              id: selectedOrderIndex,
-                              zincCart: JSON.stringify({
-                                products: JSON.parse(
-                                  theOrder.zincCart
-                                ).products.filter(
-                                  a => a.product_id !== productID
-                                ),
-                              }),
-                            },
-                          });
-                        }}
-                        checkoutLineItemsUpdate={async (
-                          productID,
-                          quantity
-                        ) => {
-                          if (quantity === 0) {
+                      {channelsData.channels.filter(
+                        channel => channel.type === 'MARKETPLACE'
+                      ).length > 0 && (
+                        <MPCart
+                          cartName="Marketplace"
+                          cart={JSON.parse(theOrder.mpCart)}
+                          removeItem={a =>
+                            removeMPItem(a, JSON.parse(theOrder.mpCart).id)
+                          }
+                          checkoutLineItemsUpdate={a =>
+                            updateMPItem(a, JSON.parse(theOrder.mpCart).id)
+                          }
+                          loading={updateOrderLoading}
+                        />
+                      )}
+
+                      {channelsData.channels.filter(
+                        channel => channel.type === 'SHOPIFY'
+                      ).length > 0 && (
+                        <MPCart
+                          cartName="BN"
+                          background="#F1FBFC"
+                          color="#007489"
+                          cart={JSON.parse(theOrder.customCart)}
+                          removeItem={a =>
+                            removeCustomItem(
+                              a,
+                              JSON.parse(theOrder.customCart).id,
+                              channelsData.channels.filter(
+                                channel => channel.type === 'SHOPIFY'
+                              )[0].settings.key,
+                              channelsData.channels.filter(
+                                channel => channel.type === 'SHOPIFY'
+                              )[0].settings.shopURL
+                            )
+                          }
+                          checkoutLineItemsUpdate={a =>
+                            updateCustomItem(
+                              a,
+                              JSON.parse(theOrder.customCart).id,
+                              channelsData.channels.filter(
+                                channel => channel.type === 'SHOPIFY'
+                              )[0].settings.key,
+                              channelsData.channels.filter(
+                                channel => channel.type === 'SHOPIFY'
+                              )[0].settings.shopURL
+                            )
+                          }
+                          loading={updateOrderLoading}
+                        />
+                      )}
+
+                      {channelsData.channels.filter(
+                        channel => channel.type === 'ZINC'
+                      ).length > 0 && (
+                        <ZincCart
+                          cart={JSON.parse(theOrder.zincCart)}
+                          removeItem={async productID => {
                             const res = await updateOrder({
                               variables: {
                                 id: selectedOrderIndex,
@@ -1078,33 +1506,52 @@ function PendingOrders() {
                                 }),
                               },
                             });
-                          } else {
-                            const find = JSON.parse(
-                              theOrder.zincCart
-                            ).products.find(
-                              obj => obj.product_id === productID
-                            );
-                            const newQ = quantity;
-                            find.quantity = newQ;
-                            const res = await updateOrder({
-                              variables: {
-                                id: selectedOrderIndex,
-                                zincCart: JSON.stringify({
-                                  products: [
-                                    find,
-                                    ...JSON.parse(
+                          }}
+                          checkoutLineItemsUpdate={async (
+                            productID,
+                            quantity
+                          ) => {
+                            if (quantity === 0) {
+                              const res = await updateOrder({
+                                variables: {
+                                  id: selectedOrderIndex,
+                                  zincCart: JSON.stringify({
+                                    products: JSON.parse(
                                       theOrder.zincCart
                                     ).products.filter(
                                       a => a.product_id !== productID
                                     ),
-                                  ],
-                                }),
-                              },
-                            });
-                          }
-                        }}
-                        loading={updateOrderLoading}
-                      />
+                                  }),
+                                },
+                              });
+                            } else {
+                              const find = JSON.parse(
+                                theOrder.zincCart
+                              ).products.find(
+                                obj => obj.product_id === productID
+                              );
+                              const newQ = quantity;
+                              find.quantity = newQ;
+                              const res = await updateOrder({
+                                variables: {
+                                  id: selectedOrderIndex,
+                                  zincCart: JSON.stringify({
+                                    products: [
+                                      find,
+                                      ...JSON.parse(
+                                        theOrder.zincCart
+                                      ).products.filter(
+                                        a => a.product_id !== productID
+                                      ),
+                                    ],
+                                  }),
+                                },
+                              });
+                            }
+                          }}
+                          loading={updateOrderLoading}
+                        />
+                      )}
                     </Box>
                   </Box>
                 ) : (
@@ -1161,6 +1608,58 @@ function PendingOrders() {
                           ],
                         },
                         theOrder.id
+                      );
+                    }
+                  }}
+                  addCustomItem={(a, b, url, key) => {
+                    if (
+                      theOrder.customCart &&
+                      JSON.parse(theOrder.customCart).id
+                    ) {
+                      addCustomVariant(
+                        a,
+                        b,
+                        JSON.parse(theOrder.customCart).id,
+                        checkoutLineItemsAdd,
+                        updateOrder,
+                        url,
+                        key
+                      );
+                    } else {
+                      toast({
+                        position: 'top-right',
+                        title: 'checkout does not exist',
+                        status: 'success',
+                        duration: 2000,
+                        isClosable: true,
+                      });
+                      createCustomCheck(
+                        {
+                          shippingAddress: {
+                            address1: theOrder.streetAddress1,
+                            address2:
+                              theOrder.streetAddress2 &&
+                              theOrder.streetAddress2,
+                            city: theOrder.city,
+                            province: theOrder.state,
+                            country: 'US',
+                            zip: theOrder.zip,
+                            firstName: theOrder.first_name,
+                            lastName: theOrder.last_name,
+                          },
+                          lineItems: [
+                            {
+                              variantId: a,
+                              quantity: b,
+                            },
+                          ],
+                          email: 'junaidkabani@windstream.net',
+                        },
+                        theOrder.id,
+                        createCheckout,
+                        updateOrder,
+                        url,
+                        key
                       );
                     }
                   }}

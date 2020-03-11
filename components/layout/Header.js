@@ -123,6 +123,7 @@ const Header = ({
   shopsError,
 }) => {
   const [type, setType] = useState('zinc');
+  const [shopURL, setShopURL] = useState('');
   const [name, setName] = useState('');
   const [key, setKey] = useState('');
   const [secret, setSecret] = useState('');
@@ -341,7 +342,7 @@ const Header = ({
                     >
                       {option(
                         'Channel Type',
-                        ['zinc', 'custom'],
+                        ['zinc', 'shopify'],
                         a => setType(a),
                         type
                       )}
@@ -381,8 +382,22 @@ const Header = ({
                           </Text>
                         </>
                       )}
-                      {type === 'custom' && (
+                      {type === 'shopify' && (
                         <>
+                          <Text
+                            fontSize="sm"
+                            color="gray.600"
+                            mb={1}
+                            fontWeight={500}
+                          >
+                            Shop URL
+                          </Text>
+                          <Input
+                            label="Name"
+                            mb={2}
+                            value={shopURL}
+                            onChange={e => setShopURL(e.target.value)}
+                          />
                           <Text
                             fontSize="sm"
                             color="gray.600"
@@ -392,7 +407,7 @@ const Header = ({
                             API Key
                           </Text>
                           <Input
-                            label="Name"
+                            label="key"
                             mb={2}
                             value={key}
                             onChange={e => setKey(e.target.value)}
@@ -431,12 +446,14 @@ const Header = ({
                               settings: {
                                 ...(key && { key }),
                                 ...(secret && { secret }),
+                                ...(shopURL && { shopURL }),
                               },
                             },
                           });
                           setName('');
                           setKey('');
                           setSecret('');
+                          setShopURL('');
                           toast({
                             position: 'top-right',
                             title: 'Channel has been added.',

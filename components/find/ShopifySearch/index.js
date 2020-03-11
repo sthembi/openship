@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import MktProduct from '../MarketplaceSearch/MktProduct';
 
-function ShopifySearch({ addZincItem, atcDisabled, searchEntry, token }) {
+function ShopifySearch({
+  addCustomItem,
+  atcDisabled,
+  searchEntry,
+  token,
+  apiKey,
+  url,
+}) {
   const [results, setResults] = useState([]);
   const [error, setError] = useState('');
 
@@ -66,23 +73,20 @@ function ShopifySearch({ addZincItem, atcDisabled, searchEntry, token }) {
         query: searchEntry,
       };
 
-      const items = await fetch(
-        `https://${process.env.CUSTOM_SHOP_NAME}.myshopify.com/api/graphql`,
-        {
-          method: 'POST',
-          body: JSON.stringify({ query, variables }),
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Shopify-Storefront-Access-Token': process.env.CUSTOM_SHOP_ACCESS,
-          },
-        }
-      )
+      const items = await fetch(`https://${url}.myshopify.com/api/graphql`, {
+        method: 'POST',
+        body: JSON.stringify({ query, variables }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Storefront-Access-Token': apiKey,
+        },
+      })
         .then(res => res.json())
         .then(json => setResults(json.data.products.edges));
     }
 
     searchEntry && findItems();
-  }, [searchEntry]);
+  }, [apiKey, searchEntry, url]);
 
   return results.map(product => (
     <MktProduct

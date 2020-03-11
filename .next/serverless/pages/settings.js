@@ -88,7 +88,7 @@ module.exports =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "nSK+");
+/******/ 	return __webpack_require__(__webpack_require__.s = "abg7");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -6412,61 +6412,6 @@ class _app_MyApp extends app_default.a {
             opacity: 0.85;
           }
 
-          .shine {
-            background: #e4e7eb;
-            background-image: linear-gradient(
-              to right,
-              #e4e7eb 0%,
-              #edeef1 20%,
-              #e4e7eb 40%,
-              #e4e7eb 100%
-            );
-            background-repeat: no-repeat;
-            background-size: 800px 104px;
-            display: inline-block;
-            position: relative;
-
-            -webkit-animation-duration: 1.5s;
-            -webkit-animation-fill-mode: forwards;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-name: placeholderShimmer;
-            -webkit-animation-timing-function: linear;
-          }
-
-          a:link {
-            text-decoration: none;
-            color: rgb(35, 67, 97);
-          }
-
-          a:visited {
-            text-decoration: none;
-            color: rgb(35, 67, 97);
-          }
-
-          a:hover {
-            text-decoration: none;
-            color: #2e669a;
-          }
-
-          a:active {
-            text-decoration: none;
-            color: #2e669a;
-          }
-
-          .clean-input {
-            box-shadow: none;
-          }
-
-          @-webkit-keyframes placeholderShimmer {
-            0% {
-              background-position: -468px 0;
-            }
-
-            100% {
-              background-position: 468px 0;
-            }
-          }
-
           @media screen and (max-width: 768px) {
             .hidden {
               display: none;
@@ -6481,76 +6426,7 @@ class _app_MyApp extends app_default.a {
               display: none;
             }
           }
-          ::-webkit-input-placeholder {
-            /* Chrome/Opera/Safari */
-            color: #8b949c !important;
-            opacity: 1 !important;
-          }
-          ::-moz-placeholder {
-            /* Firefox 19+ */
-            color: #8b949c !important;
-            opacity: 1 !important;
-          }
-          :-ms-input-placeholder {
-            /* IE 10+ */
-            color: #8b949c !important;
-            opacity: 1 !important;
-          }
-          :-moz-placeholder {
-            /* Firefox 18- */
-            color: #8b949c !important;
-            opacity: 1 !important;
-          }
-          .dot-flashing {
-            position: relative;
-            width: 6px;
-            height: 6px;
-            border-radius: 5px;
-            background-color: #d0d5da;
-            color: #9880ff;
-            animation: dotFlashing 1s infinite linear alternate;
-            animation-delay: 0.5s;
-          }
 
-          .dot-flashing::before,
-          .dot-flashing::after {
-            content: "";
-            display: inline-block;
-            position: absolute;
-            top: 0;
-          }
-
-          .dot-flashing::before {
-            left: -12px;
-            width: 6px;
-            height: 6px;
-            border-radius: 5px;
-            background-color: #d0d5da;
-            color: #9880ff;
-            animation: dotFlashing 1s infinite alternate;
-            animation-delay: 0s;
-          }
-
-          .dot-flashing::after {
-            left: 12px;
-            width: 6px;
-            height: 6px;
-            border-radius: 5px;
-            background-color: #d0d5da;
-            color: #9880ff;
-            animation: dotFlashing 1s infinite alternate;
-            animation-delay: 1s;
-          }
-
-          @keyframes dotFlashing {
-            0% {
-              background-color: #425a70;
-            }
-            50%,
-            100% {
-              background-color: #d0d5da;
-            }
-          }
         `), _app_jsx(react_hooks_cjs["ApolloProvider"], {
       client: apollo
     }, pathCheck(path)));
@@ -15550,6 +15426,10 @@ const Header = ({
     1: setType
   } = Object(react["useState"])('zinc');
   const {
+    0: shopURL,
+    1: setShopURL
+  } = Object(react["useState"])('');
+  const {
     0: name,
     1: setName
   } = Object(react["useState"])('');
@@ -15753,7 +15633,7 @@ const Header = ({
       justifyContent: "center",
       flexDirection: "column",
       padding: 15
-    }, Header_option('Channel Type', ['zinc', 'custom'], a => setType(a), type), Header_jsx(dist["Text"], {
+    }, Header_option('Channel Type', ['zinc', 'shopify'], a => setType(a), type), Header_jsx(dist["Text"], {
       fontSize: "sm",
       color: "gray.600",
       mb: 1,
@@ -15777,13 +15657,23 @@ const Header = ({
       fontSize: "xs",
       color: "gray.500",
       mb: 2
-    }, "You must get the key at Zinc.io")), type === 'custom' && Header_jsx(react_default.a.Fragment, null, Header_jsx(dist["Text"], {
+    }, "You must get the key at Zinc.io")), type === 'shopify' && Header_jsx(react_default.a.Fragment, null, Header_jsx(dist["Text"], {
+      fontSize: "sm",
+      color: "gray.600",
+      mb: 1,
+      fontWeight: 500
+    }, "Shop URL"), Header_jsx(dist["Input"], {
+      label: "Name",
+      mb: 2,
+      value: shopURL,
+      onChange: e => setShopURL(e.target.value)
+    }), Header_jsx(dist["Text"], {
       fontSize: "sm",
       color: "gray.600",
       mb: 1,
       fontWeight: 500
     }, "API Key"), Header_jsx(dist["Input"], {
-      label: "Name",
+      label: "key",
       mb: 2,
       value: key,
       onChange: e => setKey(e.target.value)
@@ -15815,12 +15705,15 @@ const Header = ({
               key
             }, {}, secret && {
               secret
+            }, {}, shopURL && {
+              shopURL
             })
           }
         });
         setName('');
         setKey('');
         setSecret('');
+        setShopURL('');
         toast({
           position: 'top-right',
           title: 'Channel has been added.',
@@ -16033,11 +15926,13 @@ const Page = ({
       alignItems: "center",
       paddingTop: 150
     }, Page_jsx(dist["Heading"], {
-      fontSize: "xl",
+      fontSize: "2xl",
+      fontWeight: 500,
       color: "text",
       paddingBottom: 15
     }, "Take full control of your e-commerce operations"), Page_jsx(dist["Text"], {
-      fontSize: "md"
+      fontSize: "lg",
+      color: "gray.600"
     }, "Get started by adding a Shopify shop"), Page_jsx("form", {
       method: "GET",
       action: "/shopify/auth"
@@ -25675,7 +25570,7 @@ exports.versionInfo = versionInfo;
 /***/ "LZ9C":
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"devFiles\":[],\"lowPriorityFiles\":[\"static/CiBg9imPVlM1xCFcxX4lE/_buildManifest.js\",\"static/CiBg9imPVlM1xCFcxX4lE/_ssgManifest.js\"],\"pages\":{\"/\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/chunks/739cf85f5bd9c4c4d3655ffc400b2f8c455c9d9a.2c0b62e272cd628b0c10.js\",\"static/chunks/6c028cc8d1de59e2cc2fc2924d5cce0aa42936b4.abfe11fa3afec5c069dd.js\",\"static/chunks/259fd5fc5bdf837ac1673ce06d035044ee1d3fa2.32c1598c6c11cddec7ae.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/_app\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/_error\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/_polyfills\":[\"static/runtime/polyfills-37f8ce52ba5d75764c81.js\"],\"/completed\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/chunks/739cf85f5bd9c4c4d3655ffc400b2f8c455c9d9a.2c0b62e272cd628b0c10.js\",\"static/chunks/6c028cc8d1de59e2cc2fc2924d5cce0aa42936b4.abfe11fa3afec5c069dd.js\",\"static/chunks/259fd5fc5bdf837ac1673ce06d035044ee1d3fa2.32c1598c6c11cddec7ae.js\",\"static/chunks/023de3c1cb397fe062e99c84f8f25eae2d32b673.25331fb2b9340017afb2.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/find\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/chunks/739cf85f5bd9c4c4d3655ffc400b2f8c455c9d9a.2c0b62e272cd628b0c10.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/index\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/chunks/739cf85f5bd9c4c4d3655ffc400b2f8c455c9d9a.2c0b62e272cd628b0c10.js\",\"static/chunks/6c028cc8d1de59e2cc2fc2924d5cce0aa42936b4.abfe11fa3afec5c069dd.js\",\"static/chunks/259fd5fc5bdf837ac1673ce06d035044ee1d3fa2.32c1598c6c11cddec7ae.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/order\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/chunks/739cf85f5bd9c4c4d3655ffc400b2f8c455c9d9a.2c0b62e272cd628b0c10.js\",\"static/chunks/6c028cc8d1de59e2cc2fc2924d5cce0aa42936b4.abfe11fa3afec5c069dd.js\",\"static/chunks/259fd5fc5bdf837ac1673ce06d035044ee1d3fa2.32c1598c6c11cddec7ae.js\",\"static/chunks/023de3c1cb397fe062e99c84f8f25eae2d32b673.25331fb2b9340017afb2.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/pending\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/chunks/a467f264b59b8ef1b687ed75edc6f778c8a59cd7.352dd4ea33494c9d7e14.js\",\"static/chunks/739cf85f5bd9c4c4d3655ffc400b2f8c455c9d9a.2c0b62e272cd628b0c10.js\",\"static/chunks/6c028cc8d1de59e2cc2fc2924d5cce0aa42936b4.abfe11fa3afec5c069dd.js\",\"static/chunks/259fd5fc5bdf837ac1673ce06d035044ee1d3fa2.32c1598c6c11cddec7ae.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/processed\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/6c028cc8d1de59e2cc2fc2924d5cce0aa42936b4.abfe11fa3afec5c069dd.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/products\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/reset\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/4ed7a99545715ae82bea3baddf1e719d4ece6a40.ac36c245f8955d42cf55.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/settings\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/1604b4e46be6e42b2fddef16f20d3fd542f6e035.4e20f727004839dc49f8.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/shop\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/runtime/main-8966a617b31264628c34.js\"],\"/shops\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/b97f2cbfb4bf807494ff5d9d84fe24010d3b89ca.00cf7a8b5d7c0d6333d9.js\",\"static/chunks/403550fb9e4ceed8a33777bd2d9f6483f7bbfb46.c19f029e3cddc92e8629.js\",\"static/chunks/884620a412602eb0a15ec756bc6d1180799dfdeb.cd315eca6f6d81d93a1a.js\",\"static/chunks/df5db1d6e989dedb159fa6a2651a502f4b182887.918ffad752702e91c4e9.js\",\"static/chunks/ceb2eba53a4dcdffcf8b60628df0c2830929e68e.b4d25cc60a0541a72c9c.js\",\"static/runtime/main-8966a617b31264628c34.js\"]}}");
+module.exports = JSON.parse("{\"devFiles\":[],\"lowPriorityFiles\":[\"static/ak69zHLatLY8SjIc_0bsf/_buildManifest.js\",\"static/ak69zHLatLY8SjIc_0bsf/_ssgManifest.js\"],\"pages\":{\"/\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/9696873db1994babb27dde6cb5139f472266fc0e.bfb2706342de3479e258.js\",\"static/chunks/4a008ffd461f26b2977d076a9782166a50be235f.c3f89425be5eca3df9a4.js\",\"static/chunks/907fe6bcc92822a4aeed7cbcb44dc25fed145cda.a6dda4ed635fe398a673.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/_app\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/_error\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/_polyfills\":[\"static/runtime/polyfills-88f9dca47e618c2d983a.js\"],\"/completed\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/9696873db1994babb27dde6cb5139f472266fc0e.bfb2706342de3479e258.js\",\"static/chunks/4a008ffd461f26b2977d076a9782166a50be235f.c3f89425be5eca3df9a4.js\",\"static/chunks/907fe6bcc92822a4aeed7cbcb44dc25fed145cda.a6dda4ed635fe398a673.js\",\"static/chunks/d5d4764f587406acd3a7f87d3a0d98e6d3b36480.b00942568e1333984eff.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/find\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/9696873db1994babb27dde6cb5139f472266fc0e.bfb2706342de3479e258.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/index\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/9696873db1994babb27dde6cb5139f472266fc0e.bfb2706342de3479e258.js\",\"static/chunks/4a008ffd461f26b2977d076a9782166a50be235f.c3f89425be5eca3df9a4.js\",\"static/chunks/907fe6bcc92822a4aeed7cbcb44dc25fed145cda.a6dda4ed635fe398a673.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/order\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/9696873db1994babb27dde6cb5139f472266fc0e.bfb2706342de3479e258.js\",\"static/chunks/4a008ffd461f26b2977d076a9782166a50be235f.c3f89425be5eca3df9a4.js\",\"static/chunks/907fe6bcc92822a4aeed7cbcb44dc25fed145cda.a6dda4ed635fe398a673.js\",\"static/chunks/d5d4764f587406acd3a7f87d3a0d98e6d3b36480.b00942568e1333984eff.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/pending\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/9696873db1994babb27dde6cb5139f472266fc0e.bfb2706342de3479e258.js\",\"static/chunks/4a008ffd461f26b2977d076a9782166a50be235f.c3f89425be5eca3df9a4.js\",\"static/chunks/907fe6bcc92822a4aeed7cbcb44dc25fed145cda.a6dda4ed635fe398a673.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/processed\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/chunks/2630d544574183323262a56919c9b6a70cf07530.bba1df94b3337e997d79.js\",\"static/chunks/4a008ffd461f26b2977d076a9782166a50be235f.c3f89425be5eca3df9a4.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/products\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/reset\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/04d51bbac37ef920855cf9647fe5bd66e15e4705.7161876fc3295e9c69b8.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/settings\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/d3da0a8c504bb2f79fbf1fbdc0d60f36956f73b0.fad5cf709af1f0fd12ab.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/shop\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"],\"/shops\":[\"static/runtime/webpack-b65cab0b00afd201cbda.js\",\"static/chunks/framework.1aca562006664c5eb2f5.js\",\"static/chunks/a00fb0dcb1828924166699eedf446add98316482.42eba3ea3d2e017f7547.js\",\"static/chunks/cd5f7ea6b3dce4c009a69679822f97df28ff970e.17f37028bcdebd2be7dd.js\",\"static/chunks/6c029700b6412d80cb68f2707f33765746c54d12.ebc174b9b4a2ef4a1a1a.js\",\"static/chunks/4786e8162e031f80487d9822761a7c44dc785abc.faabd55cbc987a7facc1.js\",\"static/runtime/main-d61687b0cc6e64936181.js\"]}}");
 
 /***/ }),
 
@@ -46151,6 +46046,210 @@ if (true) {
   module.exports = __webpack_require__("+QHS");
 } else {}
 
+
+/***/ }),
+
+/***/ "abg7":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getStaticParams", function() { return unstable_getStaticParams; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getStaticProps", function() { return getStaticProps; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getStaticPaths", function() { return getStaticPaths; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getServerSideProps", function() { return getServerSideProps; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getStaticProps", function() { return unstable_getStaticProps; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getStaticPaths", function() { return unstable_getStaticPaths; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getServerProps", function() { return unstable_getServerProps; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "config", function() { return config; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_app", function() { return _app; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderReqToHTML", function() { return renderReqToHTML; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony import */ var next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("GX0O");
+/* harmony import */ var next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("KqAr");
+
+    
+    
+    
+    const runtimeConfig = {}
+    const {parse} = __webpack_require__("bzos")
+    const {parse: parseQs} = __webpack_require__("8xkj")
+    const {renderToHTML} = __webpack_require__("/bjS");
+    const { tryGetPreviewData } = __webpack_require__("PCLx");
+    const {sendHTML} = __webpack_require__("LuNM");
+    const buildManifest = __webpack_require__("LZ9C");
+    const reactLoadableManifest = __webpack_require__("67Bq");
+    const Document = __webpack_require__("5w0S").default;
+    const Error = __webpack_require__("/a9y").default;
+    const App = __webpack_require__("1TCz").default;
+    
+    
+    const { rewrites } = __webpack_require__("Skye")
+    const { pathToRegexp, default: pathMatch } = __webpack_require__("uDRR")
+  
+
+    const ComponentInfo = __webpack_require__("fC/G")
+
+    const Component = ComponentInfo.default
+    /* harmony default export */ __webpack_exports__["default"] = (Component);
+    const unstable_getStaticParams = ComponentInfo['unstable_getStaticParam' + 's']
+    const getStaticProps = ComponentInfo['getStaticProp' + 's']
+    const getStaticPaths = ComponentInfo['getStaticPath' + 's']
+    const getServerSideProps = ComponentInfo['getServerSideProp' + 's']
+
+    // kept for detecting legacy exports
+    const unstable_getStaticProps = ComponentInfo['unstable_getStaticProp' + 's']
+    const unstable_getStaticPaths = ComponentInfo['unstable_getStaticPath' + 's']
+    const unstable_getServerProps = ComponentInfo['unstable_getServerProp' + 's']
+
+    
+    
+    const getCustomRouteMatcher = pathMatch(true)
+    const {prepareDestination} = __webpack_require__("dtb4")
+
+    function handleRewrites(parsedUrl) {
+      for (const rewrite of rewrites) {
+        const matcher = getCustomRouteMatcher(rewrite.source)
+        const params = matcher(parsedUrl.pathname)
+
+        if (params) {
+          const { parsedDestination } = prepareDestination(
+            rewrite.destination,
+            params
+          )
+          Object.assign(parsedUrl.query, parsedDestination.query, params)
+          delete parsedDestination.query
+
+          Object.assign(parsedUrl, parsedDestination)
+
+          if (parsedUrl.pathname === '/settings'){
+            break
+          }
+          
+        }
+      }
+
+      return parsedUrl
+    }
+  
+
+    const config = ComponentInfo['confi' + 'g'] || {}
+    const _app = App
+    async function renderReqToHTML(req, res, renderMode, _renderOpts, _params) {
+      const fromExport = renderMode === 'export' || renderMode === true;
+      
+      const options = {
+        App,
+        Document,
+        buildManifest,
+        getStaticProps,
+        getServerSideProps,
+        getStaticPaths,
+        reactLoadableManifest,
+        canonicalBase: "",
+        buildId: "ak69zHLatLY8SjIc_0bsf",
+        assetPrefix: "",
+        runtimeConfig: runtimeConfig.publicRuntimeConfig || {},
+        previewProps: {previewModeId:"293c56ad644ccd389c428b4c0d3744e8",previewModeSigningKey:"f33ed2e441423508cf0ab7238a1ff365b50e4ff1e1abbd88e3cccc4ca7bc7dcf",previewModeEncryptionKey:"3c891632540f114c96e6945bd3b26d6e4933419b4f229249efe86dcfeb824862"},
+        ..._renderOpts
+      }
+      let _nextData = false
+
+      const parsedUrl = handleRewrites(parse(req.url, true))
+
+      if (parsedUrl.pathname.match(/_next\/data/)) {
+        _nextData = true
+        parsedUrl.pathname = parsedUrl.pathname
+          .replace(new RegExp('/_next/data/ak69zHLatLY8SjIc_0bsf/'), '/')
+          .replace(/\.json$/, '')
+      }
+
+      const renderOpts = Object.assign(
+        {
+          Component,
+          pageConfig: config,
+          nextExport: fromExport
+        },
+        options,
+      )
+      try {
+        
+        const params = {};
+        const nowParams = null;
+        // make sure to set renderOpts to the correct params e.g. _params
+        // if provided from worker or params if we're parsing them here
+        renderOpts.params = _params || params
+
+        const isFallback = parsedUrl.query.__nextFallback
+
+        const previewData = tryGetPreviewData(req, res, options.previewProps)
+        const isPreviewMode = previewData !== false
+
+        let result = await renderToHTML(req, res, "/settings", Object.assign({}, getStaticProps ? {} : parsedUrl.query, nowParams ? nowParams : params, _params, isFallback ? { __nextFallback: 'true' } : {}), renderOpts)
+
+        if (_nextData && !renderMode) {
+          const payload = JSON.stringify(renderOpts.pageData)
+          res.setHeader('Content-Type', 'application/json')
+          res.setHeader('Content-Length', Buffer.byteLength(payload))
+
+          res.setHeader(
+            'Cache-Control',
+            isPreviewMode
+              ? `private, no-cache, no-store, max-age=0, must-revalidate`
+              : getServerSideProps
+              ? `no-cache, no-store, must-revalidate`
+              : `s-maxage=${renderOpts.revalidate}, stale-while-revalidate`
+          )
+          res.end(payload)
+          return null
+        } else if (isPreviewMode) {
+          res.setHeader(
+            'Cache-Control',
+            'private, no-cache, no-store, max-age=0, must-revalidate'
+          )
+        }
+
+        if (renderMode) return { html: result, renderOpts }
+        return result
+      } catch (err) {
+        if (err.code === 'ENOENT') {
+          res.statusCode = 404
+          const result = await renderToHTML(req, res, "/_error", parsedUrl.query, Object.assign({}, options, {
+            getStaticProps: undefined,
+            getStaticPaths: undefined,
+            getServerSideProps: undefined,
+            Component: Error
+          }))
+          return result
+        } else {
+          console.error(err)
+          res.statusCode = 500
+          const result = await renderToHTML(req, res, "/_error", parsedUrl.query, Object.assign({}, options, {
+            getStaticProps: undefined,
+            getStaticPaths: undefined,
+            getServerSideProps: undefined,
+            Component: Error,
+            err
+          }))
+          return result
+        }
+      }
+    }
+    async function render (req, res) {
+      try {
+        await Object(next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_0__["default"])()
+        const html = await renderReqToHTML(req, res)
+        if (html) {
+          sendHTML(req, res, html, {generateEtags: true})
+        }
+      } catch(err) {
+        await Object(next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_1__["default"])(err)
+        console.error(err)
+        res.statusCode = 500
+        res.end('Internal Server Error')
+      }
+    }
+  
 
 /***/ }),
 
@@ -66781,210 +66880,6 @@ Object.defineProperty(exports, "__esModule", {
 const React = __importStar(__webpack_require__("q1tI"));
 
 exports.DocumentContext = React.createContext(null);
-
-/***/ }),
-
-/***/ "nSK+":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getStaticParams", function() { return unstable_getStaticParams; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getStaticProps", function() { return getStaticProps; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getStaticPaths", function() { return getStaticPaths; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "getServerSideProps", function() { return getServerSideProps; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getStaticProps", function() { return unstable_getStaticProps; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getStaticPaths", function() { return unstable_getStaticPaths; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "unstable_getServerProps", function() { return unstable_getServerProps; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "config", function() { return config; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "_app", function() { return _app; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderReqToHTML", function() { return renderReqToHTML; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony import */ var next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("GX0O");
-/* harmony import */ var next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("KqAr");
-
-    
-    
-    
-    const runtimeConfig = {}
-    const {parse} = __webpack_require__("bzos")
-    const {parse: parseQs} = __webpack_require__("8xkj")
-    const {renderToHTML} = __webpack_require__("/bjS");
-    const { tryGetPreviewData } = __webpack_require__("PCLx");
-    const {sendHTML} = __webpack_require__("LuNM");
-    const buildManifest = __webpack_require__("LZ9C");
-    const reactLoadableManifest = __webpack_require__("67Bq");
-    const Document = __webpack_require__("5w0S").default;
-    const Error = __webpack_require__("/a9y").default;
-    const App = __webpack_require__("1TCz").default;
-    
-    
-    const { rewrites } = __webpack_require__("Skye")
-    const { pathToRegexp, default: pathMatch } = __webpack_require__("uDRR")
-  
-
-    const ComponentInfo = __webpack_require__("fC/G")
-
-    const Component = ComponentInfo.default
-    /* harmony default export */ __webpack_exports__["default"] = (Component);
-    const unstable_getStaticParams = ComponentInfo['unstable_getStaticParam' + 's']
-    const getStaticProps = ComponentInfo['getStaticProp' + 's']
-    const getStaticPaths = ComponentInfo['getStaticPath' + 's']
-    const getServerSideProps = ComponentInfo['getServerSideProp' + 's']
-
-    // kept for detecting legacy exports
-    const unstable_getStaticProps = ComponentInfo['unstable_getStaticProp' + 's']
-    const unstable_getStaticPaths = ComponentInfo['unstable_getStaticPath' + 's']
-    const unstable_getServerProps = ComponentInfo['unstable_getServerProp' + 's']
-
-    
-    
-    const getCustomRouteMatcher = pathMatch(true)
-    const {prepareDestination} = __webpack_require__("dtb4")
-
-    function handleRewrites(parsedUrl) {
-      for (const rewrite of rewrites) {
-        const matcher = getCustomRouteMatcher(rewrite.source)
-        const params = matcher(parsedUrl.pathname)
-
-        if (params) {
-          const { parsedDestination } = prepareDestination(
-            rewrite.destination,
-            params
-          )
-          Object.assign(parsedUrl.query, parsedDestination.query, params)
-          delete parsedDestination.query
-
-          Object.assign(parsedUrl, parsedDestination)
-
-          if (parsedUrl.pathname === '/settings'){
-            break
-          }
-          
-        }
-      }
-
-      return parsedUrl
-    }
-  
-
-    const config = ComponentInfo['confi' + 'g'] || {}
-    const _app = App
-    async function renderReqToHTML(req, res, renderMode, _renderOpts, _params) {
-      const fromExport = renderMode === 'export' || renderMode === true;
-      
-      const options = {
-        App,
-        Document,
-        buildManifest,
-        getStaticProps,
-        getServerSideProps,
-        getStaticPaths,
-        reactLoadableManifest,
-        canonicalBase: "",
-        buildId: "CiBg9imPVlM1xCFcxX4lE",
-        assetPrefix: "",
-        runtimeConfig: runtimeConfig.publicRuntimeConfig || {},
-        previewProps: {previewModeId:"9be61aece85e36efc184f2c65bd15408",previewModeSigningKey:"fe9ff6105f0a3301c82d9f57ecc26431463bd48d1c52b656717ed8de01a05d76",previewModeEncryptionKey:"08f7f8a8c7df5a84a1ad9568b9f45b49bb60b2827e77db83fae5c02810b07951"},
-        ..._renderOpts
-      }
-      let _nextData = false
-
-      const parsedUrl = handleRewrites(parse(req.url, true))
-
-      if (parsedUrl.pathname.match(/_next\/data/)) {
-        _nextData = true
-        parsedUrl.pathname = parsedUrl.pathname
-          .replace(new RegExp('/_next/data/CiBg9imPVlM1xCFcxX4lE/'), '/')
-          .replace(/\.json$/, '')
-      }
-
-      const renderOpts = Object.assign(
-        {
-          Component,
-          pageConfig: config,
-          nextExport: fromExport
-        },
-        options,
-      )
-      try {
-        
-        const params = {};
-        const nowParams = null;
-        // make sure to set renderOpts to the correct params e.g. _params
-        // if provided from worker or params if we're parsing them here
-        renderOpts.params = _params || params
-
-        const isFallback = parsedUrl.query.__nextFallback
-
-        const previewData = tryGetPreviewData(req, res, options.previewProps)
-        const isPreviewMode = previewData !== false
-
-        let result = await renderToHTML(req, res, "/settings", Object.assign({}, getStaticProps ? {} : parsedUrl.query, nowParams ? nowParams : params, _params, isFallback ? { __nextFallback: 'true' } : {}), renderOpts)
-
-        if (_nextData && !renderMode) {
-          const payload = JSON.stringify(renderOpts.pageData)
-          res.setHeader('Content-Type', 'application/json')
-          res.setHeader('Content-Length', Buffer.byteLength(payload))
-
-          res.setHeader(
-            'Cache-Control',
-            isPreviewMode
-              ? `private, no-cache, no-store, max-age=0, must-revalidate`
-              : getServerSideProps
-              ? `no-cache, no-store, must-revalidate`
-              : `s-maxage=${renderOpts.revalidate}, stale-while-revalidate`
-          )
-          res.end(payload)
-          return null
-        } else if (isPreviewMode) {
-          res.setHeader(
-            'Cache-Control',
-            'private, no-cache, no-store, max-age=0, must-revalidate'
-          )
-        }
-
-        if (renderMode) return { html: result, renderOpts }
-        return result
-      } catch (err) {
-        if (err.code === 'ENOENT') {
-          res.statusCode = 404
-          const result = await renderToHTML(req, res, "/_error", parsedUrl.query, Object.assign({}, options, {
-            getStaticProps: undefined,
-            getStaticPaths: undefined,
-            getServerSideProps: undefined,
-            Component: Error
-          }))
-          return result
-        } else {
-          console.error(err)
-          res.statusCode = 500
-          const result = await renderToHTML(req, res, "/_error", parsedUrl.query, Object.assign({}, options, {
-            getStaticProps: undefined,
-            getStaticPaths: undefined,
-            getServerSideProps: undefined,
-            Component: Error,
-            err
-          }))
-          return result
-        }
-      }
-    }
-    async function render (req, res) {
-      try {
-        await Object(next_plugin_loader_middleware_on_init_server___WEBPACK_IMPORTED_MODULE_0__["default"])()
-        const html = await renderReqToHTML(req, res)
-        if (html) {
-          sendHTML(req, res, html, {generateEtags: true})
-        }
-      } catch(err) {
-        await Object(next_plugin_loader_middleware_on_error_server___WEBPACK_IMPORTED_MODULE_1__["default"])(err)
-        console.error(err)
-        res.statusCode = 500
-        res.end('Internal Server Error')
-      }
-    }
-  
 
 /***/ }),
 
