@@ -113,7 +113,9 @@ const Find = ({
   const [itemLocationCountry, setItemLocationCountry] = useState('US');
   const [include, setInclude] = useState([]);
   const [exclude, setExclude] = useState([]);
-  const [selectedChannel, setSelectedChannel] = useState(channels[0].name);
+  const [selectedChannel, setSelectedChannel] = useState(
+    channels.length ? channels[0].name : ''
+  );
 
   const {
     data: { me },
