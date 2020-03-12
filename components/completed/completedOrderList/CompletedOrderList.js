@@ -197,6 +197,10 @@ export default function CompletedOrderList({ shops }) {
                         data.shopOrders.edges.filter(
                           order =>
                             order.node.id.split('/').pop() === selectedOrder
+                        ).length > 0 &&
+                        data.shopOrders.edges.filter(
+                          order =>
+                            order.node.id.split('/').pop() === selectedOrder
                         )[0].node
                       }
                       shop={client}

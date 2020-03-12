@@ -55,7 +55,6 @@ async function placeZincOrder(data, token, updateOrderFunc) {
 }
 
 async function placeCustomOrder(cart, id, updateOrderFunc) {
-  // console.log(cart);
   try {
     const cartObj = JSON.parse(cart);
     cartObj.pId = id;
@@ -89,6 +88,7 @@ async function placeCustomOrder(cart, id, updateOrderFunc) {
       // console.log(data, "after update");
       // forceUpdate();
     });
+    // console.log("first2", res);
   } catch (e) {
     console.log('error', e);
   }
@@ -1160,7 +1160,7 @@ function PendingOrders() {
                                           await placeCustomOrder(
                                             order.customCart,
                                             order.id,
-                                            updateOrder.mutation
+                                            updateOrder
                                             // forceUpdate
                                           );
                                         } else if (

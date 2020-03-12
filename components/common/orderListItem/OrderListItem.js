@@ -114,7 +114,7 @@ export default function OrderListItem(props) {
       >
         <Box>
           <Box display="flex" flexWrap="wrap" alignItems="center" mb={1}>
-            <Heading fontSize="sm" marginRight={3}>
+            <Heading fontSize="sm" marginRight={3} color="text">
               <a
                 href={`https://${
                   shopName.split('.')[0]
