@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import { ALL_SHOPS_QUERY, shopsQueryVars } from '../shops/ShopList';
-import Logo from '../Logo/Logo';
+import Logo from '../logo/Logo';
 import Header from './Header';
 import Meta from './Meta';
 

@@ -6,7 +6,7 @@ import { Box, Spinner } from '@chakra-ui/core';
 import PropTypes from 'prop-types';
 import { CURRENT_USER_QUERY } from './User';
 import Userform from './Userform';
-import Logo from '../Logo/Logo';
+import Logo from '../logo/Logo';
 
 const RESET_MUTATION = gql`
   mutation RESET_MUTATION(

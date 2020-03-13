@@ -6,7 +6,7 @@ import { Box, Text } from '@chakra-ui/core';
 import { CURRENT_USER_QUERY } from './User';
 import Signup from './Signup';
 import RequestReset from './RequestReset';
-import Logo from '../Logo/Logo';
+import Logo from '../logo/Logo';
 import Userform from './Userform';
 
 const SIGNIN_MUTATION = gql`
