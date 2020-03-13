@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useMutation, useQuery } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import {
   Box,
   Heading,
@@ -142,7 +142,7 @@ export default function Shop() {
             mr={stacked && 2}
             mb={stacked && 5}
           >
-            {['URL', 'Zinc Token'].map((tab, index) => (
+            {['URL'].map((tab, index) => (
               <Box
                 p={2}
                 mr={2}
@@ -173,7 +173,7 @@ export default function Shop() {
           padding={4}
           flex="1"
         >
-          {['URL', 'Zinc Token'].map((tab, index) => (
+          {['URL'].map((tab, index) => (
             <Box
               key={tab}
               id={`Boxl-${tab}`}
@@ -223,7 +223,7 @@ export default function Shop() {
                   </InputRightElement>
                 </InputGroup>
               )}
-              {index === 1 && (
+              {/* {index === 1 && (
                 <InputGroup>
                   <Input
                     id="api"
@@ -265,7 +265,7 @@ export default function Shop() {
                     </Button>
                   </InputRightElement>
                 </InputGroup>
-              )}
+              )} */}
             </Box>
           ))}
         </Box>
@@ -505,8 +505,15 @@ export default function Shop() {
                         alignItems="center"
                         flexDirection="column"
                         borderRadius={3}
+                        bg="gray.100"
                       >
-                        <Heading margin="1em" size={600}>
+                        <Heading
+                          margin="1em"
+                          fontSize="lg"
+                          textTransform="uppercase"
+                          color="text"
+                          fontWeight={600}
+                        >
                           No Payment Methods Added.
                         </Heading>
                       </Box>

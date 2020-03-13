@@ -129,153 +129,148 @@ const Find = ({
         </Box>
       </Box>
       <Box {...CardStyle} background="white">
-        {(() => {
+        {/* {(() => {
           if (!me) return null;
           if (me.buyer && me.buyer.status) {
+            return ( */}
+        <>
+          <Box display="flex" paddingX="1em" paddingY="1em" flexWrap="wrap">
+            <Pagination
+              leftDisabled={pageNum === 0}
+              onLeft={() => setPageNum(pageNum - 1)}
+              onRight={() => setPageNum(pageNum + 1)}
+            />
+            <Box flex={1}>
+              <InputGroup width="100%" borderColor="gray.300">
+                <InputLeftElement
+                  children={<Icon name="search" color="gray.300" />}
+                />
+                <Input
+                  value={searchBar}
+                  onChange={e => {
+                    setSearchBar(e.target.value);
+                    setPageNum(0);
+                  }}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      setSearchEntry(searchBar);
+                    }
+                  }}
+                  placeholder="Search"
+                />
+              </InputGroup>
+            </Box>
+          </Box>
+          {(() => {
+            if (channelsError || !data || !data.channels) return null;
             return (
               <>
                 <Box
                   display="flex"
-                  paddingX="1em"
-                  paddingY="1em"
                   flexWrap="wrap"
+                  background="#f5f5f5"
+                  paddingY=".7em"
+                  paddingX="1em"
                 >
-                  <Pagination
-                    leftDisabled={pageNum === 0}
-                    onLeft={() => setPageNum(pageNum - 1)}
-                    onRight={() => setPageNum(pageNum + 1)}
-                  />
-                  <Box flex={1}>
-                    <InputGroup width="100%" borderColor="gray.300">
-                      <InputLeftElement
-                        children={<Icon name="search" color="gray.300" />}
-                      />
-                      <Input
-                        value={searchBar}
-                        onChange={e => {
-                          setSearchBar(e.target.value);
-                          setPageNum(0);
-                        }}
-                        onKeyPress={e => {
-                          if (e.key === 'Enter') {
-                            setSearchEntry(searchBar);
-                          }
-                        }}
-                        placeholder="Search"
-                      />
-                    </InputGroup>
-                  </Box>
+                  {option(
+                    'Channel',
+                    data.channels.map(a => a.name),
+                    a => setSelectedChannel(a),
+                    selectedChannel
+                  )}
+                  {option(
+                    'Location',
+                    ['US', 'CN', 'All'],
+                    a => setItemLocationCountry(a),
+                    itemLocationCountry
+                  )}
+                  {option(
+                    'Items per page',
+                    [10, 50, 100],
+                    a => setLimit(a),
+                    limit
+                  )}
                 </Box>
-                {(() => {
-                  if (channelsError || !data || !data.channels) return null;
-                  return (
-                    <>
-                      <Box
-                        display="flex"
-                        flexWrap="wrap"
-                        background="#f5f5f5"
-                        paddingY=".7em"
-                        paddingX="1em"
-                      >
-                        {option(
-                          'Channel',
-                          data.channels.map(a => a.name),
-                          a => setSelectedChannel(a),
-                          selectedChannel
-                        )}
-                        {option(
-                          'Location',
-                          ['US', 'CN', 'All'],
-                          a => setItemLocationCountry(a),
-                          itemLocationCountry
-                        )}
-                        {option(
-                          'Items per page',
-                          [10, 50, 100],
-                          a => setLimit(a),
-                          limit
-                        )}
-                      </Box>
-                      {searchEntry &&
+                {searchEntry &&
+                  data.channels.filter(
+                    order => order.name === selectedChannel
+                  )[0].type === 'MARKETPLACE' && (
+                    <MarketplaceSearch
+                      {...{
+                        search: searchEntry,
+                        limit,
+                        sort: value,
+                        pageNum,
+                        exclude,
+                        include,
+                        priceCurrency,
+                        price,
+                        itemLocationCountry,
+                        atcDisabled,
+                        addMPItem,
+                      }}
+                    />
+                  )}
+                {data.channels.length > 0 &&
+                  data.channels.filter(
+                    order => order.name === selectedChannel
+                  )[0].type === 'ZINC' && (
+                    <ZincSearch
+                      addZincItem={addZincItem}
+                      atcDisabled={atcDisabled}
+                      searchEntry={searchEntry}
+                      token={
+                        data.channels.filter(c => c.type === 'ZINC')[0].settings
+                          .key
+                      }
+                    />
+                  )}
+                {data.channels.length > 0 &&
+                  data.channels.filter(
+                    order => order.name === selectedChannel
+                  )[0].type === 'SHOPIFY' && (
+                    <ShopifySearch
+                      addCustomItem={(a, b) =>
+                        addCustomItem(
+                          a,
+                          b,
+                          data.channels.filter(
+                            order => order.name === selectedChannel
+                          )[0].settings.shopURL,
+                          data.channels.filter(
+                            order => order.name === selectedChannel
+                          )[0].settings.key
+                        )
+                      }
+                      checkout={() =>
+                        toast({
+                          position: 'top-right',
+                          title: `Checkout`,
+                          status: 'success',
+                          duration: 2000,
+                          isClosable: true,
+                        })
+                      }
+                      client="Marketplace"
+                      atcDisabled={atcDisabled}
+                      searchEntry={searchEntry}
+                      apiKey={
                         data.channels.filter(
                           order => order.name === selectedChannel
-                        )[0].type === 'MARKETPLACE' && (
-                          <MarketplaceSearch
-                            {...{
-                              search: searchEntry,
-                              limit,
-                              sort: value,
-                              pageNum,
-                              exclude,
-                              include,
-                              priceCurrency,
-                              price,
-                              itemLocationCountry,
-                              atcDisabled,
-                              addMPItem,
-                            }}
-                          />
-                        )}
-                      {data.channels.length > 0 &&
+                        )[0].settings.key
+                      }
+                      url={
                         data.channels.filter(
                           order => order.name === selectedChannel
-                        )[0].type === 'ZINC' && (
-                          <ZincSearch
-                            addZincItem={addZincItem}
-                            atcDisabled={atcDisabled}
-                            searchEntry={searchEntry}
-                            token={
-                              data.channels.filter(c => c.type === 'ZINC')[0]
-                                .settings.key
-                            }
-                          />
-                        )}
-                      {data.channels.length > 0 &&
-                        data.channels.filter(
-                          order => order.name === selectedChannel
-                        )[0].type === 'SHOPIFY' && (
-                          <ShopifySearch
-                            addCustomItem={(a, b) =>
-                              addCustomItem(
-                                a,
-                                b,
-                                data.channels.filter(
-                                  order => order.name === selectedChannel
-                                )[0].settings.shopURL,
-                                data.channels.filter(
-                                  order => order.name === selectedChannel
-                                )[0].settings.key
-                              )
-                            }
-                            checkout={() =>
-                              toast({
-                                position: 'top-right',
-                                title: `Checkout`,
-                                status: 'success',
-                                duration: 2000,
-                                isClosable: true,
-                              })
-                            }
-                            client="Marketplace"
-                            atcDisabled={atcDisabled}
-                            searchEntry={searchEntry}
-                            apiKey={
-                              data.channels.filter(
-                                order => order.name === selectedChannel
-                              )[0].settings.key
-                            }
-                            url={
-                              data.channels.filter(
-                                order => order.name === selectedChannel
-                              )[0].settings.shopURL
-                            }
-                          />
-                        )}
-                    </>
-                  );
-                })()}
+                        )[0].settings.shopURL
+                      }
+                    />
+                  )}
               </>
             );
+          })()}
+        </>
+        {/* );
           }
           return (
             <Box
@@ -296,7 +291,7 @@ const Find = ({
               </Link>
             </Box>
           );
-        })()}
+        })()} */}
       </Box>
     </>
   );
