@@ -56,9 +56,9 @@ async function placeZincOrder(data, token, updateOrderFunc) {
 
 async function placeCustomOrder(cart, id, updateOrderFunc) {
   try {
-    const cartObj = JSON.parse(cart);
-    cartObj.pId = id;
-    const cartJson = JSON.stringify(cartObj);
+    let cartObj = JSON.parse(cart);
+    cartObj["pId"] = id;
+    let cartJson = JSON.stringify(cartObj);
     const response = await fetch(
       `${
         process.env.NODE_ENV === 'development' ? front : prodFront
