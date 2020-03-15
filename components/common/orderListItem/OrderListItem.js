@@ -210,6 +210,8 @@ export default function OrderListItem(props) {
             )}
           {channels.filter(channel => channel.type === 'ZINC').length > 0 &&
             zincCart &&
+            JSON.parse(zincCart).products &&
+            JSON.parse(zincCart).products.length > 0 &&
             parseZinc(zincCart, zincCheckout)}
           {mpCheckout && (
             <Box
