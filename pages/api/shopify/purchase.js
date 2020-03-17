@@ -1,6 +1,7 @@
 import fetch from 'isomorphic-unfetch';
 
 export default async (req, res) => {
+  console.log('hi');
   if (req.body) {
     const checkoutObj = req.body;
     const shippingInfo = checkoutObj.shippingAddress;

@@ -135,6 +135,7 @@ export default function OrderListItem(props) {
             >
               {shopName.split('.')[0]}
             </Heading>
+
             <Heading fontSize="xs" color="gray.500">
               {Intl.DateTimeFormat('en-US').format(Date.parse(createAt))}
             </Heading>

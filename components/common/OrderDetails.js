@@ -27,6 +27,7 @@ const OrderDetailsComp = ({
   backgroundColor,
   name,
   store,
+  email,
   processedAt,
   fulfillments,
   lineItems,
@@ -182,18 +183,49 @@ const OrderDetailsComp = ({
             </Box>
           </Box>
         </Box>
+        <Box boxShadow="sm" background="white" padding={3} marginBottom={15}>
+          <Heading
+            fontSize="xs"
+            fontWeight={500}
+            color="gray.500"
+            letterSpacing="wide"
+            textTransform="uppercase"
+            mb={2}
+          >
+            Email
+          </Heading>
+          <Box display="block">
+            <Box fontSize="sm" color="#425A70" fontWeight={500}>
+              {email}
+            </Box>
+          </Box>
+        </Box>
         {fulfillments.length > 0 && (
-          <Box elevation={1} background="white" padding={18} marginBottom={15}>
-            <Heading size={100} marginBottom={6}>
+          <Box boxShadow="sm" background="white" padding={3} marginBottom={15}>
+            <Heading
+              fontSize="xs"
+              fontWeight={500}
+              color="gray.500"
+              letterSpacing="wide"
+              textTransform="uppercase"
+              mb={2}
+            >
               Shipments
             </Heading>
             <Box display="block">
               {fulfillments.map(a =>
                 a.trackingInfo.map((b, index) => (
                   <Box key={index} display="flex" alignItems="center">
-                    <Icon icon="box" color="#47B881" marginRight={10} />
+                    <Icon
+                      size={4}
+                      name="check-circle"
+                      color="#47B881"
+                      marginRight={2}
+                    />
                     <a href={b.url} target="_blank" rel="noopener noreferrer">
-                      <Text size={500}>{b.number}</Text>
+                      <Box fontSize="md" color="#425A70" fontWeight={500}>
+                        {b.number}
+                      </Box>
                     </a>
                   </Box>
                 ))

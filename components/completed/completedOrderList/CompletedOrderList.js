@@ -228,6 +228,7 @@ export default function CompletedOrderList({ shops }) {
                         lineItems={order.node.lineItems.edges}
                         createAt={order.node.processedAt}
                         note={order.node.note && order.node.note}
+                        email={order.node.email}
                         // errorText={order.node.note && order.node.note}
                         // processText={order.node.note && order.node.note}
                         orderId={order.node.id.split('/').pop()}
@@ -256,26 +257,6 @@ export default function CompletedOrderList({ shops }) {
                             <Link
                               href={{
                                 pathname: '/completed',
-                                query: {
-                                  order: order.node.name,
-                                  email: order.node.email,
-                                  name: order.node.name,
-                                  processedAt: Intl.DateTimeFormat(
-                                    'en-US'
-                                  ).format(Date.parse(order.node.processedAt)),
-                                  shippingAddress: JSON.stringify(
-                                    order.node.shippingAddress
-                                  ),
-                                  totalRecievedSet: order.totalPrice,
-                                  lineItems: JSON.stringify(
-                                    order.node.lineItems
-                                  ),
-                                  client,
-                                  note: order.node.note && order.node.note,
-                                  fulfillments: JSON.stringify(
-                                    order.node.fulfillments
-                                  ),
-                                },
                               }}
                               as={`/order?store=${client}&name=${
                                 order.node.name
