@@ -55,49 +55,43 @@ async function placeZincOrder(data, token, updateOrderFunc) {
 }
 
 async function placeCustomOrder(cart, id, updateOrderFunc) {
-  const update = await updateOrderFunc({
-    variables: {
-      id,
-      processed: 'TRUE',
-    },
-  });
-  // try {
-  //   let cartObj = JSON.parse(cart);
-  //   cartObj["pId"] = id;
-  //   let cartJson = JSON.stringify(cartObj);
-  //   const response = await fetch(
-  //     `${
-  //       process.env.NODE_ENV === 'development' ? front : prodFront
-  //     }/api/shopify/purchase`,
-  //     {
-  //       credentials: 'same-origin',
-  //       mode: 'cors',
-  //       method: 'POST',
-  //       headers: {
-  //         Accept: 'application/json',
-  //         'Content-type': 'application/json',
-  //         'X-Requested-With': 'Fetch',
-  //       },
-  //       body: cartJson,
-  //     }
-  //   );
-  //   const res = await response.json();
-  //   console.log(res);
-  //   // console.log("response received");
-  //   const update = await updateOrderFunc({
-  //     variables: {
-  //       id,
-  //       customCheckout: res,
-  //       processed: 'TRUE',
-  //     },
-  //   }).then(function(data) {
-  //     // console.log(data, "after update");
-  //     // forceUpdate();
-  //   });
-  //   // console.log("first2", res);
-  // } catch (e) {
-  //   console.log('error', e);
-  // }
+  try {
+    const cartObj = JSON.parse(cart);
+    cartObj.pId = id;
+    const cartJson = JSON.stringify(cartObj);
+    const response = await fetch(
+      `${
+        process.env.NODE_ENV === 'development' ? front : prodFront
+      }/api/shopify/purchase`,
+      {
+        credentials: 'same-origin',
+        mode: 'cors',
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+          'X-Requested-With': 'Fetch',
+        },
+        body: cartJson,
+      }
+    );
+    const res = await response.json();
+    console.log(res);
+    // console.log("response received");
+    const update = await updateOrderFunc({
+      variables: {
+        id,
+        customCheckout: res,
+        processed: 'TRUE',
+      },
+    }).then(function(data) {
+      // console.log(data, "after update");
+      // forceUpdate();
+    });
+    // console.log("first2", res);
+  } catch (e) {
+    console.log('error', e);
+  }
 }
 
 export const ORDER_QUERY = gql`
