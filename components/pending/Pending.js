@@ -18,81 +18,8 @@ import OrderLine from '../common/orderListItem/OrderLine';
 import { CardStyle } from '../common/DefaultStyles';
 import MPCart from './Cart/MPCart';
 import ZincCart from './Cart/ZincCart';
-import { front, prodFront } from '../../config';
-
-async function placeZincOrder(data, token, updateOrderFunc) {
-  try {
-    const response = await fetch(
-      `${
-        process.env.NODE_ENV === 'development' ? front : prodFront
-      }/api/zinc/purchase?token=${token}`,
-      {
-        credentials: 'same-origin',
-        mode: 'cors',
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-          'X-Requested-With': 'Fetch',
-        },
-        body: JSON.stringify({
-          data,
-        }),
-      }
-    );
-    const res = await response.json();
-    const update = await updateOrderFunc({
-      variables: {
-        id: data.client_notes.os_order_id,
-        zincCheckout: res,
-        processed: 'TRUE',
-      },
-    });
-    console.log('first2', res);
-  } catch (e) {
-    console.log('error', e);
-  }
-}
-
-async function placeCustomOrder(cart, id, updateOrderFunc) {
-  try {
-    let cartObj = JSON.parse(cart);
-    cartObj["pId"] = id;
-    let cartJson = JSON.stringify(cartObj);
-    const response = await fetch(
-      `${
-        process.env.NODE_ENV === 'development' ? front : prodFront
-      }/api/shopify/purchase`,
-      {
-        credentials: 'same-origin',
-        mode: 'cors',
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-          'X-Requested-With': 'Fetch',
-        },
-        body: cartJson,
-      }
-    );
-    const res = await response.json();
-    console.log(res);
-    // console.log("response received");
-    const update = await updateOrderFunc({
-      variables: {
-        id,
-        customCheckout: res,
-        processed: 'TRUE',
-      },
-    }).then(function(data) {
-      // console.log(data, "after update");
-      // forceUpdate();
-    });
-    // console.log("first2", res);
-  } catch (e) {
-    console.log('error', e);
-  }
-}
+import { placeZincOrder } from './placeZincOrder';
+import { placeCustomOrder } from './placeCustomOrder';
 
 export const ORDER_QUERY = gql`
   query OrdersQuery(
@@ -1160,8 +1087,8 @@ function PendingOrders() {
                                           await placeCustomOrder(
                                             order.customCart,
                                             order.id,
-                                            updateOrder
-                                            // forceUpdate
+                                            updateOrder,
+                                            channelsData
                                           );
                                         } else if (
                                           JSON.parse(order.mpCart).lineItems
@@ -1571,7 +1498,6 @@ function PendingOrders() {
                     </Box>
                   </Box>
                 )}
-
                 <Find
                   headerSize={600}
                   atcDisabled={!theOrder}

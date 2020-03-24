@@ -1,9 +1,9 @@
 import fetch from 'isomorphic-unfetch';
 
 export default async (req, res) => {
-  console.log('hi');
   if (req.body) {
     const checkoutObj = req.body;
+    // const { url, admin } = checkoutObj;
     const shippingInfo = checkoutObj.shippingAddress;
     const checkoutEmail = checkoutObj.email;
     const allShopItems = [];
@@ -29,9 +29,9 @@ export default async (req, res) => {
   }
   async function doShopifyOrder(shopItems, shippingInfo, email) {
     // const sp = 'osmarketplace.myshopify.com';
-    const sp = `${process.env.CUSTOM_SHOP_NAME}.myshopify.com`;
+    const sp = `${req.query.url}.myshopify.com`;
     // const accessTk = 'ae5584ba3aa15573e072e228414a5d65';
-    const accessTk = process.env.CUSTOM_SHOP_ADMIN;
+    const accessTk = req.query.admin;
 
     const query = `
     mutation draftOrderCreate($input: DraftOrderInput!) {
