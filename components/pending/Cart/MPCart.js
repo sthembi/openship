@@ -31,17 +31,15 @@ class Cart extends Component {
         border="1px solid #edf0f2"
       >
         <Box marginBottom={2}>
-          {cart ? (
-            <a href={cart.webUrl} target="_blank" rel="noopener noreferrer">
-              <Text fontSize="sm" fontWeight={500} color={color || '#00783E'}>
-                {cartName} Cart
-              </Text>
-            </a>
-          ) : (
-            <Text fontWeight={500} color={color || '#00783E'}>
+          <a
+            href={cart && cart.webUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Text fontSize="sm" fontWeight={500} color={color || '#00783E'}>
               {cartName} Cart
             </Text>
-          )}
+          </a>
         </Box>
         {cart && cart.lineItems && cart.lineItems.edges.length ? (
           cart.lineItems.edges.map(a => (

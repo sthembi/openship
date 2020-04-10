@@ -74,62 +74,6 @@ app.prepare().then(() => {
   );
 
   router.post('/_shopify', bodyParser(), async (ctx, next) => {
-    // const { shop } = ctx.request.body;
-
-    // console.log(ctx.request.header);
-
-    // const query = gql`
-    //   query($first: Int!, $skip: Int!) {
-    //     shops(orderBy: createdAt_DESC, first: $first, skip: $skip) {
-    //       id
-    //       domain
-    //       accessToken
-    //       createdAt
-    //       name
-    //       settings
-    //     }
-    //   }
-    // `;
-
-    // const variables = {
-    //   skip: 0,
-    //   first: 10,
-    // };
-
-    // const url =
-    //   process.env.NODE_ENV !== 'production'
-    //     ? 'http://localhost:4444'
-    //     : 'https://server.app.openship.org';
-    // const opts = {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     ...ctx.request.header,
-    //   },
-    //   body: JSON.stringify({ query, variables }),
-    // };
-    // if (ctx.request.header.cookie) {
-    //   fetch(url, opts)
-    //     .then(response => response.json())
-    //     .then(responseAsJson => {
-    //       if (responseAsJson.data) {
-    //         responseAsJson.data.shops.map(shop =>
-    // server.use(
-    //   mount(
-    //     `/shopify/${shop.name}`,
-    //     graphQLProxy({
-    //       shop: `${shop.name}.myshopify.com`,
-    //       password: shop.accessToken,
-    //     })
-    //   )
-    // )
-    //         );
-    //       }
-    //     })
-    //     .catch(error => {
-    //       console.log(error);
-    //     });
-    // }
     const { shops } = ctx.request.body;
     shops.map(shop =>
       server.use(
@@ -161,13 +105,6 @@ app.prepare().then(() => {
       ctx.respond = false;
     }
   });
-
-  // router.post('*', async ctx => {
-  //   if (!ctx.path.match('/_shopify')) {
-  //     await handle(ctx.req, ctx.res);
-  //     ctx.respond = false;
-  //   }
-  // });
 
   server.use(async (ctx, next) => {
     ctx.res.statusCode = 200;
