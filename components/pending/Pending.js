@@ -183,7 +183,7 @@ const Layout = {
 function PendingOrders() {
   const [selectedOrderIndex, setSelectedOrderIndex] = useState(null);
   const [skip, setSkip] = useState(0);
-  const [orderBy, setOrderBy] = useState('createdAt_ASC');
+  const [orderBy, setOrderBy] = useState('createAt_ASC');
   const [firstQ, setFirstQ] = useState(100);
   const [open, setOpen] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);

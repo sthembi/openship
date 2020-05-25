@@ -123,7 +123,7 @@ const Reshipment = ({ order, shop, isOpen, onClose }) => {
         variables: {
           skip: 0,
           first: 100,
-          orderBy: 'createdAt_ASC',
+          orderBy: 'createAt_ASC',
           processed: 'FALSE',
         },
       },
