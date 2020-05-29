@@ -92,6 +92,8 @@ class MktProduct extends Component {
 
   render() {
     const { product, addVariantToCart, atcDisabled } = this.props;
+    console.log(product.currentlyNotInStock);
+
     const {
       selectedVariantImage,
       selectedVariantQuantity,
@@ -204,7 +206,7 @@ class MktProduct extends Component {
                     onClick={() =>
                       addVariantToCart(variant.id, selectedVariantQuantity)
                     }
-                    disabled={atcDisabled}
+                    disabled={atcDisabled || !product.availableForSale}
                   >
                     <Heading
                       letterSpacing="wide"
@@ -212,7 +214,9 @@ class MktProduct extends Component {
                       fontWeight={700}
                       color="#1070CA"
                     >
-                      ADD TO CART
+                      {product.availableForSale
+                        ? 'ADD TO CART'
+                        : 'OUT OF STOCK'}
                     </Heading>
                   </Button>
                 </Box>

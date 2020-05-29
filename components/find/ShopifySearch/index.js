@@ -15,7 +15,7 @@ function ShopifySearch({
   useEffect(() => {
     async function findItems() {
       const query = `
-      query AllOrdersQuery($query: String)
+      query AllProductsQuery($query: String)
       {
         products(query: $query first:5) 
         {
@@ -25,6 +25,7 @@ function ShopifySearch({
           }
           edges {
             node {
+              availableForSale
               id
               title
               options {
@@ -82,6 +83,7 @@ function ShopifySearch({
         },
       })
         .then(res => res.json())
+        // .then(json => console.log(json));
         .then(json => setResults(json.data.products.edges));
     }
 
@@ -96,6 +98,7 @@ function ShopifySearch({
       product={product.node}
       client="Marketplace"
       atcDisabled={atcDisabled}
+      // atcDisabled={atcDisabled || !product.node.availableForSale}
     />
   ));
 }
