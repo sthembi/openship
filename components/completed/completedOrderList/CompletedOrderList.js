@@ -108,6 +108,12 @@ export default function CompletedOrderList({ shops }) {
     drawerOnOpen();
     setSelectedOrder2(arg);
   }
+
+  function closeDrawer() {
+    drawerOnClose();
+    setSelectedOrder2(null);
+  }
+
   return (
     <>
       <Box display="flex" py={4}>
@@ -122,13 +128,14 @@ export default function CompletedOrderList({ shops }) {
           size="md"
           isOpen={drawerIsOpen}
           placement="right"
-          onClose={drawerOnClose}
+          onClose={() => closeDrawer()}
         >
           <DrawerOverlay />
           <DrawerContent>
             {/* <DrawerCloseButton /> */}
             <DrawerBody bg="#f9f9fb" p={0}>
               <Box>
+                {/* {filterDrawer(data.shopOrders.edges)} */}
                 <OrderDetailsComp
                   {...data.shopOrders.edges.filter(
                     order => order.node.id.split('/').pop() === selectedOrder2
@@ -258,9 +265,9 @@ export default function CompletedOrderList({ shops }) {
                               href={{
                                 pathname: '/completed',
                               }}
-                              as={`/order?store=${client}&name=${
-                                order.node.name
-                              }`}
+                              // as={`/order?store=${client}&name=${
+                              //   order.node.name
+                              // }`}
                             >
                               <Button
                                 onClick={() =>
