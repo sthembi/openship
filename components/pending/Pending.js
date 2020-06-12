@@ -907,9 +907,9 @@ function PendingOrders() {
                               height={5}
                               onClick={() =>
                                 setOrderBy(
-                                  orderBy === 'createdAt_DESC'
-                                    ? 'createdAt_ASC'
-                                    : 'createdAt_DESC'
+                                  orderBy === 'createAt_DESC'
+                                    ? 'createAt_ASC'
+                                    : 'createAt_DESC'
                                 )
                               }
                             >

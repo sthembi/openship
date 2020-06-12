@@ -10,7 +10,7 @@ export const ORDER_QUERY = gql`
     orders(
       first: $first
       skip: $skip
-      orderBy: createdAt_DESC
+      orderBy: createAt_DESC
       where: { processed: $processed }
     ) {
       id
