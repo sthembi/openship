@@ -1,3 +1,6 @@
+<h1>UPDATE: Openship is going closed-source. I will be considering open-sourcing it once the product has matured. Openship will also be incorporating open-source ethos in other ways.</h1>
+
+
 <h1 align="center">
   <a href="https://openship.org">
     <img width="200px" style="margin-right: 20px" src="https://user-images.githubusercontent.com/34615258/62741139-89ba5580-b9ff-11e9-950f-afb005771866.png">
